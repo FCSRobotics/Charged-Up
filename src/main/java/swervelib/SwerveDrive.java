@@ -156,7 +156,9 @@ public class SwerveDrive
     // Sets states
     for (SwerveModule module : swerveModules)
     {
-      module.setDesiredState(desiredStates[module.moduleNumber], false); // Todo: Send isOpenLoop
+      module.setDesiredState(desiredStates[module.moduleNumber], false);
+      module.synchronizeEncoders();
+      // Todo: Send isOpenLoop
       SmartDashboard.putNumber("Module " + module.moduleNumber + " Speed Setpoint: ",
                                desiredStates[module.moduleNumber].speedMetersPerSecond);
       SmartDashboard.putNumber("Module " + module.moduleNumber + " Angle Setpoint: ",
@@ -165,6 +167,7 @@ public class SwerveDrive
   }
 
   /**
+
    * Set field-relative chassis speeds with closed-loop velocity control.
    *
    * @param chassisSpeeds Field-relative.

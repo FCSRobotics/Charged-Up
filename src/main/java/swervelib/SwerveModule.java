@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -93,8 +94,11 @@ public class SwerveModule
     absoluteEncoder.factoryDefault();
     absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
     angleMotor.configureIntegratedEncoder(moduleConfiguration.getPositionEncoderConversion(false));
-    angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
 
+    SmartDashboard.putNumber(moduleNumber + " offset angle position", angleOffset);
+    SmartDashboard.putNumber(moduleNumber + " can coder position", absoluteEncoder.getAbsolutePosition());
+    angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
+    
     // Config angle motor/controller
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
     angleMotor.configurePIDWrapping(-180, 180);

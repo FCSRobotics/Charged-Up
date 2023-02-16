@@ -6,6 +6,9 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -324,10 +327,13 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
+    SmartDashboard.putBoolean("Check", false);
     if (absoluteEncoder == null)
     {
       encoder.setPosition(position);
+      SmartDashboard.putBoolean("Check", true);
     }
+
   }
 
   /**

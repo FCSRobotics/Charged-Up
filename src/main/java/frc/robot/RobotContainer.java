@@ -52,12 +52,12 @@ public class RobotContainer
                                                           // controls are front-left positive
                                                           () -> (Math.abs(driverXbox.getLeftY()) >
                                                                  OperatorConstants.LEFT_Y_DEADBAND)
-                                                                ? driverXbox.getLeftY() : 0,
+                                                                ? driverXbox.getLeftY()/2 : 0,
                                                           () -> (Math.abs(driverXbox.getLeftX()) >
                                                                  OperatorConstants.LEFT_X_DEADBAND)
-                                                                ? driverXbox.getLeftX() : 0,
-                                                          () -> -driverXbox.getRightX(),
-                                                          () -> -driverXbox.getRightY(),
+                                                                ? driverXbox.getLeftX()/2 : 0,
+                                                          () -> -driverXbox.getRightX()/2,
+                                                          () -> -driverXbox.getRightY()/2,
                                                           false);
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
