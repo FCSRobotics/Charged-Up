@@ -4,15 +4,21 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.io.IOException;
+
+import com.ctre.phoenix.sensors.CANCoder;
 import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import java.io.File;
-import java.io.IOException;
 import swervelib.parser.SwerveParser;
+import java.io.*;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -29,9 +35,16 @@ public class Robot extends TimedRobot
 
   private Timer disabledTimer;
 
+
+  CANCoder frontleftCanCoder = new CANCoder(35);
+  CANCoder backleftCanCoder = new CANCoder(33);
+  CANCoder frontrightCanCoder = new CANCoder(32);
+  CANCoder backrightCanCoder = new CANCoder(34);
+
   public Robot()
   {
     instance = this;
+
   }
 
   public static Robot getInstance()
@@ -53,6 +66,9 @@ public class Robot extends TimedRobot
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
+    
+                                                                                                                                                        
+
   }
 
   /**
@@ -65,6 +81,10 @@ public class Robot extends TimedRobot
   @Override
   public void robotPeriodic()
   {
+    SmartDashboard.putNumber("front left", frontleftCanCoder.getAbsolutePosition());
+    SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition());
+    SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition());
+    SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition());
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -91,6 +111,7 @@ public class Robot extends TimedRobot
       m_robotContainer.setMotorBrake(false);
       disabledTimer.stop();
     }
+    
   }
 
   /**
@@ -138,6 +159,7 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
+    
   }
 
   @Override

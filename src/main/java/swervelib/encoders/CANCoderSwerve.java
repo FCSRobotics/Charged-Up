@@ -1,6 +1,7 @@
 package swervelib.encoders;
 
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
@@ -15,7 +16,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   /**
    * CANCoder with WPILib sendable and support.
    */
-  public WPI_CANCoder encoder;
+  public CANCoder encoder;
 
   /**
    * Initialize the CANCoder on the standard CANBus.
@@ -24,7 +25,8 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
    */
   public CANCoderSwerve(int id)
   {
-    encoder = new WPI_CANCoder(id);
+    encoder = new CANCoder(id);
+    encoder.configFactoryDefault();
   }
 
   /**
@@ -35,7 +37,9 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
    */
   public CANCoderSwerve(int id, String canbus)
   {
-    encoder = new WPI_CANCoder(id, canbus);
+    encoder = new CANCoder(id, canbus);
+
+    encoder.configFactoryDefault();
   }
 
   /**
