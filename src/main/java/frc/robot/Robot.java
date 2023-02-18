@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.wpilibj.Filesystem;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.Drivebase;
 import swervelib.parser.SwerveParser;
 import java.io.*;
 
@@ -40,6 +42,7 @@ public class Robot extends TimedRobot
   CANCoder backleftCanCoder = new CANCoder(33);
   CANCoder frontrightCanCoder = new CANCoder(32);
   CANCoder backrightCanCoder = new CANCoder(34);
+  Pigeon2 pigeon = new Pigeon2(31);
 
   public Robot()
   {
@@ -85,6 +88,7 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition());
     SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition());
     SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition());
+    SmartDashboard.putNumber("pigeon", pigeon.getYaw());
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
