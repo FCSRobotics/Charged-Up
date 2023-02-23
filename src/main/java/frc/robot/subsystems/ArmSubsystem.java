@@ -37,5 +37,4 @@ public class ArmSubsystem extends SubsystemBase
   // public void extendToDistanceMeters(float distance) {
       
   // }
-
 }

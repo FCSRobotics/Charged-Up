@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.databind.introspect.DefaultAccessorNamingStrategy.FirstCharBasedValidator;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.parser.PIDFConfig;
@@ -40,6 +43,18 @@ public final class Constants
 
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
+  }
+
+  public static final class Intake {
+    public static final double wheelTopSpeedCube = 0.1;
+    public static final double wheelBottomSpeedCube = 0.1;
+    public static final double wheelTopSpeedCone = 0.1;
+    public static final double wheelBottomSpeedCone = 0.1;
+    public static final int topMotor = 23;
+    public static final int bottomMotor = 16;
+    public static int extendChannel = -1;
+    public static int retractChannel = -1;
+    public static boolean reverseSolenoid = false;
   }
 
   public static class OperatorConstants
