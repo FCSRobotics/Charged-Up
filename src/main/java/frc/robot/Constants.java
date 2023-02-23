@@ -70,6 +70,8 @@ public final class Constants
     public static final double p = 0;
     public static final double i = 0;
     public static final double d = 0;
+    public static final float revToMetersConversionFactor = 0; // need to set
+    public static final int extendSparkMaxId = -1;
   }
 
   public static class OperatorConstants
