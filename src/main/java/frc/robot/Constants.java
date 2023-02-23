@@ -66,6 +66,12 @@ public final class Constants
     public static final int retractChannel = -1;
   }
 
+  public static class Arm {
+    public static final double p = 0;
+    public static final double i = 0;
+    public static final double d = 0;
+  }
+
   public static class OperatorConstants
   {
 

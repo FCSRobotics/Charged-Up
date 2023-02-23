@@ -4,16 +4,9 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.ArmSubsystem;
 
-import java.util.function.DoubleSupplier;
-import swervelib.SwerveController;
-import swervelib.math.SwerveMath;
 
 /**
  * An example command that uses an example subsystem.
@@ -22,11 +15,7 @@ public class ArmExtend extends CommandBase
 {
 
   private final ArmSubsystem armSubsystem;
-  private double currentDistance;
   private double distanceMeters;
-  private float acceptableDistanceMeters;
-  private double approxExtensionTimeSeconds;
-  private double increment;
   
 
   /**
@@ -39,14 +28,11 @@ public class ArmExtend extends CommandBase
    *                          
    * 
    */
-  public ArmExtend(ArmSubsystem armSubsystem, float distancMeters, float acceptableDistanceMeters)
+  public ArmExtend(ArmSubsystem armSubsystem, float distancMeters)
   {
     this.armSubsystem = armSubsystem;
-    this.currentDistance = 0.0;
     this.distanceMeters = distancMeters;
-    this.acceptableDistanceMeters = acceptableDistanceMeters;
     
-
     addRequirements(armSubsystem);
   }
 
@@ -54,18 +40,17 @@ public class ArmExtend extends CommandBase
   public void initialize()
   {
     
-    this.currentDistance = this.armSubsystem.extendEncoder.getPosition();
+    armSubsystem.setDesiredDistance(distanceMeters);
     
   }
 
   // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute()
-  {
-    this.currentDistance = this.armSubsystem.extendEncoder.getPosition();
-    this.armSubsystem.extendSparkMax.set(this.distanceMeters - this.currentDistance);
-
-  }
+  // @Override
+  // public void execute()
+  // {
+  //   this.currentDistance = this.armSubsystem.extendEncoder.getPosition();
+  //   this.armSubsystem.extendSparkMax.set(this.distanceMeters - this.currentDistance);
+  // }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -77,7 +62,7 @@ public class ArmExtend extends CommandBase
   @Override
   public boolean isFinished()
   {
-    return Math.abs(this.distanceMeters - this.currentDistance) > 0.02;
+    return true;
   }
 
 
