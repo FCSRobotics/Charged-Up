@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Grabber;
 import frc.robot.Constants.Intake;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.SetIntakePosition;
@@ -24,6 +25,7 @@ import frc.robot.commands.ToggleIntakePosition;
 import frc.robot.commands.swervedrive2.auto.Autos;
 import frc.robot.commands.swervedrive2.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
+import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
 
@@ -44,6 +46,10 @@ public class RobotContainer
                                                      Intake.extendChannel, 
                                                      Intake.retractChannel, 
                                                      Intake.reverseSolenoid);
+  final GrabberSubsystem grabber = new GrabberSubsystem(Grabber.rightMotorId,
+                                                        Grabber.leftMotorId,
+                                                        Grabber.extendChannel, 
+                                                        Grabber.retractChannel);
   // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandPS4Controller driverController = new CommandPS4Controller(0);

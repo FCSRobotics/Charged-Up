@@ -22,6 +22,7 @@ public class StopIntake extends CommandBase
   public StopIntake(IntakeSubsystem i)
   {
     intakeSubsystem = i;
+    addRequirements(intakeSubsystem);
   }
 
   @Override

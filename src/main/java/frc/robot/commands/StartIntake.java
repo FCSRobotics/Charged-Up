@@ -35,6 +35,7 @@ public class StartIntake extends CommandBase
   {
     intakeSubsystem = i;
     cone = isCone;
+    addRequirements(intakeSubsystem);
   }
 
   @Override

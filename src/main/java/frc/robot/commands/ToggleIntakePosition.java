@@ -19,6 +19,7 @@ public class ToggleIntakePosition extends CommandBase {
    * */
   public ToggleIntakePosition(IntakeSubsystem intake) {
     intakeSubsystem = intake;
+    addRequirements(intakeSubsystem);
   }
 
   @Override

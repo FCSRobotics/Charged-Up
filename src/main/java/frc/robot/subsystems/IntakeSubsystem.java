@@ -10,19 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Rotation2d;
-// import edu.wpi.first.math.geometry.Translation2d;
-// import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import java.io.File;
-
-// import swervelib.SwerveController;
-// import swervelib.SwerveDrive;
-// import swervelib.math.SwerveKinematics2;
-// import swervelib.parser.SwerveControllerConfiguration;
-// import swervelib.parser.SwerveDriveConfiguration;
-// import swervelib.parser.SwerveParser;
 
 public class IntakeSubsystem extends SubsystemBase
 {

@@ -22,6 +22,7 @@ public class SetIntakePosition extends CommandBase {
   public SetIntakePosition(IntakeSubsystem intake, boolean out) {
     desiredPosition = out;
     intakeSubsystem = intake;
+    addRequirements(intakeSubsystem);
   }
 
   @Override

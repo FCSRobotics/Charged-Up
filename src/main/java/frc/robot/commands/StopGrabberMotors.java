@@ -22,6 +22,8 @@ public class StopGrabberMotors extends CommandBase
   public StopGrabberMotors(GrabberSubsystem g)
   {
     grabberSubsystem = g;
+    addRequirements(grabberSubsystem);
+
   }
 
   @Override

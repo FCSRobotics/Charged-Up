@@ -22,6 +22,8 @@ public class OpenGrabber extends CommandBase
   public OpenGrabber(GrabberSubsystem g)
   {
     grabberSubsystem = g;
+    addRequirements(grabberSubsystem);
+
   }
 
   @Override

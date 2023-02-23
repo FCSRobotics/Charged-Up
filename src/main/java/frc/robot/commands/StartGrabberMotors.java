@@ -24,6 +24,8 @@ public class StartGrabberMotors extends CommandBase
   {
     grabberSubsystem = g;
     motorSpeed = speed;
+    addRequirements(grabberSubsystem);
+
 
   }
 

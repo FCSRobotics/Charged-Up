@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.io.ObjectInputFilter.Status;
+
 import com.fasterxml.jackson.databind.introspect.DefaultAccessorNamingStrategy.FirstCharBasedValidator;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 
@@ -52,9 +54,16 @@ public final class Constants
     public static final double wheelBottomSpeedCone = 0.1;
     public static final int topMotor = 23;
     public static final int bottomMotor = 16;
-    public static int extendChannel = -1;
-    public static int retractChannel = -1;
-    public static boolean reverseSolenoid = false;
+    public static final int extendChannel = -1;
+    public static final int retractChannel = -1;
+    public static final boolean reverseSolenoid = false;
+  }
+
+  public static class Grabber {
+    public static final int rightMotorId = -1;
+    public static final int leftMotorId = -1;
+    public static final int extendChannel = -1;
+    public static final int retractChannel = -1;
   }
 
   public static class OperatorConstants

@@ -22,6 +22,7 @@ public class CloseGrabber extends CommandBase
   public CloseGrabber(GrabberSubsystem g)
   {
     grabberSubsystem = g;
+    addRequirements(grabberSubsystem);
   }
 
   @Override
