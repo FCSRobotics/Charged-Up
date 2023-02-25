@@ -64,6 +64,8 @@ public final class Constants
     public static final int leftMotorId = -1;
     public static final int extendChannel = -1;
     public static final int retractChannel = -1;
+    public static final double offCurrent = -1;
+    public static final boolean disableMotors = false;
   }
 
   public static class Arm {
@@ -72,6 +74,22 @@ public final class Constants
     public static final double d = 0;
     public static final float revToMetersConversionFactor = 0; // need to set
     public static final int extendSparkMaxId = -1;
+    public static final float revToAngleConversionFactor = 0;
+    public static final int rotateSparkMaxId = 0;
+    public static final double iExtension = 0;
+    public static final double pExtension = 0;
+    public static final double dExtension = 0;
+    public static final double pRotating = 0;
+    public static final double iRotating = 0;
+    public static final double dRotating = 0;
+    public static final int extendCancoderid = -1;
+    public static final int rotateCancoderid = -1;
+    public static final float extendOffset = 0;
+    public static final float rotateOffset = 0;
+    public static final double maxSpeedExtend = 0.1;
+    public static final double maxSpeedRotate = 0.1;
+    public static final double maxAccelExtend = 0.1;
+    public static final double maxAccelRotate = 0.1;
   }
 
   public static class OperatorConstants

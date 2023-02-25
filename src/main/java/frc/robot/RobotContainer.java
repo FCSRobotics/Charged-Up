@@ -19,16 +19,16 @@ import frc.robot.Constants.Arm;
 import frc.robot.Constants.Grabber;
 import frc.robot.Constants.Intake;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.SetIntakePosition;
-import frc.robot.commands.StartIntake;
-import frc.robot.commands.StopIntake;
-import frc.robot.commands.ToggleIntakePosition;
+// import frc.robot.commands.SetIntakePosition;
+// import frc.robot.commands.StartIntake;
+// import frc.robot.commands.StopIntake;
+// import frc.robot.commands.ToggleIntakePosition;
 import frc.robot.commands.swervedrive2.auto.Autos;
 import frc.robot.commands.swervedrive2.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.GrabberSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+// import frc.robot.subsystems.ArmSubsystem;
+// import frc.robot.subsystems.GrabberSubsystem;
+// import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
 
 import java.io.File;
@@ -43,19 +43,26 @@ public class RobotContainer
 
   // The robot's subsystems and commands are defined here...
   final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  final IntakeSubsystem intake = new IntakeSubsystem(Intake.topMotor, 
-                                                     Intake.bottomMotor, 
-                                                     Intake.extendChannel, 
-                                                     Intake.retractChannel, 
-                                                     Intake.reverseSolenoid);
-  final GrabberSubsystem grabber = new GrabberSubsystem(Grabber.rightMotorId,
-                                                        Grabber.leftMotorId,
-                                                        Grabber.extendChannel, 
-                                                        Grabber.retractChannel);
-  final ArmSubsystem arm = new ArmSubsystem(Arm.extendSparkMaxId, Arm.revToMetersConversionFactor);
+  // final IntakeSubsystem intake = new IntakeSubsystem(Intake.topMotor, 
+  //                                                    Intake.bottomMotor, 
+  //                                                    Intake.extendChannel, 
+  //                                                    Intake.retractChannel, 
+  //                                                    Intake.reverseSolenoid);
+  // final GrabberSubsystem grabber = new GrabberSubsystem(Grabber.rightMotorId,
+  //                                                       Grabber.leftMotorId,
+  //                                                       Grabber.extendChannel, 
+  //                                                       Grabber.retractChannel);
+  // final ArmSubsystem arm = new ArmSubsystem(Arm.extendSparkMaxId,
+  //                                           Arm.rotateSparkMaxId,
+  //                                           Arm.extendCancoderid,
+  //                                           Arm.rotateCancoderid,
+  //                                           Arm.extendOffset,
+  //                                           Arm.rotateOffset,
+  //                                           Arm.revToMetersConversionFactor, 
+  //                                           Arm.revToAngleConversionFactor);
   // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  CommandPS4Controller driverController = new CommandPS4Controller(0);
+  CommandPS4Controller driverController = new CommandPS4Controller(1);
 
   // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   PS4Controller driverXbox = new PS4Controller(0);
@@ -72,20 +79,20 @@ public class RobotContainer
                                                           // Applies deadbands and inverts controls because joysticks
                                                           // are back-right positive while robot
                                                           // controls are front-left positive
-                                                          () -> (Math.abs(driverXbox.getLeftY()/.7) >
+                                                          () -> (Math.abs(driverXbox.getLeftY()/3) >
                                                                  OperatorConstants.LEFT_Y_DEADBAND)
-                                                                ? driverXbox.getLeftY()/.7 : 0,
+                                                                ? driverXbox.getLeftY()/2 : 0,
                                                           () -> (Math.abs(driverXbox.getLeftX()) >
                                                                  OperatorConstants.LEFT_X_DEADBAND)
-                                                                ? driverXbox.getLeftX()/.7 : 0,
-                                                          () -> -driverXbox.getRightX()/.7,
-                                                          () -> -driverXbox.getRightY()/.7,
+                                                                ? driverXbox.getLeftX()/2 : 0,
+                                                          () -> -driverXbox.getRightX()/2,
+                                                          () -> -driverXbox.getRightY()/2,
                                                           false);
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
         () -> (Math.abs(driverController.getLeftY()) > OperatorConstants.LEFT_Y_DEADBAND) ? driverController.getLeftY() : 0,
         () -> (Math.abs(driverController.getLeftX()) > OperatorConstants.LEFT_X_DEADBAND) ? driverController.getLeftX() : 0,
-        () -> -driverController.getRawAxis(3), () -> true, false);
+        () -> -driverController.getRawAxis(3), () -> false, false);
 
     drivebase.setDefaultCommand(closedFieldRel);
   }
@@ -101,11 +108,11 @@ public class RobotContainer
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-    new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
-    new JoystickButton(driverXbox, 2).onTrue((new ToggleIntakePosition(intake)));
-    new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))
-                                                   .onFalse(new StopIntake(intake)); // no idea what button this is
-//    new JoystickButton(driverXbox, 3).whileTrue(new InstantCommand(drivebase::lock, drivebase));
+//     new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
+//     new JoystickButton(driverXbox, 2).onTrue((new ToggleIntakePosition(intake)));
+//     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))
+//                                                    .onFalse(new StopIntake(intake)); // no idea what button this is
+// //    new JoystickButton(driverXbox, 3).whileTrue(new InstantCommand(drivebase::lock, drivebase));
   }
 
   /**
