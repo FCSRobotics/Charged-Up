@@ -22,6 +22,11 @@ import frc.robot.Constants.Grabber;
 import frc.robot.Constants.Intake;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmControl;
+import frc.robot.commands.ArmControl2;
+import frc.robot.commands.StartGrabberMotors;
+import frc.robot.commands.StartIntake;
+import frc.robot.commands.StopGrabberMotors;
+import frc.robot.commands.StopIntake;
 import frc.robot.commands.ToggleConeCube;
 import frc.robot.commands.ToggleGrabberMotors;
 import frc.robot.commands.ToggleIntakeMotors;
@@ -109,7 +114,11 @@ public class RobotContainer
         () -> (Math.abs(driverController.getLeftX()) > OperatorConstants.LEFT_X_DEADBAND) ? driverController.getLeftX() : 0,
         () -> -driverController.getRawAxis(3), () -> false, false);
 
-    ArmControl armControl = new ArmControl(arm,() -> Math.atan2(driverController.getLeftY(),driverController.getLeftX()) * 180/Math.PI);
+    // ArmControl armControl = new ArmControl(arm,() -> 
+    //   Math.atan2(driverController.getLeftX(),
+    //   driverController.getLeftY()) * 180/Math.PI);
+
+    ArmControl2 armControl = new ArmControl2(arm,() -> driverController.getLeftY()/5);
 
     drivebase.setDefaultCommand(new ParallelCommandGroup(closedAbsoluteDrive,armControl));
   }
@@ -125,10 +134,18 @@ public class RobotContainer
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-    new JoystickButton(driverXbox, 1).onTrue(new ToggleGrabberMotors(grabber));
+    new JoystickButton(driverXbox, 1).onTrue(new StartGrabberMotors(grabber,Grabber.motorSpeeds,true));
+    new JoystickButton(driverXbox, 1).onFalse(new StopGrabberMotors(grabber));
+
+    new JoystickButton(driverXbox,4).onTrue(new StartGrabberMotors(grabber,-Grabber.motorSpeeds,false));
+    new JoystickButton(driverXbox,4).onFalse(new StopGrabberMotors(grabber));
+
     
-    
-    new JoystickButton(driverXbox, 2).onTrue((new ToggleIntakeMotors(intake)));
+    new JoystickButton(driverXbox, 2).onTrue((new StartIntake(intake,true,true)));
+    new JoystickButton(driverXbox, 2).onFalse((new StopIntake(intake)));
+
+    new JoystickButton(driverXbox, 4).onTrue((new StartIntake(intake,true,false)));
+    new JoystickButton(driverXbox,4).onFalse((new StopIntake(intake)));
 
     new JoystickButton(driverXbox, 3).onTrue((new ToggleConeCube(light)));
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))

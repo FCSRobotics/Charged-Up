@@ -157,6 +157,10 @@ public class ArmSubsystem extends SubsystemBase
     setDesiredRotation(desiredHeight);
   }
 
+  public void setPercentage(double amount) {
+    rotateSparkMax.set(amount);
+  }
+
 //   public void updateRelativeEncoders() {
 //     extendEncoder.setPosition(extendCANCoder.getAbsolutePosition() - extendOffset);
 //     rotatingEncoder.setPosition(rotateCANCoder.getAbsolutePosition() - rotateOffset);

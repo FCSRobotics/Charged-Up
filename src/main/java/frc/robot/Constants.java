@@ -50,8 +50,8 @@ public final class Constants
   public static final class Intake {
     public static final double wheelTopSpeedCube = 0.1;
     public static final double wheelBottomSpeedCube = 0.1;
-    public static final double wheelTopSpeedCone = 0.5;
-    public static final double wheelBottomSpeedCone = 0.5;
+    public static final double wheelTopSpeedCone = 0.3;
+    public static final double wheelBottomSpeedCone = 0.3;
     public static final int topMotor = 28;
     public static final int bottomMotor = 27;
     public static final int extendChannel = 8;
@@ -66,7 +66,7 @@ public final class Constants
     public static final int retractChannel = -1;
     public static final double offCurrent = -1;
     public static final boolean disableMotors = false;
-    public static final double motorSpeeds = 0.2;
+    public static final double motorSpeeds = 1;
   }
 
   public static class Arm {
