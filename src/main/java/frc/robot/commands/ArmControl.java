@@ -20,6 +20,7 @@ public class ArmControl extends CommandBase
 
   private final ArmSubsystem armSubsystem;
   private DoubleSupplier rotation;
+  private DoubleSupplier extensionSupplier;
   
 
   /**
@@ -32,9 +33,10 @@ public class ArmControl extends CommandBase
    *                          
    * 
    */
-  public ArmControl(ArmSubsystem armSubsystem,DoubleSupplier rotation)
+  public ArmControl(ArmSubsystem armSubsystem,DoubleSupplier rotation, DoubleSupplier extensionSupplier)
   {
     this.armSubsystem = armSubsystem;
+    this.extensionSupplier = extensionSupplier;
     this.rotation = rotation;
     
     addRequirements(armSubsystem);
@@ -50,7 +52,7 @@ public class ArmControl extends CommandBase
   @Override
   public void execute()
   {
-    armSubsystem.setRawPosition(new ArmPosition(0, rotation.getAsDouble()));
+    armSubsystem.setRawPosition(new ArmPosition(extensionSupplier.getAsDouble(), rotation.getAsDouble()));
     SmartDashboard.putNumber("Angle ", rotation.getAsDouble());
     SmartDashboard.putBoolean("check", true);
   }
