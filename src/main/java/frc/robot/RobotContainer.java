@@ -8,8 +8,10 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -19,6 +21,10 @@ import frc.robot.Constants.Arm;
 import frc.robot.Constants.Grabber;
 import frc.robot.Constants.Intake;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArmControl;
+import frc.robot.commands.ToggleConeCube;
+import frc.robot.commands.ToggleGrabberMotors;
+import frc.robot.commands.ToggleIntakeMotors;
 // import frc.robot.commands.SetIntakePosition;
 // import frc.robot.commands.StartIntake;
 // import frc.robot.commands.StopIntake;
@@ -26,7 +32,10 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive2.auto.Autos;
 import frc.robot.commands.swervedrive2.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
-// import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.GrabberSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.GrabberSubsystem;
 // import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
@@ -43,29 +52,34 @@ public class RobotContainer
 
   // The robot's subsystems and commands are defined here...
   final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  // final IntakeSubsystem intake = new IntakeSubsystem(Intake.topMotor, 
-  //                                                    Intake.bottomMotor, 
-  //                                                    Intake.extendChannel, 
-  //                                                    Intake.retractChannel, 
-  //                                                    Intake.reverseSolenoid);
-  // final GrabberSubsystem grabber = new GrabberSubsystem(Grabber.rightMotorId,
-  //                                                       Grabber.leftMotorId,
-  //                                                       Grabber.extendChannel, 
-  //                                                       Grabber.retractChannel);
-  // final ArmSubsystem arm = new ArmSubsystem(Arm.extendSparkMaxId,
-  //                                           Arm.rotateSparkMaxId,
-  //                                           Arm.extendCancoderid,
-  //                                           Arm.rotateCancoderid,
-  //                                           Arm.extendOffset,
-  //                                           Arm.rotateOffset,
-  //                                           Arm.revToMetersConversionFactor, 
-  //                                           Arm.revToAngleConversionFactor);
-  // CommandJoystick rotationController = new CommandJoystick(1);
+  final IntakeSubsystem intake = new IntakeSubsystem(Intake.topMotor, 
+                                                     Intake.bottomMotor, 
+                                                     Intake.extendChannel, 
+                                                     Intake.retractChannel, 
+                                                     Intake.reverseSolenoid);
+  final GrabberSubsystem grabber = new GrabberSubsystem(Grabber.rightMotorId,
+                                                        Grabber.leftMotorId);
+                                                        // Grabber.extendChannel, 
+                                                        // Grabber.retractChannel);
+  final ArmSubsystem arm = new ArmSubsystem(Arm.extendSparkMaxId,
+                                            Arm.rotateSparkMaxId,
+                                            Arm.rotateFollowSparkMaxId,
+                                            // Arm.extendCancoderid,
+                                            // Arm.rotateCancoderid,
+                                            Arm.extendOffset,
+                                            Arm.rotateOffset,
+                                            Arm.revToMetersConversionFactor, 
+                                            Arm.revToAngleConversionFactor);
+  final LightSubsystem light = new LightSubsystem();
+  // // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  CommandPS4Controller driverController = new CommandPS4Controller(1);
+  CommandPS4Controller driverController = new CommandPS4Controller(0);
 
   // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   PS4Controller driverXbox = new PS4Controller(0);
+
+  Joystick rightstick = new Joystick(2);
+  Joystick leftstick = new Joystick(1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -79,22 +93,25 @@ public class RobotContainer
                                                           // Applies deadbands and inverts controls because joysticks
                                                           // are back-right positive while robot
                                                           // controls are front-left positive
-                                                          () -> (Math.abs(driverXbox.getLeftY()/3) >
+                                                          () -> (Math.abs(leftstick.getY()) >
                                                                  OperatorConstants.LEFT_Y_DEADBAND)
-                                                                ? driverXbox.getLeftY()/2 : 0,
-                                                          () -> (Math.abs(driverXbox.getLeftX()) >
+                                                                ? leftstick.getY() : 0,
+                                                          () -> (Math.abs(leftstick.getX()) >
                                                                  OperatorConstants.LEFT_X_DEADBAND)
-                                                                ? driverXbox.getLeftX()/2 : 0,
-                                                          () -> -driverXbox.getRightX()/2,
-                                                          () -> -driverXbox.getRightY()/2,
+                                                                ? leftstick.getX() : 0,
+                                                          () -> -rightstick.getX(),
+                                                          () -> -rightstick.getY(),
                                                           false);
+    SmartDashboard.putNumber("High rightx", driverXbox.getRightX());
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
         () -> (Math.abs(driverController.getLeftY()) > OperatorConstants.LEFT_Y_DEADBAND) ? driverController.getLeftY() : 0,
         () -> (Math.abs(driverController.getLeftX()) > OperatorConstants.LEFT_X_DEADBAND) ? driverController.getLeftX() : 0,
         () -> -driverController.getRawAxis(3), () -> false, false);
 
-    drivebase.setDefaultCommand(closedFieldRel);
+    ArmControl armControl = new ArmControl(arm,() -> Math.atan2(driverController.getLeftY(),driverController.getLeftX()) * 180/Math.PI);
+
+    drivebase.setDefaultCommand(new ParallelCommandGroup(closedAbsoluteDrive,armControl));
   }
 
   /**
@@ -108,8 +125,12 @@ public class RobotContainer
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-//     new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
-//     new JoystickButton(driverXbox, 2).onTrue((new ToggleIntakePosition(intake)));
+    new JoystickButton(driverXbox, 1).onTrue(new ToggleGrabberMotors(grabber));
+    
+    
+    new JoystickButton(driverXbox, 2).onTrue((new ToggleIntakeMotors(intake)));
+
+    new JoystickButton(driverXbox, 3).onTrue((new ToggleConeCube(light)));
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))
 //                                                    .onFalse(new StopIntake(intake)); // no idea what button this is
 // //    new JoystickButton(driverXbox, 3).whileTrue(new InstantCommand(drivebase::lock, drivebase));

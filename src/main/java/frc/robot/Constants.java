@@ -34,7 +34,7 @@ public final class Constants
 
     public static final PIDFConfig xAutoPID     = new PIDFConfig(0.7, 0, 0);
     public static final PIDFConfig yAutoPID     = new PIDFConfig(0.7, 0, 0);
-    public static final PIDFConfig angleAutoPID = new PIDFConfig(0.4, 0, 0.01);
+    public static final PIDFConfig angleAutoPID = new PIDFConfig(0.4, 0.0, 0.01);
 
     public static final double MAX_SPEED        = 4;
     public static final double MAX_ACCELERATION = 2;
@@ -50,36 +50,34 @@ public final class Constants
   public static final class Intake {
     public static final double wheelTopSpeedCube = 0.1;
     public static final double wheelBottomSpeedCube = 0.1;
-    public static final double wheelTopSpeedCone = 0.1;
-    public static final double wheelBottomSpeedCone = 0.1;
-    public static final int topMotor = 23;
-    public static final int bottomMotor = 16;
-    public static final int extendChannel = -1;
-    public static final int retractChannel = -1;
+    public static final double wheelTopSpeedCone = 0.5;
+    public static final double wheelBottomSpeedCone = 0.5;
+    public static final int topMotor = 28;
+    public static final int bottomMotor = 27;
+    public static final int extendChannel = 8;
+    public static final int retractChannel = 9;
     public static final boolean reverseSolenoid = false;
   }
 
   public static class Grabber {
-    public static final int rightMotorId = -1;
-    public static final int leftMotorId = -1;
+    public static final int rightMotorId = 24;
+    public static final int leftMotorId = 25;
     public static final int extendChannel = -1;
     public static final int retractChannel = -1;
     public static final double offCurrent = -1;
     public static final boolean disableMotors = false;
+    public static final double motorSpeeds = 0.2;
   }
 
   public static class Arm {
-    public static final double p = 0;
-    public static final double i = 0;
-    public static final double d = 0;
-    public static final float revToMetersConversionFactor = 0; // need to set
-    public static final int extendSparkMaxId = -1;
-    public static final float revToAngleConversionFactor = 0;
-    public static final int rotateSparkMaxId = 0;
+    public static final float revToMetersConversionFactor = (float) (15.0 * (0.11286/12)/20); // need to set
+    public static final int extendSparkMaxId = 22;
+    public static final float revToAngleConversionFactor = 360/112;
+    public static final int rotateSparkMaxId = 23;
     public static final double iExtension = 0;
-    public static final double pExtension = 0;
+    public static final double pExtension = 0.000;
     public static final double dExtension = 0;
-    public static final double pRotating = 0;
+    public static final double pRotating = 5.0;
     public static final double iRotating = 0;
     public static final double dRotating = 0;
     public static final int extendCancoderid = -1;
@@ -90,6 +88,7 @@ public final class Constants
     public static final double maxSpeedRotate = 0.1;
     public static final double maxAccelExtend = 0.1;
     public static final double maxAccelRotate = 0.1;
+    public static final int rotateFollowSparkMaxId = 26;
   }
 
   public static class OperatorConstants

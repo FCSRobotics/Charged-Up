@@ -3,6 +3,7 @@ package swervelib;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.parser.SwerveControllerConfiguration;
 
 /**
@@ -98,6 +99,11 @@ public class SwerveController
     // Converts the horizontal and vertical components to the commanded angle, in radians, unless the joystick is near
     // the center (i. e. has been released), in which case the angle is held at the last valid joystick input (hold
     // position when stick released).
+    SmartDashboard.putNumber("x heading", headingX);
+    SmartDashboard.putNumber("y heading", headingY);
+    SmartDashboard.putBoolean("HypotDeadband", withinHypotDeadband(headingX, headingY));
+    SmartDashboard.putNumber("last angle", lastAngle);
+    SmartDashboard.putNumber("new angle", Math.atan2(headingX, headingY));
     double        angle  = withinHypotDeadband(headingX, headingY) ? lastAngle : Math.atan2(headingX, headingY);
     ChassisSpeeds speeds = getTargetSpeeds(xInput, yInput, angle, currentHeadingAngleRadians);
 

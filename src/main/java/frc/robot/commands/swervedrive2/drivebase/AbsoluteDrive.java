@@ -56,6 +56,8 @@ public class AbsoluteDrive extends CommandBase
     this.headingVertical = headingVertical;
     this.isOpenLoop = isOpenLoop;
 
+    
+
     addRequirements(swerve);
   }
 
@@ -68,7 +70,7 @@ public class AbsoluteDrive extends CommandBase
   @Override
   public void execute()
   {
-
+    SmartDashboard.putNumber("low rightx", headingHorizontal.getAsDouble());
     // Get the desired chassis speeds based on a 2 joystick module.
     ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
                                                          headingHorizontal.getAsDouble(),
