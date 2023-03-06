@@ -47,6 +47,9 @@ import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
 
 import java.io.File;
 
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
@@ -115,10 +118,22 @@ public class RobotContainer
         () -> -driverController.getRawAxis(3), () -> false, false);
 
     // ArmControl armControl = new ArmControl(arm,() -> 
-    //   Math.atan2(driverController.getLeftX(),
+    //   Math.atan2(driverController.getLeftX(),  
     //   driverController.getLeftY()) * 180/Math.PI);
 
-    ArmControl2 armControl = new ArmControl2(arm,() -> driverController.getLeftY()/5);
+    ArmControl2 armControl = new ArmControl2(arm,() -> driverController.getLeftY()/3,() -> driverController.getRightY());
+
+    // SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+    //   drivebase::getPose, // Pose2d supplier
+    //   drivebase::resetPose, // Pose2d consumer, used to reset odometry at the beginning of auto
+    //   drivebase.kinematics, // SwerveDriveKinematics
+    //   new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+    //   new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+    //   driveSubsystem::setModuleStates, // Module states consumer used to output to the drive subsystem
+    //   eventMap,
+    //   true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+    //   drivebase // The drive subsystem. Used to properly set the requirements of path following commands
+    // );
 
     drivebase.setDefaultCommand(new ParallelCommandGroup(closedAbsoluteDrive,armControl));
   }

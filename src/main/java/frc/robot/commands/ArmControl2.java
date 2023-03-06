@@ -20,6 +20,8 @@ public class ArmControl2 extends CommandBase
 
   private final ArmSubsystem armSubsystem;
   private DoubleSupplier voltage;
+  private DoubleSupplier extensionSupplier;
+
   
 
   /**
@@ -32,10 +34,12 @@ public class ArmControl2 extends CommandBase
    *                          
    * 
    */
-  public ArmControl2(ArmSubsystem armSubsystem,DoubleSupplier voltage)
+  public ArmControl2(ArmSubsystem armSubsystem,DoubleSupplier voltage,DoubleSupplier extensionSupplier)
   {
     this.armSubsystem = armSubsystem;
     this.voltage = voltage;
+    this.extensionSupplier = extensionSupplier;
+
     
     addRequirements(armSubsystem);
   }
@@ -51,6 +55,8 @@ public class ArmControl2 extends CommandBase
   public void execute()
   {
     armSubsystem.setPercentage(voltage.getAsDouble());
+    armSubsystem.setPercentageex(extensionSupplier.getAsDouble());
+
     // armSubsystem.setRawPosition(new ArmPosition(0, voltage.getAsDouble()));
     // SmartDashboard.putNumber("Angle ", voltage.getAsDouble());
     // SmartDashboard.putBoolean("check", true);

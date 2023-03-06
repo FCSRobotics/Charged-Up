@@ -75,8 +75,7 @@ public class ArmSubsystem extends SubsystemBase
 
     rotateFollowSparkMax = new CANSparkMax(rotateSparkMaxFollowId, MotorType.kBrushless);
     rotateFollowSparkMax.setSmartCurrentLimit(40);
-    rotateFollowSparkMax.follow(rotateSparkMax);
-    rotateFollowSparkMax.setInverted(false);
+    rotateFollowSparkMax.follow(rotateSparkMax,true);
 
     extendEncoder = extendSparkMax.getEncoder();
     extendEncoder.setPositionConversionFactor(revToMetersConversionFactor);
@@ -159,6 +158,9 @@ public class ArmSubsystem extends SubsystemBase
 
   public void setPercentage(double amount) {
     rotateSparkMax.set(amount);
+  }
+  public void setPercentageex(double amount) {
+    extendSparkMax.set(amount);
   }
 
 //   public void updateRelativeEncoders() {
