@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
@@ -30,6 +31,7 @@ import frc.robot.commands.StopIntake;
 import frc.robot.commands.ToggleConeCube;
 import frc.robot.commands.ToggleGrabberMotors;
 import frc.robot.commands.ToggleIntakeMotors;
+import frc.robot.commands.ToggleIntakePosition;
 // import frc.robot.commands.SetIntakePosition;
 // import frc.robot.commands.StartIntake;
 // import frc.robot.commands.StopIntake;
@@ -97,16 +99,18 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
 
+    CameraServer.startAutomaticCapture();
+
     AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
                                                           // Applies deadbands and inverts controls because joysticks
                                                           // are back-right positive while robot
                                                           // controls are front-left positive
                                                           () -> (Math.abs(leftstick.getY()) >
                                                                  OperatorConstants.LEFT_Y_DEADBAND)
-                                                                ? leftstick.getY() : 0,
+                                                                ?(!leftstick.getRawButton(1) ? 1: 0.5) * leftstick.getY() : 0,
                                                           () -> (Math.abs(leftstick.getX()) >
                                                                  OperatorConstants.LEFT_X_DEADBAND)
-                                                                ? leftstick.getX() : 0,
+                                                                ? (!leftstick.getRawButton(1) ? 1 :  0.5) * leftstick.getX() : 0,
                                                           () -> -rightstick.getX(),
                                                           () -> -rightstick.getY(),
                                                           false);
@@ -121,7 +125,7 @@ public class RobotContainer
     //   Math.atan2(driverController.getLeftX(),  
     //   driverController.getLeftY()) * 180/Math.PI);
 
-    ArmControl2 armControl = new ArmControl2(arm,() -> driverController.getLeftY()/3,() -> driverController.getRightY());
+    ArmControl2 armControl = new ArmControl2(arm,() -> driverController.getLeftY()/3,() -> driverController.getRightY(), () -> driverController.getHID().getPOV());
 
     // SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
     //   drivebase::getPose, // Pose2d supplier
@@ -159,10 +163,12 @@ public class RobotContainer
     new JoystickButton(driverXbox, 2).onTrue((new StartIntake(intake,true,true)));
     new JoystickButton(driverXbox, 2).onFalse((new StopIntake(intake)));
 
-    new JoystickButton(driverXbox, 4).onTrue((new StartIntake(intake,true,false)));
-    new JoystickButton(driverXbox,4).onFalse((new StopIntake(intake)));
+    new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake,true,false)));
+    new JoystickButton(driverXbox,3).onFalse((new StopIntake(intake)));
+    
+    new JoystickButton(driverXbox, 6).onTrue(new ToggleIntakePosition(intake));
 
-    new JoystickButton(driverXbox, 3).onTrue((new ToggleConeCube(light)));
+
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))
 //                                                    .onFalse(new StopIntake(intake)); // no idea what button this is
 // //    new JoystickButton(driverXbox, 3).whileTrue(new InstantCommand(drivebase::lock, drivebase));

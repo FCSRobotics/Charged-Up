@@ -15,7 +15,6 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANPIDController.AccelStrategy;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -118,10 +117,12 @@ public class ArmSubsystem extends SubsystemBase
 
   @Override
   public void periodic() {
-    // if (Math.abs(desiredDistance - currentDistance) > 0.02) {
-    //   currentDistance = extendEncoder.getPosition();
-    //   extendSparkMax.set(extensionPID.calculate(currentDistance, desiredDistance)); // might want to change this to the built in one  
-    // }
+    if (Math.abs(desiredDistance - currentDistance) > 0.02) {
+      currentDistance = rotatingEncoder.getPosition();
+      rotateSparkMax.set((desiredDistance - currentDistance) * 0.3); // might want to change this to the built in one  
+    } else {
+      rotateSparkMax.stopMotor();
+    }
     // if (Math.abs(desiredHeight - currentHeight) > 1) {
     //   currentHeight = rotatingEncoder.getPosition();
     // }
@@ -132,12 +133,12 @@ public class ArmSubsystem extends SubsystemBase
 
   public void setDesiredDistance(double distance) {
     desiredDistance = distance;
-    extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
+    // extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
   }
 
   public void setDesiredRotation(double rotation) {
     desiredHeight = rotation;
-    rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
+    // rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
   }
 
   public void groundSetPoint() {
@@ -162,6 +163,8 @@ public class ArmSubsystem extends SubsystemBase
   public void setPercentageex(double amount) {
     extendSparkMax.set(amount);
   }
+
+  
 
 //   public void updateRelativeEncoders() {
 //     extendEncoder.setPosition(extendCANCoder.getAbsolutePosition() - extendOffset);

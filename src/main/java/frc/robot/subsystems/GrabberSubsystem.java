@@ -51,8 +51,8 @@ public class  GrabberSubsystem extends SubsystemBase
   }
 
   public void stopMotors() {
-    leftMotor.stopMotor();
-    rightMotor.stopMotor();
+    leftMotor.set(0.1);
+    rightMotor.set(0.1);
   }
 
   public void toggleMotorDirection() {

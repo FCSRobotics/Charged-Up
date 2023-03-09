@@ -28,6 +28,8 @@ public class TeleopDrive extends CommandBase
   private final SwerveController controller;
 
 
+
+
   /**
    * Creates a new ExampleCommand.
    *
@@ -43,6 +45,7 @@ public class TeleopDrive extends CommandBase
     this.driveMode = driveMode;
     this.isOpenLoop = isOpenLoop;
     this.controller = swerve.getSwerveController();
+    
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerve);
   }
@@ -57,8 +60,8 @@ public class TeleopDrive extends CommandBase
   @Override
   public void execute()
   {
-    double xVelocity   = Math.pow(vX.getAsDouble(), 3) * controller.config.maxSpeed;
-    double yVelocity   = Math.pow(vY.getAsDouble(), 3) * controller.config.maxSpeed;
+    double xVelocity   = Math.pow(vX.getAsDouble() , 3) * controller.config.maxSpeed;
+    double yVelocity   = Math.pow(vY.getAsDouble()  , 3) * controller.config.maxSpeed;
     double angVelocity = Math.pow(omega.getAsDouble(), 3) * controller.config.maxAngularVelocity;
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
