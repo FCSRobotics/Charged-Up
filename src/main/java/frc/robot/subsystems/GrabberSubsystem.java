@@ -21,19 +21,19 @@ public class  GrabberSubsystem extends SubsystemBase
   private final CANSparkMax leftMotor;
   private final CANSparkMax rightMotor;
   private boolean in = true;
-//   private final DoubleSolenoid solenoid;
+  private final DoubleSolenoid solenoid;
 
   public GrabberSubsystem(int rightMotorId, 
-                int leftMotorId
-                //int extendChannel, 
-                //int retractChannel
+                int leftMotorId,
+                int extendChannel, 
+                int retractChannel
                 ) {
     leftMotor = new CANSparkMax(leftMotorId,MotorType.kBrushless);
     leftMotor.setSmartCurrentLimit(10);
     rightMotor = new CANSparkMax(rightMotorId, MotorType.kBrushless);
     rightMotor.setSmartCurrentLimit(10);
 
-    // solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, extendChannel, retractChannel);
+    solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, extendChannel, retractChannel);
   }
 
   // currently using percentage voltage might be better to change it to explicit speed
@@ -59,11 +59,11 @@ public class  GrabberSubsystem extends SubsystemBase
     setMotorsSpeeds( !in ? Grabber.motorSpeeds : -Grabber.motorSpeeds, !in); 
   }
 
-//   public void clamp() {
-//     solenoid.set(kForward);
-//   }
+  public void clamp() {
+    solenoid.set(kForward);
+  }
 
-//   public void unclamp() {
-//     solenoid.set(kReverse);
-//   }
+  public void unclamp() {
+    solenoid.set(kReverse);
+  }
 }

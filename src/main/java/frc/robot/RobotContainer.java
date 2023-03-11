@@ -24,6 +24,8 @@ import frc.robot.Constants.Intake;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.ArmControl2;
+import frc.robot.commands.CloseGrabber;
+import frc.robot.commands.OpenGrabber;
 import frc.robot.commands.StartGrabberMotors;
 import frc.robot.commands.StartIntake;
 import frc.robot.commands.StopGrabberMotors;
@@ -68,9 +70,9 @@ public class RobotContainer
                                                      Intake.retractChannel, 
                                                      Intake.reverseSolenoid);
   final GrabberSubsystem grabber = new GrabberSubsystem(Grabber.rightMotorId,
-                                                        Grabber.leftMotorId);
-                                                        // Grabber.extendChannel, 
-                                                        // Grabber.retractChannel);
+                                                        Grabber.leftMotorId,
+                                                        Grabber.extendChannel, 
+                                                        Grabber.retractChannel);
   final ArmSubsystem arm = new ArmSubsystem(Arm.extendSparkMaxId,
                                             Arm.rotateSparkMaxId,
                                             Arm.rotateFollowSparkMaxId,
@@ -101,25 +103,25 @@ public class RobotContainer
 
     CameraServer.startAutomaticCapture();
 
-    AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
-                                                          // Applies deadbands and inverts controls because joysticks
-                                                          // are back-right positive while robot
-                                                          // controls are front-left positive
-                                                          () -> (Math.abs(leftstick.getY()) >
-                                                                 OperatorConstants.LEFT_Y_DEADBAND)
-                                                                ?(!leftstick.getRawButton(1) ? 1: 0.5) * leftstick.getY() : 0,
-                                                          () -> (Math.abs(leftstick.getX()) >
-                                                                 OperatorConstants.LEFT_X_DEADBAND)
-                                                                ? (!leftstick.getRawButton(1) ? 1 :  0.5) * leftstick.getX() : 0,
-                                                          () -> -rightstick.getX(),
-                                                          () -> -rightstick.getY(),
-                                                          false);
+    // AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
+    //                                                       // Applies deadbands and inverts controls because joysticks
+    //                                                       // are back-right positive while robot
+    //                                                       // controls are front-left positive
+    //                                                       () -> (Math.abs(leftstick.getY()) >
+    //                                                              OperatorConstants.LEFT_Y_DEADBAND)
+    //                                                             ?(!leftstick.getRawButton(1) ? 1: 0.5) * leftstick.getY() : 0,
+    //                                                       () -> (Math.abs(leftstick.getX()) >
+    //                                                              OperatorConstants.LEFT_X_DEADBAND)
+    //                                                             ? (!leftstick.getRawButton(1) ? 1 :  0.5) * leftstick.getX() : 0,
+    //                                                       () -> -rightstick.getX(),
+    //                                                       () -> -rightstick.getY(),
+    //                                                       false);
     SmartDashboard.putNumber("High rightx", driverXbox.getRightX());
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
-        () -> (Math.abs(driverController.getLeftY()) > OperatorConstants.LEFT_Y_DEADBAND) ? driverController.getLeftY() : 0,
-        () -> (Math.abs(driverController.getLeftX()) > OperatorConstants.LEFT_X_DEADBAND) ? driverController.getLeftX() : 0,
-        () -> -driverController.getRawAxis(3), () -> false, false);
+        () -> (Math.abs(leftstick.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (!leftstick.getRawButton(1) ? -1: -0.5) * leftstick.getY() : 0,
+        () -> (Math.abs(leftstick.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? (!leftstick.getRawButton(1) ? -1 :  -0.5) * leftstick.getX() : 0,
+        () -> -rightstick.getX(), () -> true, false);
 
     // ArmControl armControl = new ArmControl(arm,() -> 
     //   Math.atan2(driverController.getLeftX(),  
@@ -139,7 +141,7 @@ public class RobotContainer
     //   drivebase // The drive subsystem. Used to properly set the requirements of path following commands
     // );
 
-    drivebase.setDefaultCommand(new ParallelCommandGroup(closedAbsoluteDrive,armControl));
+    drivebase.setDefaultCommand(new ParallelCommandGroup(closedFieldRel,armControl));
   }
 
   /**
@@ -167,6 +169,11 @@ public class RobotContainer
     new JoystickButton(driverXbox,3).onFalse((new StopIntake(intake)));
     
     new JoystickButton(driverXbox, 6).onTrue(new ToggleIntakePosition(intake));
+
+    new JoystickButton(rightstick, 7).onTrue((new InstantCommand(drivebase::zeroGyro)));
+
+    new JoystickButton(driverXbox, 7).onTrue((new CloseGrabber(grabber)));
+    new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
 
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))

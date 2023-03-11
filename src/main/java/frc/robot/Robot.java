@@ -38,8 +38,8 @@ public class Robot extends TimedRobot
   private Timer disabledTimer;
 
 
-  CANCoder frontleftCanCoder = new CANCoder(35);
-  CANCoder backleftCanCoder = new CANCoder(33);
+  CANCoder frontleftCanCoder = new CANCoder(33);
+  CANCoder backleftCanCoder = new CANCoder(35);
   CANCoder frontrightCanCoder = new CANCoder(32);
   CANCoder backrightCanCoder = new CANCoder(34);
   Pigeon2 pigeon = new Pigeon2(31);

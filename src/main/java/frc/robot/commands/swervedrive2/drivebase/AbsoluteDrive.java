@@ -88,7 +88,6 @@ public class AbsoluteDrive extends CommandBase
 
     // Make the robot move
     swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true, isOpenLoop);
-
   }
 
   // Called once the command ends or is interrupted.

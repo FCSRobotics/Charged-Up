@@ -117,7 +117,7 @@ public class ArmSubsystem extends SubsystemBase
 
   @Override
   public void periodic() {
-    if (Math.abs(desiredDistance - currentDistance) > 0.02) {
+    if (Math.abs(desiredDistance - currentDistance) > 0.02) { // want to change this to pid
       currentDistance = rotatingEncoder.getPosition();
       rotateSparkMax.set((desiredDistance - currentDistance) * 0.3); // might want to change this to the built in one  
     } else {
@@ -162,6 +162,30 @@ public class ArmSubsystem extends SubsystemBase
   }
   public void setPercentageex(double amount) {
     extendSparkMax.set(amount);
+  }
+
+  public double getExtension() {
+    return extendEncoder.getPosition();
+  }
+
+  public double getRotation() {
+    return rotatingEncoder.getPosition();
+  }
+
+  public boolean leftSide(Positions pos) {
+    return true;
+  }
+
+  public boolean leftSide(double angle) {
+    return false;
+  }
+
+  public double getPostionAngle(Positions pos) {
+    return armPositions[pos.ordinal()].rotation;
+  }
+
+  public double getPostionExtension(Positions pos) {
+    return armPositions[pos.ordinal()].rotation;
   }
 
   

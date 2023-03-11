@@ -60,17 +60,23 @@ public class ArmControl2 extends CommandBase
 
     int angle = positionSupplier.getAsInt();
 
-    //if (angle == -1) {
+    if (angle == -1) {
       armSubsystem.setPercentage(voltage.getAsDouble());
-    //}
-    // } else {
-    //   int index = angle / 45;
-    //   armSubsystem.setPosition(Positions.values()[index]);
-    // }
+    } else {
+      int index = angle / 45;
+      if (armSubsystem.getExtension() <= 0.1) {
+        armSubsystem.setPosition(Positions.values()[index]);
+      } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index]))) {
+        armSubsystem.setDesiredDistance(0);
+      }
+      if (Math.abs(armSubsystem.getRotation() - armSubsystem.getPostionAngle(Positions.values()[index])) < 1) {
+        armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]));
+      }
+    }
 
-    // armSubsystem.setRawPosition(new ArmPosition(0, voltage.getAsDouble()));
-    // SmartDashboard.putNumber("Angle ", voltage.getAsDouble());
-    // SmartDashboard.putBoolean("check", true);
+    armSubsystem.setRawPosition(new ArmPosition(0, voltage.getAsDouble()));
+    SmartDashboard.putNumber("Angle ", voltage.getAsDouble());
+    SmartDashboard.putBoolean("check", true);
   }
 
   // Called once the command ends or is interrupted.
