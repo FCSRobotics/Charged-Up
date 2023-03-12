@@ -64,7 +64,6 @@ public class ArmControl2 extends CommandBase
       armSubsystem.setPercentage(voltage.getAsDouble());
     } else {
       int index = angle / 45;
-      SmartDashboard.putNumber("extension: " armSubsystem.getExtension());
       if (armSubsystem.getExtension() <= 0.1) {
         armSubsystem.setPosition(Positions.values()[index]);
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index]))) {

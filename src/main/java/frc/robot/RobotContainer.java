@@ -175,6 +175,13 @@ public class RobotContainer
     new JoystickButton(driverXbox, 7).onTrue((new CloseGrabber(grabber)));
     new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
+    new JoystickButton(rightstick,1).onTrue(new ToggleIntakePosition(intake));
+    new JoystickButton(rightstick,5).onTrue(new StartIntake(intake,true,true));
+    new JoystickButton(rightstick,5).onFalse(new StopIntake(intake));
+    new JoystickButton(rightstick,6).onTrue((new StartIntake(intake,true,false)));
+    new JoystickButton(rightstick,6).onFalse((new StopIntake(intake)));
+
+
 
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))
 //                                                    .onFalse(new StopIntake(intake)); // no idea what button this is
