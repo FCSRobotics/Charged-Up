@@ -119,9 +119,9 @@ public class RobotContainer
     SmartDashboard.putNumber("High rightx", driverXbox.getRightX());
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
-        () -> (Math.abs(leftstick.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (!leftstick.getRawButton(1) ? -1: -0.5) * leftstick.getY() : 0,
-        () -> (Math.abs(leftstick.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? (!leftstick.getRawButton(1) ? -1 :  -0.5) * leftstick.getX() : 0,
-        () -> -rightstick.getX(), () -> true, false);
+        () -> (Math.abs(leftstick.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (!leftstick.getRawButton(1) ? 1: -0.5) * leftstick.getY() : 0,
+        () -> (Math.abs(leftstick.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? (!leftstick.getRawButton(1) ? 1 :  -0.5) * leftstick.getX() : 0,
+        () -> rightstick.getX(), () -> true, false);
 
     // ArmControl armControl = new ArmControl(arm,() -> 
     //   Math.atan2(driverController.getLeftX(),  

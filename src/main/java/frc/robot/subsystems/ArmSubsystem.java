@@ -119,7 +119,7 @@ public class ArmSubsystem extends SubsystemBase
   public void periodic() {
     if (Math.abs(desiredDistance - currentDistance) > 0.02) { // want to change this to pid
       currentDistance = rotatingEncoder.getPosition();
-      rotateSparkMax.set((desiredDistance - currentDistance) * 0.3); // might want to change this to the built in one  
+      rotateSparkMax.set((desiredDistance - currentDistance) > 0 ? 0.3 : -0.3); // might want to change this to the built in one  
     } else {
       rotateSparkMax.stopMotor();
     }
@@ -133,7 +133,7 @@ public class ArmSubsystem extends SubsystemBase
 
   public void setDesiredDistance(double distance) {
     desiredDistance = distance;
-    // extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
+    extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
   }
 
   public void setDesiredRotation(double rotation) {
@@ -181,11 +181,11 @@ public class ArmSubsystem extends SubsystemBase
   }
 
   public double getPostionAngle(Positions pos) {
-    return armPositions[pos.ordinal()].rotation;
+    return armPositions[pos.ordinal()-1].rotation;
   }
 
   public double getPostionExtension(Positions pos) {
-    return armPositions[pos.ordinal()].rotation;
+    return armPositions[pos.ordinal()-1].rotation;
   }
 
   

@@ -62,8 +62,8 @@ public final class Constants
   public static class Grabber {
     public static final int rightMotorId = 24;
     public static final int leftMotorId = 25;
-    public static final int extendChannel = -1;
-    public static final int retractChannel = -1;
+    public static final int extendChannel = 10;
+    public static final int retractChannel = 11;
     public static final double offCurrent = -1;
     public static final boolean disableMotors = false;
     public static final double motorSpeeds = 1;
