@@ -52,7 +52,8 @@ public class ArmSubsystem extends SubsystemBase
     new ArmPosition(0, 0), // high cone
     new ArmPosition(0,0), // low cube
     new ArmPosition(0,0), // middle cube
-    new ArmPosition(0, 0) // high cube
+    new ArmPosition(0, 0), // high cube
+    new ArmPosition(0,0)
   };
 
   public ArmSubsystem(int extendSparkMaxId, 
@@ -103,6 +104,7 @@ public class ArmSubsystem extends SubsystemBase
     extendpid.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kSCurve,0);
     extendpid.setSmartMotionMaxAccel(Arm.maxAccelExtend, 0);
     extendpid.setSmartMotionMaxVelocity(Arm.maxSpeedExtend, 0);
+    extendpid.setFF​(0.1);
 
     rotatepid.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kSCurve,0);
     rotatepid.setSmartMotionMaxAccel(Arm.maxAccelRotate, 0);
@@ -117,23 +119,30 @@ public class ArmSubsystem extends SubsystemBase
 
   @Override
   public void periodic() {
-    if (Math.abs(desiredDistance - currentDistance) > 0.02) { // want to change this to pid
+    if (Math.abs(desiredHeight - currentHeight) > 0.02) { // want to change this to pid
       currentDistance = rotatingEncoder.getPosition();
-      rotateSparkMax.set((desiredDistance - currentDistance) > 0 ? 0.3 : -0.3); // might want to change this to the built in one  
+      rotateSparkMax.set((desiredHeight - currentHeight) > 0 ? 0.3 : -0.3);
+      SmartDashboard.putString("armState", "stoping"); // might want to change this to the built in one  
     } else {
       rotateSparkMax.stopMotor();
+      SmartDashboard.putString("armState", "stoping");
     }
+
+    // rotateSparkMax.getPIDController().setFF(0.1 * Math.sin(Math.toRadians(currentHeight)));
+
     // if (Math.abs(desiredHeight - currentHeight) > 1) {
     //   currentHeight = rotatingEncoder.getPosition();
     // }
     SmartDashboard.putNumber("arm location", extendEncoder.getPosition());
     SmartDashboard.putNumber("arm rotation", rotatingEncoder.getPosition());
+    SmartDashboard.putNumber("arm dlocation",desiredDistance);
+    SmartDashboard.putNumber("arm drotation", desiredHeight);
 
   }
 
   public void setDesiredDistance(double distance) {
     desiredDistance = distance;
-    extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
+    // extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
   }
 
   public void setDesiredRotation(double rotation) {

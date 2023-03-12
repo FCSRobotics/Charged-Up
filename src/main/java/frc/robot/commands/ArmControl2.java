@@ -69,8 +69,8 @@ public class ArmControl2 extends CommandBase
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index]))) {
         armSubsystem.setDesiredDistance(0);
       }
-      if (Math.abs(armSubsystem.getRotation() - armSubsystem.getPostionAngle(Positions.values()[index-1])) < 1) {
-        armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index-1]));
+      if (Math.abs(armSubsystem.getRotation() - armSubsystem.getPostionAngle(Positions.values()[index])) < 1) {
+        armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]));
       }
     }
 
