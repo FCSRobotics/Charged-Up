@@ -46,10 +46,10 @@ public class ArmSubsystem extends SubsystemBase
   };
 
   public final ArmPosition[] armPositions = {
-    new ArmPosition(0, 0), // down
-    new ArmPosition(0.1, 10), // low cone
-    new ArmPosition(0, 0), // middle cone 
-    new ArmPosition(0, 0), // high cone
+    new ArmPosition(0, 89), // down
+    new ArmPosition(0.1, 70), // low cone
+    new ArmPosition(-46.089920, 33), // middle cone 
+    new ArmPosition(0, -100), // high cone
     new ArmPosition(0,0), // low cube
     new ArmPosition(0,0), // middle cube
     new ArmPosition(0, 0), // high cube
@@ -68,10 +68,10 @@ public class ArmSubsystem extends SubsystemBase
     this.rotateOffset = rotateOffset;
 
     extendSparkMax = new CANSparkMax(extendSparkMaxId, MotorType.kBrushless);
-    extendSparkMax.setSmartCurrentLimit(40);
+    extendSparkMax.setSmartCurrentLimit(20);
 
     rotateSparkMax = new CANSparkMax(rotateSparkMaxId, MotorType.kBrushless);
-    rotateSparkMax.setSmartCurrentLimit(40);
+    rotateSparkMax.setSmartCurrentLimit(20);
 
     rotateFollowSparkMax = new CANSparkMax(rotateSparkMaxFollowId, MotorType.kBrushless);
     rotateFollowSparkMax.setSmartCurrentLimit(40);
@@ -80,10 +80,12 @@ public class ArmSubsystem extends SubsystemBase
     extendEncoder = extendSparkMax.getEncoder();
     extendEncoder.setPositionConversionFactor(revToMetersConversionFactor);
     extendEncoder.setVelocityConversionFactor(revToMetersConversionFactor);
+    extendEncoder.setPosition(-30.304398);
 
     rotatingEncoder = rotateSparkMax.getEncoder();
     rotatingEncoder.setPositionConversionFactor(revToDegrees);
     rotatingEncoder.setVelocityConversionFactor(revToDegrees);
+    rotatingEncoder.setPosition(0);
 
     // updateRelativeEncoders();
     
@@ -101,14 +103,13 @@ public class ArmSubsystem extends SubsystemBase
     rotatepid.setI(Arm.iRotating);
     rotatepid.setD(Arm.dRotating);
 
-    extendpid.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kSCurve,0);
-    extendpid.setSmartMotionMaxAccel(Arm.maxAccelExtend, 0);
-    extendpid.setSmartMotionMaxVelocity(Arm.maxSpeedExtend, 0);
-    extendpid.setFF​(0.1);
+    // extendpid.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kSCurve,0);
+    // extendpid.setSmartMotionMaxAccel(Arm.maxAccelExtend, 0);
+    // extendpid.setSmartMotionMaxVelocity(Arm.maxSpeedExtend, 0);
 
-    rotatepid.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kSCurve,0);
-    rotatepid.setSmartMotionMaxAccel(Arm.maxAccelRotate, 0);
-    rotatepid.setSmartMotionMaxVelocity(Arm.maxSpeedRotate, 0);
+    // rotatepid.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kSCurve,0);
+    // rotatepid.setSmartMotionMaxAccel(Arm.maxAccelRotate, 0);
+    // rotatepid.setSmartMotionMaxVelocity(Arm.maxSpeedRotate, 0);
 
     setDesiredDistance(0);
     setDesiredRotation(0);
@@ -119,14 +120,14 @@ public class ArmSubsystem extends SubsystemBase
 
   @Override
   public void periodic() {
-    if (Math.abs(desiredHeight - currentHeight) > 0.02) { // want to change this to pid
-      currentDistance = rotatingEncoder.getPosition();
-      rotateSparkMax.set((desiredHeight - currentHeight) > 0 ? 0.3 : -0.3);
-      SmartDashboard.putString("armState", "stoping"); // might want to change this to the built in one  
-    } else {
-      rotateSparkMax.stopMotor();
-      SmartDashboard.putString("armState", "stoping");
-    }
+    // if (Math.abs(desiredHeight - currentHeight) > 0.02) { // want to change this to pid
+    //   currentDistance = rotatingEncoder.getPosition();
+    //   rotateSparkMax.set((desiredHeight - currentHeight) > 0 ? 0.3 : -0.3);
+    //   SmartDashboard.putString("armState", "stoping"); // might want to change this to the built in one  
+    // } else {
+    //   rotateSparkMax.stopMotor();
+    //   SmartDashboard.putString("armState", "stoping");
+    // }
 
     // rotateSparkMax.getPIDController().setFF(0.1 * Math.sin(Math.toRadians(currentHeight)));
 
@@ -142,12 +143,12 @@ public class ArmSubsystem extends SubsystemBase
 
   public void setDesiredDistance(double distance) {
     desiredDistance = distance;
-    // extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
+    extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
   }
 
   public void setDesiredRotation(double rotation) {
     desiredHeight = rotation;
-    // rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
+    rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
   }
 
   public void groundSetPoint() {
@@ -182,7 +183,7 @@ public class ArmSubsystem extends SubsystemBase
   }
 
   public boolean leftSide(Positions pos) {
-    return true;
+    return getPostionAngle(pos) < 0;
   }
 
   public boolean leftSide(double angle) {
@@ -190,11 +191,11 @@ public class ArmSubsystem extends SubsystemBase
   }
 
   public double getPostionAngle(Positions pos) {
-    return armPositions[pos.ordinal()-1].rotation;
+    return armPositions[pos.ordinal()].rotation;
   }
 
   public double getPostionExtension(Positions pos) {
-    return armPositions[pos.ordinal()-1].rotation;
+    return armPositions[pos.ordinal()].extension;
   }
 
   

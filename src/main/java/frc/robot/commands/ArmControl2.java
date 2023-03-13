@@ -61,11 +61,15 @@ public class ArmControl2 extends CommandBase
     int angle = positionSupplier.getAsInt();
 
     if (angle == -1) {
-      armSubsystem.setPercentage(voltage.getAsDouble());
+      armSubsystem.setPercentage(0);//voltage.getAsDouble());
+      // armSubsystem.setDesiredRotation(0);
+      armSubsystem.setDesiredDistance(0);
     } else {
-      int index = angle / 45;
+      int index = angle / 90;
+      // armSubsystem.setDesiredDistance(0);
+
       if (armSubsystem.getExtension() <= 0.1) {
-        armSubsystem.setPosition(Positions.values()[index]);
+        armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])));
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index]))) {
         armSubsystem.setDesiredDistance(0);
       }

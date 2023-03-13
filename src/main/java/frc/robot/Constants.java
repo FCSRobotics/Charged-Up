@@ -54,30 +54,30 @@ public final class Constants
     public static final double wheelBottomSpeedCone = 0.3;
     public static final int topMotor = 28;
     public static final int bottomMotor = 27;
-    public static final int extendChannel = 8;
-    public static final int retractChannel = 9;
+    public static final int extendChannel = 11;
+    public static final int retractChannel = 12;
     public static final boolean reverseSolenoid = false;
   }
 
   public static class Grabber {
     public static final int rightMotorId = 24;
     public static final int leftMotorId = 25;
-    public static final int extendChannel = 10;
-    public static final int retractChannel = 11;
+    public static final int extendChannel = 9;
+    public static final int retractChannel = 8;
     public static final double offCurrent = -1;
     public static final boolean disableMotors = false;
     public static final double motorSpeeds = 1;
   }
 
   public static class Arm {
-    public static final float revToMetersConversionFactor = (float) (15.0 * (0.11286/12)/20); // need to set
+    public static final float revToMetersConversionFactor = (float) 1; // need to set
     public static final int extendSparkMaxId = 22;
     public static final float revToAngleConversionFactor = 360/112;
     public static final int rotateSparkMaxId = 23;
     public static final double iExtension = 0;
-    public static final double pExtension = 0.000;
+    public static final double pExtension = 0.06505600363016129;
     public static final double dExtension = 0;
-    public static final double pRotating = 5.0;
+    public static final double pRotating = 0.1;
     public static final double iRotating = 0;
     public static final double dRotating = 0;
     public static final int extendCancoderid = -1;
