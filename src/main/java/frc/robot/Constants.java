@@ -54,8 +54,8 @@ public final class Constants
     public static final double wheelBottomSpeedCone = 0.3;
     public static final int topMotor = 28;
     public static final int bottomMotor = 27;
-    public static final int extendChannel = 11;
-    public static final int retractChannel = 12;
+    public static final int extendChannel = 12;
+    public static final int retractChannel = 11;
     public static final boolean reverseSolenoid = false;
   }
 
@@ -89,6 +89,7 @@ public final class Constants
     public static final double maxAccelExtend = 0.1;
     public static final double maxAccelRotate = 0.1;
     public static final int rotateFollowSparkMaxId = 26;
+    public static final int rollingAverageLenght = 10;
   }
 
   public static class OperatorConstants

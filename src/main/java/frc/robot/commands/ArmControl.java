@@ -22,6 +22,7 @@ public class ArmControl extends CommandBase
   private DoubleSupplier rotation;
   private DoubleSupplier extensionSupplier;
   
+  
 
   /**
    * Extend arm to given distance in meters

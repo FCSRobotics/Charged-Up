@@ -127,7 +127,7 @@ public class RobotContainer
     //   Math.atan2(driverController.getLeftX(),  
     //   driverController.getLeftY()) * 180/Math.PI);
 
-    ArmControl2 armControl = new ArmControl2(arm,() -> driverController.getLeftY()/3,() -> driverController.getRightY(), () -> driverController.getHID().getPOV());
+    ArmControl2 armControl = new ArmControl2(arm,() -> driverController.getLeftY()/3,() -> driverController.getRightY(), () -> driverController.getHID().getPOV(),() -> intake.isIn());
 
     // SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
     //   drivebase::getPose, // Pose2d supplier
@@ -196,7 +196,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return Autos.driveAndSpin(drivebase);
+    return Autos.leaveandbalance(drivebase,intake);
   }
 
   public void setDriveMode()

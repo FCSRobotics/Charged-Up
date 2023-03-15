@@ -70,4 +70,8 @@ public class IntakeSubsystem extends SubsystemBase
       pullIn();
     }
   }
+
+  public boolean isIn() {
+    return in;
+  }
 }

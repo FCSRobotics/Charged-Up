@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class ArmSubsystem extends SubsystemBase
@@ -46,11 +47,11 @@ public class ArmSubsystem extends SubsystemBase
   };
 
   public final ArmPosition[] armPositions = {
-    new ArmPosition(0, 89), // down
-    new ArmPosition(0.1, 70), // low cone
-    new ArmPosition(-46.089920, 33), // middle cone 
-    new ArmPosition(0, -100), // high cone
-    new ArmPosition(0,0), // low cube
+    new ArmPosition(-94.355515, 92.142097),
+    new ArmPosition(-39.851860, 77.356628),
+    new ArmPosition(-46.089920, 33), 
+    new ArmPosition(-53.614460, -80.142151),
+    new ArmPosition(0,-33), // low cube
     new ArmPosition(0,0), // middle cube
     new ArmPosition(0, 0), // high cube
     new ArmPosition(0,0)
@@ -68,7 +69,8 @@ public class ArmSubsystem extends SubsystemBase
     this.rotateOffset = rotateOffset;
 
     extendSparkMax = new CANSparkMax(extendSparkMaxId, MotorType.kBrushless);
-    extendSparkMax.setSmartCurrentLimit(20);
+    extendSparkMax.setSmartCurrentLimit(10);
+    extendSparkMax.setSoftLimit(SoftLimitDirection.kForward,-95);
 
     rotateSparkMax = new CANSparkMax(rotateSparkMaxId, MotorType.kBrushless);
     rotateSparkMax.setSmartCurrentLimit(20);
@@ -111,7 +113,7 @@ public class ArmSubsystem extends SubsystemBase
     // rotatepid.setSmartMotionMaxAccel(Arm.maxAccelRotate, 0);
     // rotatepid.setSmartMotionMaxVelocity(Arm.maxSpeedRotate, 0);
 
-    setDesiredDistance(0);
+    setDesiredDistance(-1);
     setDesiredRotation(0);
 
     // extensionPID = new PIDController(Arm.pExtension, Arm.iExtension, Arm.dExtension);
