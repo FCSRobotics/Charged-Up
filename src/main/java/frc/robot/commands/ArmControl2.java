@@ -120,9 +120,7 @@ public class ArmControl2 extends CommandBase
       int index = angle / 90;
       // armSubsystem.setDesiredDistance(0);
       lastTimePositionHeld = System.currentTimeMillis();
-      if (index == 3 && intakeUp.getAsBoolean()) {
-        return;
-      }
+      
       if (armSubsystem.getExtension() >= -2) {
         armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])));
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index]))) {

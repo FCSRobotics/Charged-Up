@@ -47,14 +47,11 @@ public class ArmSubsystem extends SubsystemBase
   };
 
   public final ArmPosition[] armPositions = {
-    new ArmPosition(-94.355515, 92.142097),
-    new ArmPosition(-39.851860, 77.356628),
-    new ArmPosition(-46.089920, 33), 
-    new ArmPosition(-53.614460, -80.142151),
+    new ArmPosition(-94.355515, 92.142097), //high back
+    new ArmPosition(-39.851860, 90.285133), //mid back
+    new ArmPosition(-46.089920, 38), //low back
+    new ArmPosition(0, 90.142250), // change this to back
     new ArmPosition(0,-33), // low cube
-    new ArmPosition(0,0), // middle cube
-    new ArmPosition(0, 0), // high cube
-    new ArmPosition(0,0)
   };
 
   public ArmSubsystem(int extendSparkMaxId, 

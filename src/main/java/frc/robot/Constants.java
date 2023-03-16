@@ -89,7 +89,7 @@ public final class Constants
     public static final double maxAccelExtend = 0.1;
     public static final double maxAccelRotate = 0.1;
     public static final int rotateFollowSparkMaxId = 26;
-    public static final int rollingAverageLenght = 10;
+    public static final int rollingAverageLenght = 20;
   }
 
   public static class OperatorConstants
