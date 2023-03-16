@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Arm;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Positions;
 import frc.robot.utils.ArmPosition;
 
@@ -34,6 +35,7 @@ public class ArmControl2 extends CommandBase
   private BooleanSupplier intakeUp;
   private BooleanSupplier returnToZero;
   private long lastTimePositionHeld = 0;
+  private GrabberSubsystem grabberSubsystem;
 
 
   /**
@@ -47,7 +49,7 @@ public class ArmControl2 extends CommandBase
    * 
    */
   public ArmControl2(ArmSubsystem armSubsystem,DoubleSupplier voltage,DoubleSupplier extensionSupplier,IntSupplier povSupplier,
-                     BooleanSupplier intakeUp, BooleanSupplier returnToZero)
+                     BooleanSupplier intakeUp, BooleanSupplier returnToZero, GrabberSubsystem grabberSubsystem)
   {
     this.armSubsystem = armSubsystem;
     this.voltage = voltage;
@@ -98,6 +100,7 @@ public class ArmControl2 extends CommandBase
         if (lastTimePositionHeld + 1000 <= currentTime) {
           if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.PICKUP)) < 1) {
             armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.PICKUP));
+            armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle(Positions.PICKUP) + voltage.getAsDouble());
           } else {
             armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle(Positions.PICKUP));
           }
@@ -107,6 +110,7 @@ public class ArmControl2 extends CommandBase
           } else {
             lastTimePositionHeld = currentTime;
             armSubsystem.setDesiredDistance(-1);
+            grabberSubsystem.clamp();
           }
         }
       } else {
@@ -114,6 +118,7 @@ public class ArmControl2 extends CommandBase
           armSubsystem.setPercentage(0);
         }
         armSubsystem.setDesiredDistance(-1);
+        grabberSubsystem.clamp();
         lastTimePositionHeld = currentTime;
       }
     } else {

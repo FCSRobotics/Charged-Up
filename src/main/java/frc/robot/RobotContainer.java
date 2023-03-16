@@ -137,7 +137,8 @@ public class RobotContainer
       () -> driverController.getRightY(), 
       () -> driverController.getHID().getPOV(),
       () -> intake.isIn(),
-      () -> driverXbox.getL1Button());
+      () -> driverXbox.getL1Button(),
+      grabber);
 
     // SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
     //   drivebase::getPose, // Pose2d supplier
