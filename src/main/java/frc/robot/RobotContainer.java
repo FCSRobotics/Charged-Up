@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -30,7 +31,7 @@ import frc.robot.commands.StartGrabberMotors;
 import frc.robot.commands.StartIntake;
 import frc.robot.commands.StopGrabberMotors;
 import frc.robot.commands.StopIntake;
-import frc.robot.commands.ToggleConeCube;
+
 import frc.robot.commands.ToggleGrabberMotors;
 import frc.robot.commands.ToggleIntakeMotors;
 import frc.robot.commands.ToggleIntakePosition;
@@ -44,7 +45,7 @@ import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LightSubsystem;
+// import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.GrabberSubsystem;
 // import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
@@ -82,7 +83,7 @@ public class RobotContainer
                                             Arm.rotateOffset,
                                             Arm.revToMetersConversionFactor, 
                                             Arm.revToAngleConversionFactor);
-  final LightSubsystem light = new LightSubsystem();
+  // final LightSubsystem light = new LightSubsystem();
   // // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandPS4Controller driverController = new CommandPS4Controller(0);
@@ -92,6 +93,8 @@ public class RobotContainer
 
   Joystick rightstick = new Joystick(2);
   Joystick leftstick = new Joystick(1);
+  private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+  private boolean l1buttonPressed = false;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -127,7 +130,12 @@ public class RobotContainer
     //   Math.atan2(driverController.getLeftX(),  
     //   driverController.getLeftY()) * 180/Math.PI);
 
-    ArmControl2 armControl = new ArmControl2(arm,() -> driverController.getLeftY()/3,() -> driverController.getRightY(), () -> driverController.getHID().getPOV(),() -> intake.isIn());
+    ArmControl2 armControl = new ArmControl2(arm,
+      () -> driverController.getLeftY()/3,
+      () -> driverController.getRightY(), 
+      () -> driverController.getHID().getPOV(),
+      () -> intake.isIn(),
+      () -> driverXbox.getL1Button());
 
     // SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
     //   drivebase::getPose, // Pose2d supplier
@@ -142,6 +150,11 @@ public class RobotContainer
     // );
 
     drivebase.setDefaultCommand(new ParallelCommandGroup(closedFieldRel,armControl));
+    m_chooser.setDefaultOption("Default Auto", Autos.leaveandbalance(drivebase, intake));
+    m_chooser.addOption("balance", Autos.setActionsBalance(drivebase, intake));
+    m_chooser.addOption("spin", Autos.driveAndSpin(drivebase));
+    m_chooser.addOption("just leave", Autos.leaveTheStadium(drivebase));
+    SmartDashboard.putData("Auto choices", m_chooser);
   }
 
   /**
@@ -175,13 +188,13 @@ public class RobotContainer
     new JoystickButton(driverXbox, 7).onTrue((new CloseGrabber(grabber)));
     new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
+    //new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(light::cycleColor, light));
+
     new JoystickButton(rightstick,1).onTrue(new ToggleIntakePosition(intake));
     new JoystickButton(rightstick,5).onTrue(new StartIntake(intake,true,true));
     new JoystickButton(rightstick,5).onFalse(new StopIntake(intake));
     new JoystickButton(rightstick,6).onTrue((new StartIntake(intake,true,false)));
     new JoystickButton(rightstick,6).onFalse((new StopIntake(intake)));
-
-
 
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))
 //                                                    .onFalse(new StopIntake(intake)); // no idea what button this is
@@ -196,7 +209,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return Autos.leaveandbalance(drivebase,intake);
+    return m_chooser.getSelected(); // Autos.leaveandbalance(drivebase,intake);
   }
 
   public void setDriveMode()

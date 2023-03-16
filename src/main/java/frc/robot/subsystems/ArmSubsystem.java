@@ -37,11 +37,11 @@ public class ArmSubsystem extends SubsystemBase
   public final float rotateOffset;
 
   public enum Positions {
-    DOWN,
-    LOW_CONE,
-    MIDDLE_CONE,
-    HIGH_CONE,
-    LOW_CUBE,
+    UP,
+    MIDDLE,
+    LOW,
+    PICKUPSTATION,
+    PICKUP,
     MIDDLE_CUBE,
     HIGH_CUBE
   };
@@ -69,11 +69,11 @@ public class ArmSubsystem extends SubsystemBase
     this.rotateOffset = rotateOffset;
 
     extendSparkMax = new CANSparkMax(extendSparkMaxId, MotorType.kBrushless);
-    extendSparkMax.setSmartCurrentLimit(10);
+    extendSparkMax.setSmartCurrentLimit(30);
     extendSparkMax.setSoftLimit(SoftLimitDirection.kForward,-95);
 
     rotateSparkMax = new CANSparkMax(rotateSparkMaxId, MotorType.kBrushless);
-    rotateSparkMax.setSmartCurrentLimit(20);
+    rotateSparkMax.setSmartCurrentLimit(40);
 
     rotateFollowSparkMax = new CANSparkMax(rotateSparkMaxFollowId, MotorType.kBrushless);
     rotateFollowSparkMax.setSmartCurrentLimit(40);
@@ -82,12 +82,12 @@ public class ArmSubsystem extends SubsystemBase
     extendEncoder = extendSparkMax.getEncoder();
     extendEncoder.setPositionConversionFactor(revToMetersConversionFactor);
     extendEncoder.setVelocityConversionFactor(revToMetersConversionFactor);
-    extendEncoder.setPosition(-30.304398);
+    extendEncoder.setPosition(-25.285551+4);
 
     rotatingEncoder = rotateSparkMax.getEncoder();
     rotatingEncoder.setPositionConversionFactor(revToDegrees);
     rotatingEncoder.setVelocityConversionFactor(revToDegrees);
-    rotatingEncoder.setPosition(0);
+    rotatingEncoder.setPosition(-1);
 
     // updateRelativeEncoders();
     
@@ -140,6 +140,7 @@ public class ArmSubsystem extends SubsystemBase
     SmartDashboard.putNumber("arm rotation", rotatingEncoder.getPosition());
     SmartDashboard.putNumber("arm dlocation",desiredDistance);
     SmartDashboard.putNumber("arm drotation", desiredHeight);
+    SmartDashboard.putNumber("arm extension current", extendSparkMax.getOutputCurrent());
 
   }
 

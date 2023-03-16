@@ -8,6 +8,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 
+import javax.swing.text.Position;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Arm;
@@ -30,6 +32,7 @@ public class ArmControl2 extends CommandBase
   private double currentSum;
   private int currentLocationInList;
   private BooleanSupplier intakeUp;
+  private BooleanSupplier returnToZero;
   private long lastTimePositionHeld = 0;
 
 
@@ -43,13 +46,15 @@ public class ArmControl2 extends CommandBase
    *                          
    * 
    */
-  public ArmControl2(ArmSubsystem armSubsystem,DoubleSupplier voltage,DoubleSupplier extensionSupplier,IntSupplier povSupplier,BooleanSupplier intakeUp)
+  public ArmControl2(ArmSubsystem armSubsystem,DoubleSupplier voltage,DoubleSupplier extensionSupplier,IntSupplier povSupplier,
+                     BooleanSupplier intakeUp, BooleanSupplier returnToZero)
   {
     this.armSubsystem = armSubsystem;
     this.voltage = voltage;
     this.extensionSupplier = extensionSupplier;
     this.positionSupplier = povSupplier;
     this.intakeUp = intakeUp;
+    this.returnToZero = returnToZero;
 
     positions = new double[Arm.rollingAverageLenght];
     for (int i = 0; i < Arm.rollingAverageLenght; i++) {
@@ -89,28 +94,27 @@ public class ArmControl2 extends CommandBase
 
     if (angle == -1) {
       long currentTime = System.currentTimeMillis();
-      if (!intakeUp.getAsBoolean()) {
-        if (lastTimePositionHeld + 1000 >= currentTime) {
-          if (armSubsystem.getExtension() >= -1.1) {
+      if (!intakeUp.getAsBoolean() && !returnToZero.getAsBoolean()) {
+        if (lastTimePositionHeld + 1000 <= currentTime) {
+          if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.PICKUP)) < 1) {
+            armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.PICKUP));
+          } else {
+            armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle(Positions.PICKUP));
+          }
+        } else {
+          if (armSubsystem.getExtension() >= -2) {
+            armSubsystem.setPercentage(0);
+          } else {
             lastTimePositionHeld = currentTime;
             armSubsystem.setDesiredDistance(-1);
-          } else {
-            armSubsystem.setPercentage(0);
-          }
-        } else if (Math.abs(currentAverage-armSubsystem.getPostionAngle(Positions.values()[4])) < 1) {
-          armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[4]));
-        } else {
-          if (armSubsystem.getExtension() >= -1.1) {
-            armSubsystem.setDesiredDistance(-1);
-          } else {
-            armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle(Positions.values()[4]));
           }
         }
       } else {
-        if (armSubsystem.getExtension() >= -1.1) {
+        if (armSubsystem.getExtension() >= -2) {
           armSubsystem.setPercentage(0);
         }
-        armSubsystem.setDesiredDistance(0);
+        armSubsystem.setDesiredDistance(-1);
+        lastTimePositionHeld = currentTime;
       }
     } else {
       int index = angle / 90;
@@ -119,7 +123,7 @@ public class ArmControl2 extends CommandBase
       if (index == 3 && intakeUp.getAsBoolean()) {
         return;
       }
-      if (armSubsystem.getExtension() >= -1.1) {
+      if (armSubsystem.getExtension() >= -2) {
         armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])));
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index]))) {
         armSubsystem.setDesiredDistance(-1);
