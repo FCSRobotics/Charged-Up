@@ -105,6 +105,8 @@ public class RobotContainer
     configureBindings();
 
     CameraServer.startAutomaticCapture();
+    CameraServer.startAutomaticCapture();
+    
 
     // AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
     //                                                       // Applies deadbands and inverts controls because joysticks
