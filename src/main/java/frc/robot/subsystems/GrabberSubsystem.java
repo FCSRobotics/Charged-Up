@@ -60,10 +60,10 @@ public class  GrabberSubsystem extends SubsystemBase
   }
 
   public void clamp() {
-    solenoid.set(kForward);
+    solenoid.set(kReverse);
   }
 
   public void unclamp() {
-    solenoid.set(kReverse);
+    solenoid.set(kForward);
   }
 }

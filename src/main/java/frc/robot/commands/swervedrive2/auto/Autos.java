@@ -16,11 +16,19 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.Auton;
+import frc.robot.Constants.Intake;
+import frc.robot.commands.MoveArmDown;
 import frc.robot.commands.MoveArmPosition;
 import frc.robot.commands.MoveTime;
+import frc.robot.commands.OpenGrabber;
 import frc.robot.commands.RotateSwerve;
+import frc.robot.commands.RotateTime;
 import frc.robot.commands.SetIntakePosition;
+import frc.robot.commands.StartIntake;
+import frc.robot.commands.StopIntake;
+import frc.robot.commands.ToggleIntakeMotors;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Positions;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
@@ -49,33 +57,50 @@ public final class Autos
         new RepeatCommand(new InstantCommand(() -> swerve.drive(new Translation2d(1, 0), 5, true, true), swerve)));
   }
 
-  public static CommandBase setActionsBalance(SwerveSubsystem swerve,IntakeSubsystem intake)
+  public static CommandBase setActionsBalance(SwerveSubsystem swerve,IntakeSubsystem intake,ArmSubsystem arm, GrabberSubsystem grabber)
   {
-    return Commands.sequence(new WaitCommand(3),
+    return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, -1, 0, 1000),
                              new SetIntakePosition(intake, true),
                              new WaitCommand(1),
                              new MoveTime(swerve, -1, 0, 2250));
   }
-  public static CommandBase leaveandbalance(SwerveSubsystem swerve,IntakeSubsystem intake)
+  public static CommandBase leaveandbalance(SwerveSubsystem swerve,IntakeSubsystem intake,GrabberSubsystem grabber, ArmSubsystem arm)
   {
-    return Commands.sequence(new WaitCommand(3),
+    return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, -1, 0, 1000),
                              new SetIntakePosition(intake, true),
                              new WaitCommand(1),
                              new MoveTime(swerve, -1, 0,2250),
                              new SetIntakePosition(intake, false),
                              new MoveTime(swerve, -1, 0, 2000),
-                             new RotateSwerve(swerve, 0, 1),
+                             new RotateSwerve(swerve, 0, -1),
                              new SetIntakePosition(intake, true));
   }
 
-  public static CommandBase leaveTheStadium(SwerveSubsystem swerve)
+  public static CommandBase leaveTheStadium(SwerveSubsystem swerve,ArmSubsystem arm, GrabberSubsystem grabber)
   {
-    return Commands.sequence(new WaitCommand(3),
+    return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, -1, 0, 1000+2250+2000));
   }
-  public static CommandBase dropOffCone(SwerveSubsystem swerve,ArmSubsystem arm) {
-    return Commands.sequence(new MoveArmPosition(arm,Positions.UP));
+  public static CommandBase dropOffCone(SwerveSubsystem swerve,ArmSubsystem arm,GrabberSubsystem grabber) {
+    return Commands.sequence(new MoveArmPosition(arm,Positions.UP),
+                             new OpenGrabber(grabber),
+                             new MoveArmDown(arm,grabber));
+  }
+
+  public static CommandBase pickUpConeCube(SwerveSubsystem swerve, ArmSubsystem arm, GrabberSubsystem grabber, IntakeSubsystem intake, boolean turnLeft) {
+    return Commands.sequence(dropOffCone(swerve, arm, grabber),
+                             new MoveTime(swerve, 0, turnLeft ? -1 : 1, 500),
+                             new SetIntakePosition(intake, true),
+                             new StartIntake(intake, true, true),
+                             new MoveTime(swerve, -1, 0, 5000),
+                            //  new RotateSwerve(swerve, turnLeft ? -1 : 1 ,0),
+                            //  new RotateTime(swerve,0.1,1000),
+                             new StopIntake(intake));
   }
 }
+
+
+//Auto 1: score, drive out for like 5 seconds, turn 90 degrees right, put arm in intake position, drive forwards while running intake
+//Auto 2: score, drive out for like 5 seconds, turn 90 degrees left, put arm in intake position, drive forwards while running intake

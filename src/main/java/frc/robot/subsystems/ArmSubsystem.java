@@ -39,6 +39,8 @@ public class ArmSubsystem extends SubsystemBase
   public final float extendOffset;
   public final float rotateOffset;
 
+
+
   public enum Positions {
     UP,
     MIDDLE,
@@ -49,15 +51,12 @@ public class ArmSubsystem extends SubsystemBase
     HIGH_CUBE
   };
 
-  public ArmPosition[] armPositions = {
-    new ArmPosition(-94.355515, 92.142097),
-    new ArmPosition(-39.851860, 77.356628),
-    new ArmPosition(-46.089920, 33), 
-    new ArmPosition(-53.614460, -80.142151),
-    new ArmPosition(0,-33), // low cube
-    new ArmPosition(0,0), // middle cube
-    new ArmPosition(0, 0), // high cube
-    new ArmPosition(0,0)
+  public final ArmPosition[] armPositions = {
+    new ArmPosition(-90, 105.142197), //high back
+    new ArmPosition(-39.851860, 92.28410), //mid back
+    new ArmPosition(-46.089920, 43), //low back
+    new ArmPosition(0, 88.142250), // change this to back
+    new ArmPosition(0,0), // low cube
   };
 
   public ArmSubsystem(int extendSparkMaxId, 
@@ -70,6 +69,7 @@ public class ArmSubsystem extends SubsystemBase
     
     this.extendOffset = extendOffset;
     this.rotateOffset = rotateOffset;
+
 
     extendSparkMax = new CANSparkMax(extendSparkMaxId, MotorType.kBrushless);
     extendSparkMax.setSmartCurrentLimit(30);
@@ -146,10 +146,10 @@ public class ArmSubsystem extends SubsystemBase
     SmartDashboard.putNumber("arm extension current", extendSparkMax.getOutputCurrent());
 
     double armBottomeExtension = SmartDashboard.getNumber("arm bottom extension",-46.089920);
-    double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",33);
+    double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",43);
     double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",-39.851860);
-    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",77.356628);
-    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", -94.355515);
+    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",92.28410);
+    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", -90);
     double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", -94.355515);
     double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", -80.142151);
     double armPickupExtension = SmartDashboard.getNumber("arm pickup extension", -53.614460);
@@ -216,6 +216,10 @@ public class ArmSubsystem extends SubsystemBase
 
   public double getPostionExtension(Positions pos) {
     return armPositions[pos.ordinal()].extension;
+  }
+
+  public void stopMotors() {
+    rotateSparkMax.stopMotor();
   }
 
   
