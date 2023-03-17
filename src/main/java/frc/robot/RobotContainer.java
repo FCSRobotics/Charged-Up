@@ -45,6 +45,7 @@ import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+//import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.GrabberSubsystem;
 // import frc.robot.subsystems.IntakeSubsystem;
@@ -83,7 +84,7 @@ public class RobotContainer
                                             Arm.rotateOffset,
                                             Arm.revToMetersConversionFactor, 
                                             Arm.revToAngleConversionFactor);
-  // final LightSubsystem light = new LightSubsystem();
+  //final LightSubsystem light = new LightSubsystem();
   // // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandPS4Controller driverController = new CommandPS4Controller(0);
@@ -124,8 +125,8 @@ public class RobotContainer
     SmartDashboard.putNumber("High rightx", driverXbox.getRightX());
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
-        () -> (Math.abs(leftstick.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (!leftstick.getRawButton(1) ? 1: -0.5) * leftstick.getY() : 0,
-        () -> (Math.abs(leftstick.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? (!leftstick.getRawButton(1) ? 1 :  -0.5) * leftstick.getX() : 0,
+        () -> (Math.abs(leftstick.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (!leftstick.getRawButton(1) ? 1: .5) * leftstick.getY() : 0,
+        () -> (Math.abs(leftstick.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? (!leftstick.getRawButton(1) ? 1 :  .5) * leftstick.getX() : 0,
         () -> rightstick.getX(), () -> true, false);
 
     // ArmControl armControl = new ArmControl(arm,() -> 
@@ -133,7 +134,7 @@ public class RobotContainer
     //   driverController.getLeftY()) * 180/Math.PI);
 
     ArmControl2 armControl = new ArmControl2(arm,
-      () -> driverController.getLeftY()/3,
+      () -> driverController.getLeftY(),
       () -> driverController.getRightY(), 
       () -> driverController.getHID().getPOV(),
       () -> intake.isIn(),
@@ -153,10 +154,12 @@ public class RobotContainer
     // );
 
     drivebase.setDefaultCommand(new ParallelCommandGroup(closedFieldRel,armControl));
-    m_chooser.setDefaultOption("Default Auto", Autos.leaveandbalance(drivebase, intake));
-    m_chooser.addOption("balance", Autos.setActionsBalance(drivebase, intake));
+    m_chooser.setDefaultOption("Default Auto", Autos.leaveandbalance(drivebase, intake, grabber, arm));
+    m_chooser.addOption("balance", Autos.setActionsBalance(drivebase, intake, arm, grabber));
     m_chooser.addOption("spin", Autos.driveAndSpin(drivebase));
-    m_chooser.addOption("just leave", Autos.leaveTheStadium(drivebase));
+    m_chooser.addOption("just leave", Autos.leaveTheStadium(drivebase,arm,grabber));
+    m_chooser.addOption("pickup from left", Autos.pickUpConeCube(drivebase, arm, grabber, intake, true));
+    m_chooser.addOption("pickup from right", Autos.pickUpConeCube(drivebase, arm, grabber, intake, false));
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 

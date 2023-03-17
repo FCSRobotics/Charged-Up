@@ -36,6 +36,8 @@ public class ArmSubsystem extends SubsystemBase
   public final float extendOffset;
   public final float rotateOffset;
 
+
+
   public enum Positions {
     UP,
     MIDDLE,
@@ -47,11 +49,11 @@ public class ArmSubsystem extends SubsystemBase
   };
 
   public final ArmPosition[] armPositions = {
-    new ArmPosition(-94.355515, 92.142097), //high back
-    new ArmPosition(-39.851860, 90.285133), //mid back
-    new ArmPosition(-46.089920, 38), //low back
-    new ArmPosition(0, 90.142250), // change this to back
-    new ArmPosition(0,-33), // low cube
+    new ArmPosition(-90, 105.142197), //high back
+    new ArmPosition(-39.851860, 92.28410), //mid back
+    new ArmPosition(-46.089920, 43), //low back
+    new ArmPosition(0, 88.142250), // change this to back
+    new ArmPosition(0,0), // low cube
   };
 
   public ArmSubsystem(int extendSparkMaxId, 
@@ -64,6 +66,7 @@ public class ArmSubsystem extends SubsystemBase
     
     this.extendOffset = extendOffset;
     this.rotateOffset = rotateOffset;
+
 
     extendSparkMax = new CANSparkMax(extendSparkMaxId, MotorType.kBrushless);
     extendSparkMax.setSmartCurrentLimit(30);
@@ -196,6 +199,10 @@ public class ArmSubsystem extends SubsystemBase
 
   public double getPostionExtension(Positions pos) {
     return armPositions[pos.ordinal()].extension;
+  }
+
+  public void stopMotors() {
+    rotateSparkMax.stopMotor();
   }
 
   

@@ -36,6 +36,8 @@ public class ArmControl2 extends CommandBase
   private BooleanSupplier returnToZero;
   private long lastTimePositionHeld = 0;
   private GrabberSubsystem grabberSubsystem;
+  public int lastFrameAngle;
+  public int lastInputedAngle;
 
 
   /**
@@ -57,6 +59,9 @@ public class ArmControl2 extends CommandBase
     this.positionSupplier = povSupplier;
     this.intakeUp = intakeUp;
     this.returnToZero = returnToZero;
+    this.grabberSubsystem = grabberSubsystem;
+    lastFrameAngle = -1;
+    lastInputedAngle = -1;
 
     positions = new double[Arm.rollingAverageLenght];
     for (int i = 0; i < Arm.rollingAverageLenght; i++) {
@@ -73,6 +78,7 @@ public class ArmControl2 extends CommandBase
   public void initialize()
   { 
     SmartDashboard.putBoolean("check", false);
+    grabberSubsystem.clamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -82,6 +88,15 @@ public class ArmControl2 extends CommandBase
     // armSubsystem.setPercentageex(extensionSupplier.getAsDouble());
 
     int angle = positionSupplier.getAsInt();
+
+    if (angle != lastFrameAngle && lastFrameAngle == -1) {
+      if (angle == lastInputedAngle) {
+        lastInputedAngle = -1;
+      } else {
+        lastInputedAngle = angle;
+      }
+    }
+    lastFrameAngle = angle;
 
     
     double newPosition = armSubsystem.getRotation();
@@ -94,19 +109,26 @@ public class ArmControl2 extends CommandBase
     double currentAverage = currentSum/Arm.rollingAverageLenght;
     SmartDashboard.putNumber("current average of arm position", currentAverage);
 
-    if (angle == -1) {
+
+    int index = lastInputedAngle / 90;
+    double deltaAngle = voltage.getAsDouble() * 20 / 3;
+    double deltaExtension;
+    if (lastInputedAngle == -1) {
       long currentTime = System.currentTimeMillis();
       if (!intakeUp.getAsBoolean() && !returnToZero.getAsBoolean()) {
         if (lastTimePositionHeld + 1000 <= currentTime) {
-          if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.PICKUP)) < 1) {
+          if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.PICKUP) - deltaAngle)  < 1) {
             armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.PICKUP));
-            armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle(Positions.PICKUP) + voltage.getAsDouble());
+            
           } else {
-            armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle(Positions.PICKUP));
+            armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle(Positions.PICKUP) + deltaAngle);
           }
         } else {
           if (armSubsystem.getExtension() >= -2) {
             armSubsystem.setPercentage(0);
+            if (Math.abs(armSubsystem.getRotation()) < 1 ) {
+              armSubsystem.stopMotors();
+            }
           } else {
             lastTimePositionHeld = currentTime;
             armSubsystem.setDesiredDistance(-1);
@@ -116,28 +138,31 @@ public class ArmControl2 extends CommandBase
       } else {
         if (armSubsystem.getExtension() >= -2) {
           armSubsystem.setPercentage(0);
+          if (Math.abs(armSubsystem.getRotation()) < 1 ) {
+            armSubsystem.stopMotors();
+          }
         }
         armSubsystem.setDesiredDistance(-1);
+        
         grabberSubsystem.clamp();
         lastTimePositionHeld = currentTime;
       }
     } else {
-      int index = angle / 90;
       // armSubsystem.setDesiredDistance(0);
       lastTimePositionHeld = System.currentTimeMillis();
       
       if (armSubsystem.getExtension() >= -2) {
-        armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])));
-      } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index]))) {
+        armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])) + deltaAngle);
+      } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index])  + deltaAngle)) {
         armSubsystem.setDesiredDistance(-1);
       }
-      if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index])) < 1) {
+      if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index]) - deltaAngle) < 1) {
         armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]));
       }
     }
 
     //armSubsystem.setRawPosition(new ArmPosition(0, voltage.getAsDouble()));
-    SmartDashboard.putNumber("Angle ", voltage.getAsDouble());
+    SmartDashboard.putNumber("Angle ", deltaAngle);
     SmartDashboard.putBoolean("check", true);
   }
 

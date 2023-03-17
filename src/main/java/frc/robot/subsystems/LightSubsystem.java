@@ -18,7 +18,7 @@
 // public class LightSubsystem extends SubsystemBase
 // {
 
-//     private final CANdle m_candle = new CANdle(2, "rio");
+//     private final CANdle m_candle = new CANdle(3);
 //     private final int LedCount = 300;
 
 //     private enum Color {
@@ -27,11 +27,16 @@
 //     }
 
 //     private Color color;
+
+//     public LightSubsystem() {
+//         this.color = color.Yellow;
+//     }
     
 //     public void cycleColor() {
 //         switch (color) {
 //             case Yellow:
 //                 color = Color.Purple;
+//                 m_candle.animate()
 //                 m_candle.setLEDs(255,0, 255);
 //                 break;
 //             case Purple:
