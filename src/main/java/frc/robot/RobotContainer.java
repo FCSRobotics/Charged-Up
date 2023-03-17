@@ -191,7 +191,7 @@ public class RobotContainer
     new JoystickButton(driverXbox, 7).onTrue((new CloseGrabber(grabber)));
     new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
-    //new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(light::cycleColor, light));
+    new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(light::cycleColor, light));
 
     new JoystickButton(rightstick,1).onTrue(new ToggleIntakePosition(intake));
     new JoystickButton(rightstick,5).onTrue(new StartIntake(intake,true,true));
