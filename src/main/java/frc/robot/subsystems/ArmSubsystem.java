@@ -5,7 +5,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Arm;
@@ -141,6 +144,20 @@ public class ArmSubsystem extends SubsystemBase
     SmartDashboard.putNumber("arm dlocation",desiredDistance);
     SmartDashboard.putNumber("arm drotation", desiredHeight);
     SmartDashboard.putNumber("arm extension current", extendSparkMax.getOutputCurrent());
+
+    double armBottomeExtension = SmartDashboard.getNumber("arm bottom extension",-46.089920);
+    double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",43);
+    double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",-39.851860);
+    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",92.28410);
+    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", -90);
+    double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", -94.355515);
+    double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", -80.142151);
+    double armPickupExtension = SmartDashboard.getNumber("arm pickup extension", -53.614460);
+
+    armPositions[Positions.LOW.ordinal()] = new ArmPosition(armBottomeExtension, armBottomRotation);
+    armPositions[Positions.MIDDLE.ordinal()] = new ArmPosition(armMiddleExtension, armMiddleRotation);
+    armPositions[Positions.UP.ordinal()] = new ArmPosition(armUpperExtension, armUpperRotation);
+    armPositions[Positions.PICKUP.ordinal()] = new ArmPosition(armPickupExtension, armPickupRotation);
 
   }
 
