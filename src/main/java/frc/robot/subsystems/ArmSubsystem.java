@@ -49,7 +49,7 @@ public class ArmSubsystem extends SubsystemBase
   };
 
   public final ArmPosition[] armPositions = {
-    new ArmPosition(-90, 105.142197), //high back
+    new ArmPosition(-85, 105.142197), //high back
     new ArmPosition(-39.851860, 92.28410), //mid back
     new ArmPosition(-46.089920, 43), //low back
     new ArmPosition(0, 88.142250), // change this to back
