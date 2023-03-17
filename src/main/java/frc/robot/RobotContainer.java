@@ -45,7 +45,7 @@ import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-//import frc.robot.subsystems.LightSubsystem;
+import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.GrabberSubsystem;
 // import frc.robot.subsystems.IntakeSubsystem;
@@ -84,7 +84,7 @@ public class RobotContainer
                                             Arm.rotateOffset,
                                             Arm.revToMetersConversionFactor, 
                                             Arm.revToAngleConversionFactor);
-  //final LightSubsystem light = new LightSubsystem();
+  final LightSubsystem light = new LightSubsystem();
   // // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandPS4Controller driverController = new CommandPS4Controller(0);
