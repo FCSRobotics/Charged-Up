@@ -45,7 +45,7 @@ import frc.robot.commands.ToggleIntakePosition;
 // import frc.robot.commands.ToggleIntakePosition;
 import frc.robot.commands.swervedrive2.auto.Autos;
 import frc.robot.commands.swervedrive2.drivebase.AbsoluteDrive;
-import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
+import frc.robot.commands.swervedrive2.drivebase.TeleopDrive2;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -90,6 +90,8 @@ public class RobotContainer
                                             Arm.revToMetersConversionFactor, 
                                             Arm.revToAngleConversionFactor);
   final LightSubsystem light = new LightSubsystem();
+  
+
   // // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandPS4Controller driverController = new CommandPS4Controller(0);
@@ -128,7 +130,7 @@ public class RobotContainer
     //                                                       () -> -rightstick.getY(),
     //                                                       false);
     SmartDashboard.putNumber("High rightx", driverXbox.getRightX());
-    TeleopDrive closedFieldRel = new TeleopDrive(
+    TeleopDrive2 closedFieldRel = new TeleopDrive2(
         drivebase,
         () -> (Math.abs(leftstick.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (!leftstick.getRawButton(1) ? 1: .5) * leftstick.getY() : 0,
         () -> (Math.abs(leftstick.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? (!leftstick.getRawButton(1) ? 1 :  .5) * leftstick.getX() : 0,
@@ -214,8 +216,12 @@ public class RobotContainer
     new JoystickButton(rightstick,6).onFalse((new StopIntake(intake)));
     
     
-    new JoystickButton(leftstick,12).onTrue((new InstantCommand(light::cycleColor, light)));
+    new JoystickButton(leftstick,8).onTrue((new InstantCommand(light::cycleColor, light)));
     new JoystickButton(leftstick, 11).onTrue(Scoring.thirdLevelCube(intake));
+    new JoystickButton(leftstick, 12).onTrue(Scoring._thirdLevelCube(intake));
+    new JoystickButton(leftstick, 2).onTrue(Scoring.shootCube(intake));
+    new JoystickButton(leftstick,8).onTrue(new InstantCommand(arm::resetAbsoluteEncoder));
+    new JoystickButton(rightstick, 2).whileTrue(Scoring.playerStation(drivebase, intake));
 
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))
 //                                                    .onFalse(new StopIntake(intake)); // no idea what button this is
@@ -229,7 +235,7 @@ public class RobotContainer
    */
   public Command getAutonomousCommand()
   {
-
+    //light.playAuto();
     DriverStation.reportWarning(m_chooser.getSelected().toString(), false);
     // An example command will be run in autonomous
     return m_chooser.getSelected(); // Autos.leaveandbalance(drivebase,intake);

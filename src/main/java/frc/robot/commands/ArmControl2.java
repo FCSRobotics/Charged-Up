@@ -69,7 +69,7 @@ public class ArmControl2 extends CommandBase
     lastInputedAngle = -1;
     rotationMovingAverage = new MovingAverage(Arm.rollingAverageLength);
 
-    currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle(positionSupplier.getAsInt())];
+    
 
     // positions = new double[Arm.rollingAverageLength];
     // for (int i = 0; i < Arm.rollingAverageLength; i++) {
@@ -82,11 +82,7 @@ public class ArmControl2 extends CommandBase
     addRequirements(armSubsystem);
   }
 
-  private int calculateIndexFromAngle(int angle) {
-    
-    return (int)Math.round(Math.floor(angle / 60));
-
-  }
+  
 
   @Override
   public void initialize()
@@ -100,7 +96,7 @@ public class ArmControl2 extends CommandBase
   public void execute()
   {
     // armSubsystem.setPercentageex(extensionSupplier.getAsDouble());
-    currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle(positionSupplier.getAsInt())];
+    // currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle(positionSupplier.getAsInt())];
 
     int angle = positionSupplier.getAsInt();
 

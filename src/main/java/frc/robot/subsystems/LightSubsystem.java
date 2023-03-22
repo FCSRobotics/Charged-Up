@@ -23,31 +23,41 @@ public class LightSubsystem extends SubsystemBase
 
     private enum Color {
         Yellow,
-        Purple
+        Purple,
+        Rainbow
     }
 
     private Color color = Color.Yellow;
+
+    public void playAuto() {
+        m_candle.animate(new RainbowAnimation());
+    }
     
     public void cycleColor() {
         switch (color) {
             case Yellow:
                 color = Color.Purple;
-                
-                m_candle.setLEDs(255,0, 255);
+                m_candle.animate(new StrobeAnimation(255, 0, 255));
+                //m_candle.setLEDs(255,0, 255);
                 break;
             case Purple:
-                color = Color.Yellow;
-                m_candle.setLEDs(255,255, 0);
+                color = Color.Rainbow;
+                m_candle.animate(new RainbowAnimation());
+                //m_candle.setLEDs(255,255, 0);
                 break;
-        }
+            case Rainbow:
+                color = Color.Yellow;
+                m_candle.animate(new StrobeAnimation(255, 255, 0));
+                //m_candle.setLEDs(255,255, 0);
+                break;
+                    }
     }
 
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-
-        this.cycleColor();
+        
     }
 
     @Override

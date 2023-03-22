@@ -94,13 +94,13 @@ public final class Constants
     public static final int rotateFollowSparkMaxId = 26;
     public static final int rollingAverageLength = 20;
 
-    public static final ArmFeedforward[] feedForwardMap = {
-      new ArmFeedforward(0, 0, 0),
-      new ArmFeedforward(0, 0, 0),
-      new ArmFeedforward(0, 0, 0),
-      new ArmFeedforward(0, 0, 0),
-      new ArmFeedforward(0, 0, 0),
-      new ArmFeedforward(0, 0, 0),
+    public static final double[] feedForwardMap = {
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
     };
   }
 
@@ -111,7 +111,7 @@ public final class Constants
     public static final double LEFT_X_DEADBAND = 0.01;
     public static final double LEFT_Y_DEADBAND = 0.01;
 
-    public static final float MAX_INPUT_CHANGE = 0.05f;
+    public static final float MAX_INPUT_CHANGE = 10f;//5
 
   }
 }

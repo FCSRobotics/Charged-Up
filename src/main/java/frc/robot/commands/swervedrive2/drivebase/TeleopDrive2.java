@@ -68,8 +68,8 @@ public class TeleopDrive2 extends CommandBase
   @Override
   public void execute()
   {
-    double xVelocity   = xInputLimiter.calculate(Math.pow(vX.getAsDouble() , 3)) * controller.config.maxSpeed;
-    double yVelocity   = yInputLimiter.calculate(Math.pow(vY.getAsDouble()  , 3)) * controller.config.maxSpeed;
+    double xVelocity   = xInputLimiter.calculate(Math.pow(vX.getAsDouble() , 3) * controller.config.maxSpeed);
+    double yVelocity   = yInputLimiter.calculate(Math.pow(vY.getAsDouble()  , 3) * controller.config.maxSpeed);
     double angVelocity = Math.pow(omega.getAsDouble(), 3) * controller.config.maxAngularVelocity;
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);

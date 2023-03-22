@@ -51,7 +51,7 @@ public final class Scoring
     return Commands.sequence(
       new SetIntakePosition(thethingthatdoestheeating, true),
       new WaitCommand(0.55), 
-      new EjectIntake(thethingthatdoestheeating, false, false),
+      new EjectIntake(thethingthatdoestheeating, false, false, -0.45f),
       new WaitCommand(0.1),
       new SetIntakePosition(thethingthatdoestheeating, false),
       new StopIntake(thethingthatdoestheeating)
@@ -61,13 +61,33 @@ public final class Scoring
   public static CommandBase _thirdLevelCube(IntakeSubsystem thethingthatdoestheeating) {
     return Commands.sequence(
       new SetIntakePosition(thethingthatdoestheeating, true),
-      new WaitCommand(0.1), 
-      new EjectIntake(thethingthatdoestheeating, false, false),
-      new WaitCommand(2),
+      new WaitCommand(0.68), 
+      new EjectIntake(thethingthatdoestheeating, false, false, -0.45f),
+      new WaitCommand(0.05),
       new SetIntakePosition(thethingthatdoestheeating, false),
       new StopIntake(thethingthatdoestheeating)
     );
-  } 
+  }
+
+public static Command shootCube(IntakeSubsystem thethingthatdoestheeating) {
+  return Commands.sequence(
+    new SetIntakePosition(thethingthatdoestheeating, true),
+    new WaitCommand(0.68), 
+    new EjectIntake(thethingthatdoestheeating, false, false, -1f),
+    new WaitCommand(0.05),
+    new SetIntakePosition(thethingthatdoestheeating, false),
+    new WaitCommand(0.6 - 0.05),
+    new StopIntake(thethingthatdoestheeating)
+  );
+}
+
+  public static Command playerStation(SwerveSubsystem drivebase, IntakeSubsystem intake) {
+    return Commands.sequence(
+      
+    );
+  }
+
+  
 
 }
 

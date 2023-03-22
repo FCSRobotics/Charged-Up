@@ -26,25 +26,27 @@ public class EjectIntake extends CommandBase
   private final IntakeSubsystem intakeSubsystem;
   boolean cone;
   boolean rotateIn;
+  private float ejectSpeed;
   
 
   /**
    * Extend arm to given distance in meters
    * might not matter if it is a cone or a cube but... it's there if it is needed
    */
-  public EjectIntake(IntakeSubsystem i, boolean isCone, boolean rotateIn)
+  public EjectIntake(IntakeSubsystem i, boolean isCone, boolean rotateIn, float ejectSpeed)
   {
     intakeSubsystem = i;
     cone = isCone;
     this.rotateIn = rotateIn;
     addRequirements(intakeSubsystem);
+    this.ejectSpeed = ejectSpeed;
   }
 
   @Override
   public void initialize() {
     double invert = rotateIn ? 1 : -1;
-    intakeSubsystem.setBottomMotorSpeed(invert * (cone ? Intake.wheelBottomSpeedEject : Intake.wheelBottomSpeedEject));
-    intakeSubsystem.setTopMotorSpeed(invert * (cone ? Intake.wheelTopSpeedEject : Intake.wheelTopSpeedEject));
+    intakeSubsystem.setBottomMotorSpeed(ejectSpeed);
+    intakeSubsystem.setTopMotorSpeed(ejectSpeed);
   }
 
   // Returns true when the command should end.
