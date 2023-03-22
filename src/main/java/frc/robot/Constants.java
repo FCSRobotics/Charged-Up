@@ -9,6 +9,7 @@ import java.io.ObjectInputFilter.Status;
 import com.fasterxml.jackson.databind.introspect.DefaultAccessorNamingStrategy.FirstCharBasedValidator;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.parser.PIDFConfig;
@@ -57,6 +58,8 @@ public final class Constants
     public static final int extendChannel = 12;
     public static final int retractChannel = 11;
     public static final boolean reverseSolenoid = false;
+    public static final double wheelBottomSpeedEject = 0.45;
+    public static final double wheelTopSpeedEject = 0.45;
   }
 
   public static class Grabber {
@@ -66,7 +69,7 @@ public final class Constants
     public static final int retractChannel = 8;
     public static final double offCurrent = -1;
     public static final boolean disableMotors = false;
-    public static final double motorSpeeds = 1;
+    public static final double motorSpeeds = 0.5;
   }
 
   public static class Arm {
@@ -75,9 +78,9 @@ public final class Constants
     public static final float revToAngleConversionFactor = 360/112;
     public static final int rotateSparkMaxId = 23;
     public static final double iExtension = 0;
-    public static final double pExtension = 0.06505600363016129*2*1.1;  
+    public static final double pExtension = 0.06505600363016129*2;  
     public static final double dExtension = 0;
-    public static final double pRotating = 0.1/2;
+    public static final double pRotating = 0.1/2*0.95;
     public static final double iRotating = 0;
     public static final double dRotating = 0;
     public static final int extendCancoderid = -1;
@@ -89,7 +92,16 @@ public final class Constants
     public static final double maxAccelExtend = 0.1;
     public static final double maxAccelRotate = 0.1;
     public static final int rotateFollowSparkMaxId = 26;
-    public static final int rollingAverageLenght = 20;
+    public static final int rollingAverageLength = 20;
+
+    public static final double[] feedForwardMap = {
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+    };
   }
 
   public static class OperatorConstants
@@ -98,5 +110,8 @@ public final class Constants
     // Joystick Deadband
     public static final double LEFT_X_DEADBAND = 0.01;
     public static final double LEFT_Y_DEADBAND = 0.01;
+
+    public static final float MAX_INPUT_CHANGE = 10f;//5
+
   }
 }

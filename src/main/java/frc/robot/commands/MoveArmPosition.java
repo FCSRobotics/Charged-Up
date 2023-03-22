@@ -4,10 +4,14 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Arm;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Positions;
+import frc.robot.utils.MovingAverage;
 
 /**
  * An example command that uses an example subsystem.
@@ -17,10 +21,9 @@ public class MoveArmPosition extends CommandBase {
   private ArmSubsystem arm;
   private final Positions pos;
   private MotionLocation phase;
-  private double[] positions;
-  private double currentSum;
-  private int currentLocationInList;
   private double currentAverage;
+
+  private MovingAverage rotateMovingAverage;
 
   public enum MotionLocation {
     MovingIn,
@@ -34,13 +37,11 @@ public class MoveArmPosition extends CommandBase {
   public MoveArmPosition(ArmSubsystem arm, Positions pos) {
     this.arm = arm;
     this.pos = pos;
+
+    this.rotateMovingAverage = new MovingAverage(Arm.rollingAverageLength);
     phase = MotionLocation.MovingIn;
-    currentLocationInList = 0;
-    currentSum = 0;
-    positions = new double[Arm.rollingAverageLenght];
-    for (int i = 0; i < Arm.rollingAverageLenght; i++) {
-      positions[i] = 0;
-    }
+    
+    
     
     addRequirements(arm);
   }
@@ -52,14 +53,13 @@ public class MoveArmPosition extends CommandBase {
 
   @Override
   public void execute() {
-    double newPosition = arm.getRotation();
-    double oldPosition = positions[currentLocationInList];
-    positions[currentLocationInList] = newPosition;
-    currentSum -= oldPosition;
-    currentSum += newPosition;
-    currentLocationInList++;
-    currentLocationInList = currentLocationInList % Arm.rollingAverageLenght;
-    currentAverage = currentSum/Arm.rollingAverageLenght;
+    DriverStation.reportWarning("arm extension auto: " + arm.getExtension(), false);
+    DriverStation.reportWarning("arm rotation auto: " + arm.getRotation(),false);
+
+    currentAverage = rotateMovingAverage.addValue(arm.getRotation());
+
+    SmartDashboard.putNumber("current average of arm position", currentAverage);
+
     switch (phase) {
       case MovingIn:
         if (arm.getExtension() >= -2) {
@@ -68,7 +68,7 @@ public class MoveArmPosition extends CommandBase {
         }
       break;
       case GoingToLocation:
-        if (Math.abs(arm.getPostionAngle(pos) - currentAverage) < 1) {
+        if (Math.abs(arm.getPostionAngle(pos) - currentAverage) < 4) {
           phase = MotionLocation.Extending;
           arm.setDesiredDistance(arm.getPostionExtension(pos));
         }
