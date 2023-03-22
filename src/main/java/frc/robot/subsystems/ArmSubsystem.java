@@ -4,23 +4,21 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.CAN;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Arm;
 import frc.robot.utils.ArmPosition;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 public class ArmSubsystem extends SubsystemBase
 {
@@ -51,11 +49,13 @@ public class ArmSubsystem extends SubsystemBase
     HIGH_CUBE
   };
 
+  
+
   public final ArmPosition[] armPositions = {
-    new ArmPosition(-85, 105.142197), //high back
-    new ArmPosition(-39.851860, 92.28410), //mid back
-    new ArmPosition(-46.089920, 43), //low back
-    new ArmPosition(0, 88.142250), // change this to back
+    new ArmPosition(-85, 93.142197), //high back
+    new ArmPosition(-56.35, 80.01), //mid back
+    new ArmPosition(-51, 34), //low back
+    new ArmPosition(0, 74.142250), // change this to back
     new ArmPosition(0,0), // low cube
   };
 
@@ -77,21 +77,22 @@ public class ArmSubsystem extends SubsystemBase
 
     rotateSparkMax = new CANSparkMax(rotateSparkMaxId, MotorType.kBrushless);
     rotateSparkMax.setSmartCurrentLimit(40);
+    rotateSparkMax.setIdleMode(IdleMode.kCoast);
+    rotateSparkMax.setInverted(true);
 
     rotateFollowSparkMax = new CANSparkMax(rotateSparkMaxFollowId, MotorType.kBrushless);
     rotateFollowSparkMax.setSmartCurrentLimit(40);
-    rotateFollowSparkMax.follow(rotateSparkMax,true);
+    rotateFollowSparkMax.follow(rotateSparkMax);
 
     extendEncoder = extendSparkMax.getEncoder();
     extendEncoder.setPositionConversionFactor(revToMetersConversionFactor);
     extendEncoder.setVelocityConversionFactor(revToMetersConversionFactor);
     extendEncoder.setPosition(-25.285551+4);
 
-    rotatingEncoder = rotateSparkMax.getEncoder();
+    rotatingEncoder = rotateSparkMax.getAlternateEncoder(AlternateEncoderType.kQuadrature,8192);
     rotatingEncoder.setPositionConversionFactor(revToDegrees);
     rotatingEncoder.setVelocityConversionFactor(revToDegrees);
-    rotatingEncoder.setPosition(-1);
-
+    //rotatingEncoder.setZeroOffset(0);
     // updateRelativeEncoders();
     
     desiredDistance = 0;
@@ -145,19 +146,21 @@ public class ArmSubsystem extends SubsystemBase
     SmartDashboard.putNumber("arm drotation", desiredHeight);
     SmartDashboard.putNumber("arm extension current", extendSparkMax.getOutputCurrent());
 
-    double armBottomeExtension = SmartDashboard.getNumber("arm bottom extension",-46.089920);
-    double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",43);
-    double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",-39.851860);
-    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",92.28410);
-    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", -90);
-    double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", -94.355515);
-    double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", -80.142151);
-    double armPickupExtension = SmartDashboard.getNumber("arm pickup extension", -53.614460);
+    double armBottomeExtension = SmartDashboard.getNumber("arm bottom extension",-51);
+    double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",34);
+    double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",-60.35);
+    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",88);
+    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", -85);
+    double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", 100.955515);
+    // double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 85.142151);
+    double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 85.14);
+
+    double armPickupExtension = SmartDashboard.getNumber("arm pickup extension", 0);
 
     armPositions[Positions.LOW.ordinal()] = new ArmPosition(armBottomeExtension, armBottomRotation);
     armPositions[Positions.MIDDLE.ordinal()] = new ArmPosition(armMiddleExtension, armMiddleRotation);
     armPositions[Positions.UP.ordinal()] = new ArmPosition(armUpperExtension, armUpperRotation);
-    armPositions[Positions.PICKUP.ordinal()] = new ArmPosition(armPickupExtension, armPickupRotation);
+    armPositions[Positions.PICKUPSTATION.ordinal()] = new ArmPosition(armPickupExtension, armPickupRotation);
 
   }
 
@@ -179,6 +182,10 @@ public class ArmSubsystem extends SubsystemBase
     ArmPosition pos = armPositions[p.ordinal()];
     setRawPosition(pos);
   } 
+
+  public void setZeroPosition() {
+    extendEncoder.setPosition(0.0);
+  }
 
   public void setRawPosition(ArmPosition pos) {
     desiredDistance = pos.extension;
@@ -220,6 +227,10 @@ public class ArmSubsystem extends SubsystemBase
 
   public void stopMotors() {
     rotateSparkMax.stopMotor();
+  }
+
+  public void bringIn() {
+    setDesiredDistance(0);
   }
 
   

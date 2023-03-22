@@ -6,8 +6,11 @@ package frc.robot.commands.swervedrive2.auto;
 
 import java.util.function.DoubleSupplier;
 
+import javax.swing.plaf.basic.BasicTreeUI.TreeCancelEditingAction;
+
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,13 +25,14 @@ import swervelib.SwerveDrive;
 /**
  * An example command that uses an example subsystem.
  */
-public class WithGyroBalance extends CommandBase
+public class PidBalance extends CommandBase
 {
 
   private final SwerveSubsystem swerve;
   private final IntakeSubsystem intake;
   private final Pigeon2 gyro;
   private boolean onStation;
+  private PIDController pid;
   
   /**
    * Extend arm to given distance in meters
@@ -40,12 +44,13 @@ public class WithGyroBalance extends CommandBase
    *                          
    * 
    */
-  public WithGyroBalance(SwerveSubsystem swerve, Pigeon2 gyro,IntakeSubsystem intake)
+  public PidBalance(SwerveSubsystem swerve, Pigeon2 gyro,IntakeSubsystem intake)
   {
     this.swerve = swerve;
     this.gyro = gyro;
     onStation = false;
     this.intake = intake;
+    pid = new PIDController(0.05, 0, 0);
 
     
     addRequirements(swerve);
@@ -67,14 +72,7 @@ public class WithGyroBalance extends CommandBase
         intake.extendOut();
       }
     } else {
-      if (tilt < -91) {
-        swerve.drive(new Translation2d(0.2,0), 0, true, false);
-      } else if (tilt > -89) {
-        swerve.drive(new Translation2d(-0.2,0), 0, true, false);
-      } else {
-        swerve.drive(new Translation2d(0,0), 0, true, false);
-        swerve.brakeMotors();
-      }
+      swerve.drive(new Translation2d(pid.calculate(tilt, -90),0), 0, true, false);
     }
   }
 

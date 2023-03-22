@@ -7,6 +7,7 @@ package frc.robot.commands;
 import javax.swing.text.Position;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Arm;
 import frc.robot.Constants.Grabber;
@@ -43,8 +44,8 @@ public class MoveArmDown extends CommandBase {
     currentLocationInList = 0;
     currentSum = 0;
     this.grabber = grabber;
-    positions = new double[Arm.rollingAverageLenght];
-    for (int i = 0; i < Arm.rollingAverageLenght; i++) {
+    positions = new double[Arm.rollingAverageLength];
+    for (int i = 0; i < Arm.rollingAverageLength; i++) {
       positions[i] = 0;
     }
     
@@ -58,14 +59,16 @@ public class MoveArmDown extends CommandBase {
 
   @Override
   public void execute() {
+    DriverStation.reportWarning("arm extension auto: " + arm.getExtension(), false);
+    DriverStation.reportWarning("arm rotation auto: " + arm.getRotation(), false);
     double newPosition = arm.getRotation();
     double oldPosition = positions[currentLocationInList];
     positions[currentLocationInList] = newPosition;
     currentSum -= oldPosition;
     currentSum += newPosition;
     currentLocationInList++;
-    currentLocationInList = currentLocationInList % Arm.rollingAverageLenght;
-    double currentAverage = currentSum/Arm.rollingAverageLenght;
+    currentLocationInList = currentLocationInList % Arm.rollingAverageLength;
+    double currentAverage = currentSum/Arm.rollingAverageLength;
     switch (phase) {
       case MovingIn:
         if (arm.getExtension() >= -2) {

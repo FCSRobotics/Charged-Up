@@ -5,32 +5,29 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.Grabber;
-import frc.robot.subsystems.GrabberSubsystem;
+import frc.robot.subsystems.LightSubsystem;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class CloseGrabber extends CommandBase
+public class CycleColor extends CommandBase
 {
 
-  private final GrabberSubsystem grabberSubsystem;
+  private final LightSubsystem lightSubsystem;
 
   /**
    * Extend arm to given distance in meters
    * might not matter if it is a cone or a cube but... it's there if it is needed
    */
-  public CloseGrabber(GrabberSubsystem g)
+  public CycleColor(LightSubsystem l)
   {
-    grabberSubsystem = g;
-    addRequirements(grabberSubsystem);
+    lightSubsystem = l;
+    addRequirements(lightSubsystem);
   }
 
   @Override
   public void initialize() {
-    grabberSubsystem.setMotorsSpeeds(-Grabber.motorSpeeds, true);
-    grabberSubsystem.clamp();
-    
+    lightSubsystem.cycleColor();
   }
 
   // Returns true when the command should end.
@@ -40,3 +37,4 @@ public class CloseGrabber extends CommandBase
     return true;
   }
 }
+

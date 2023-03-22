@@ -90,6 +90,10 @@ public class SwerveSubsystem extends SubsystemBase
   {
   }
 
+  public void brakeMotors() {
+    this.setMotorBrake(true);
+  }
+
   /**
    * Get the swerve drive kinematics object.
    *

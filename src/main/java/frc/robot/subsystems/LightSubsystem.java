@@ -18,7 +18,7 @@ import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 public class LightSubsystem extends SubsystemBase
 {
 
-    private final CANdle m_candle = new CANdle(2, "rio");
+    private final CANdle m_candle = new CANdle(3, "rio");
     private final int LedCount = 300;
 
     private enum Color {
@@ -26,13 +26,13 @@ public class LightSubsystem extends SubsystemBase
         Purple
     }
 
-    private Color color;
+    private Color color = Color.Yellow;
     
     public void cycleColor() {
         switch (color) {
             case Yellow:
                 color = Color.Purple;
-                m_candle.set
+                
                 m_candle.setLEDs(255,0, 255);
                 break;
             case Purple:
@@ -46,6 +46,7 @@ public class LightSubsystem extends SubsystemBase
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
         this.cycleColor();
     }
 

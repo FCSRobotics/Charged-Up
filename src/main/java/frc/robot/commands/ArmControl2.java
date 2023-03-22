@@ -10,6 +10,8 @@ import java.util.function.IntSupplier;
 
 import javax.swing.text.Position;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Arm;
@@ -17,6 +19,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Positions;
 import frc.robot.utils.ArmPosition;
+import frc.robot.utils.MovingAverage;
 
 
 /**
@@ -38,6 +41,8 @@ public class ArmControl2 extends CommandBase
   private GrabberSubsystem grabberSubsystem;
   public int lastFrameAngle;
   public int lastInputedAngle;
+  public MovingAverage rotationMovingAverage;
+  private ArmFeedforward currentArmFeedforward;
 
 
   /**
@@ -62,16 +67,25 @@ public class ArmControl2 extends CommandBase
     this.grabberSubsystem = grabberSubsystem;
     lastFrameAngle = -1;
     lastInputedAngle = -1;
+    rotationMovingAverage = new MovingAverage(Arm.rollingAverageLength);
 
-    positions = new double[Arm.rollingAverageLenght];
-    for (int i = 0; i < Arm.rollingAverageLenght; i++) {
-      positions[i] = 0;
-    }
-    currentSum = 0;
+    currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle(positionSupplier.getAsInt())];
+
+    // positions = new double[Arm.rollingAverageLength];
+    // for (int i = 0; i < Arm.rollingAverageLength; i++) {
+    //   positions[i] = 0;
+    // }
+    // currentSum = 0;
 
     lastTimePositionHeld = System.currentTimeMillis();
     
     addRequirements(armSubsystem);
+  }
+
+  private int calculateIndexFromAngle(int angle) {
+    
+    return (int)Math.round(Math.floor(angle / 60));
+
   }
 
   @Override
@@ -86,6 +100,7 @@ public class ArmControl2 extends CommandBase
   public void execute()
   {
     // armSubsystem.setPercentageex(extensionSupplier.getAsDouble());
+    currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle(positionSupplier.getAsInt())];
 
     int angle = positionSupplier.getAsInt();
 
@@ -99,25 +114,26 @@ public class ArmControl2 extends CommandBase
     lastFrameAngle = angle;
 
     
-    double newPosition = armSubsystem.getRotation();
-    double oldPosition = positions[currentLocationInList];
-    positions[currentLocationInList] = newPosition;
-    currentSum -= oldPosition;
-    currentSum += newPosition;
-    currentLocationInList++;
-    currentLocationInList = currentLocationInList % Arm.rollingAverageLenght;
-    double currentAverage = currentSum/Arm.rollingAverageLenght;
+    // double newPosition = armSubsystem.getRotation();
+    // double oldPosition = positions[currentLocationInList];
+    // positions[currentLocationInList] = newPosition;
+    // currentSum -= oldPosition;
+    // currentSum += newPosition;
+    // currentLocationInList++;
+    // currentLocationInList = currentLocationInList % Arm.rollingAverageLength;
+    // double currentAverage = currentSum/Arm.rollingAverageLength;
+    double currentAverage = rotationMovingAverage.addValue(armSubsystem.getRotation());
     SmartDashboard.putNumber("current average of arm position", currentAverage);
 
 
     int index = lastInputedAngle / 90;
-    double deltaAngle = voltage.getAsDouble() * 20 / 3;
-    double deltaExtension = extensionSupplier.getAsDouble() * 10;
+    double deltaAngle = voltage.getAsDouble() * 20;
+    double deltaExtension = extensionSupplier.getAsDouble() * 20;
     if (lastInputedAngle == -1) {
       long currentTime = System.currentTimeMillis();
       if (!intakeUp.getAsBoolean() && !returnToZero.getAsBoolean()) {
         if (lastTimePositionHeld + 1000 <= currentTime) {
-          if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.PICKUP) - deltaAngle)  < 1) {
+          if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.PICKUP) - deltaAngle)  < 3) {
             armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.PICKUP) - deltaExtension);
             
           } else {
@@ -156,7 +172,7 @@ public class ArmControl2 extends CommandBase
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index])  + deltaAngle)) {
         armSubsystem.setDesiredDistance(-1);
       }
-      if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index]) - deltaAngle) < 1) {
+      if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index]) - deltaAngle) < 4) {
         armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]) - deltaExtension);
       }
     }
@@ -165,6 +181,7 @@ public class ArmControl2 extends CommandBase
     SmartDashboard.putNumber("Angle ", deltaAngle);
     SmartDashboard.putBoolean("check", true);
   }
+
 
   // Called once the command ends or is interrupted.
   @Override
