@@ -32,7 +32,7 @@ public class LightSubsystem extends SubsystemBase
         switch (color) {
             case Yellow:
                 color = Color.Purple;
-                m_candle.set
+                
                 m_candle.setLEDs(255,0, 255);
                 break;
             case Purple:
