@@ -50,7 +50,7 @@ public class PidBalance extends CommandBase
     this.gyro = gyro;
     onStation = false;
     this.intake = intake;
-    pid = new PIDController(0.05, 0, 0);
+    pid = new PIDController(0.04, 0, 0);
 
     
     addRequirements(swerve);
@@ -59,21 +59,22 @@ public class PidBalance extends CommandBase
   @Override
   public void initialize()
   { 
-    swerve.drive(new Translation2d(0,0.5), 0, true, true);
+    swerve.drive(new Translation2d(-0.5,0), 0, true, true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     double tilt = gyro.getPitch();
-    if (!onStation) {
-      if (Math.abs(tilt + 90) > 2) {
-        onStation = true;
-        intake.extendOut();
-      }
-    } else {
-      swerve.drive(new Translation2d(pid.calculate(tilt, -90),0), 0, true, false);
-    }
+    SmartDashboard.putNumber("gyro: ", tilt);
+    // if (!onStation) {
+    //   if (Math.abs(tilt + 90) > 2) {
+    //     onStation = true;
+    //     intake.extendOut();
+    //   }
+    // } else {
+      swerve.drive(new Translation2d(pid.calculate(tilt, -3),0), 0, true, false);
+    // }
   }
 
   // Called once the command ends or is interrupted.

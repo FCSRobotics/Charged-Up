@@ -112,8 +112,8 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
 
-    // CameraServer.startAutomaticCapture();
-    // CameraServer.startAutomaticCapture();
+    CameraServer.startAutomaticCapture();
+    CameraServer.startAutomaticCapture();
     
 
     // AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
@@ -220,7 +220,7 @@ public class RobotContainer
     new JoystickButton(leftstick, 11).onTrue(Scoring.thirdLevelCube(intake));
     new JoystickButton(leftstick, 12).onTrue(Scoring._thirdLevelCube(intake));
     new JoystickButton(leftstick, 2).onTrue(Scoring.shootCube(intake));
-    new JoystickButton(leftstick,8).onTrue(new InstantCommand(arm::resetAbsoluteEncoder));
+    new JoystickButton(leftstick,7).onTrue(new InstantCommand(arm::resetAbsoluteEncoder));
     new JoystickButton(rightstick, 2).whileTrue(Scoring.playerStation(drivebase, intake));
 
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))

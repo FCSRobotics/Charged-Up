@@ -50,8 +50,8 @@ public final class Scoring
   public static CommandBase thirdLevelCube(IntakeSubsystem thethingthatdoestheeating) {
     return Commands.sequence(
       new SetIntakePosition(thethingthatdoestheeating, true),
-      new WaitCommand(0.55), 
-      new EjectIntake(thethingthatdoestheeating, false, false, -0.45f),
+      new WaitCommand(0.35), 
+      new EjectIntake(thethingthatdoestheeating, false, false, -0.6f),
       new WaitCommand(0.1),
       new SetIntakePosition(thethingthatdoestheeating, false),
       new StopIntake(thethingthatdoestheeating)
@@ -62,7 +62,7 @@ public final class Scoring
     return Commands.sequence(
       new SetIntakePosition(thethingthatdoestheeating, true),
       new WaitCommand(0.68), 
-      new EjectIntake(thethingthatdoestheeating, false, false, -0.45f),
+      new EjectIntake(thethingthatdoestheeating, false, false, -0.55f),
       new WaitCommand(0.05),
       new SetIntakePosition(thethingthatdoestheeating, false),
       new StopIntake(thethingthatdoestheeating)
