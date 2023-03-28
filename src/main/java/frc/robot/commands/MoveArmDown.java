@@ -73,7 +73,7 @@ public class MoveArmDown extends CommandBase {
       case MovingIn:
         if (arm.getExtension() >= -2) {
           phase = MotionLocation.GoingToLocation;
-          arm.setPercentage(0);
+          arm.setDesiredRotation(0);
           grabber.clamp();
         }
       break;

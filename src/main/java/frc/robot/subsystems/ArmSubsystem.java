@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,6 +17,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxAnalogSensor;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANAnalog.AnalogMode;
@@ -29,13 +32,14 @@ public class ArmSubsystem extends SubsystemBase
 
   public final CANSparkMax extendSparkMax;
   public final CANSparkMax rotateSparkMax;
+  public final PIDController rotatePIDController;
   public final CANSparkMax rotateFollowSparkMax;
   public final RelativeEncoder extendEncoder;
-  public final RelativeEncoder rotatingEncoder;
+  public final SparkMaxAbsoluteEncoder rotatingEncoder;
 //   public final CANCoder extendCANCoder;
 //   public final CANCoder rotateCANCoder;
   public double desiredDistance;
-  public DutyCycleEncoder absoluteEncoder;
+  //public DutyCycleEncoder absoluteEncoder;
   public DutyCycleEncoder extensionEncoder;
   public double currentDistance;
   public double desiredHeight;
@@ -96,16 +100,19 @@ public class ArmSubsystem extends SubsystemBase
     extensionEncoder = new DutyCycleEncoder(1);
     extensionEncoder.setDistancePerRotation(20);
     extensionEncoder.setPositionOffset(0);
-    extendEncoder.setPosition(-(extensionEncoder.getDistance()+15));
+    extendEncoder.setPosition(-(extensionEncoder.getDistance()));
 
-    rotatingEncoder = rotateSparkMax.getEncoder();
+    rotatingEncoder = rotateSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
     rotatingEncoder.setPositionConversionFactor(revToDegrees);
     rotatingEncoder.setVelocityConversionFactor(revToDegrees);
 
-    absoluteEncoder = new DutyCycleEncoder(0);
-    absoluteEncoder.setDistancePerRotation(360);
-    absoluteEncoder.setPositionOffset(0);
-    rotatingEncoder.setPosition(absoluteEncoder.getDistance()-219);
+    rotatingEncoder.setZeroOffset(0);
+
+    // absoluteEncoder = new DutyCycleEncoder(0);
+    // absoluteEncoder.setDistancePerRotation(360);
+    // absoluteEncoder.setPositionOffset(0);
+    // rotatingEncoder.setPosition(absoluteEncoder.getDistance()-222);
+    rotatePIDController = new PIDController(Arm.pRotating,Arm.iRotating,Arm.dRotating);
     // absoluteEncoder.close();
     
     desiredDistance = 0;
@@ -122,6 +129,7 @@ public class ArmSubsystem extends SubsystemBase
     rotatepid.setP(Arm.pRotating);
     rotatepid.setI(Arm.iRotating);
     rotatepid.setD(Arm.dRotating);
+
 
     // extendpid.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kSCurve,0);
     // extendpid.setSmartMotionMaxAccel(Arm.maxAccelExtend, 0);
@@ -141,7 +149,17 @@ public class ArmSubsystem extends SubsystemBase
   @Override
   public void periodic() {
     double currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle((int)rotatingEncoder.getPosition())];
-    rotateSparkMax.getPIDController().setFF(currentArmFeedforward);
+
+    double output = MathUtil.clamp(rotatePIDController.calculate(rotatingEncoder.getPosition(),desiredHeight),-4.8,4.8);
+
+    rotateSparkMax.setVoltage(output+currentArmFeedforward);
+
+    // rotateSparkMax.getPIDController().setFF(0);
+    SmartDashboard.putNumber("arm output voltage", output+currentArmFeedforward);
+    SmartDashboard.putNumber("arm feed forward",currentArmFeedforward);
+    SmartDashboard.putNumber("arm index",calculateIndexFromAngle((int)rotatingEncoder.getPosition()));
+
+    
 
     // if (Math.abs(desiredHeight - currentHeight) > 0.02) { // want to change this to pid
     //   currentDistance = rotatingEncoder.getPosition();
@@ -157,25 +175,38 @@ public class ArmSubsystem extends SubsystemBase
     // if (Math.abs(desiredHeight - currentHeight) > 1) {
     //   currentHeight = rotatingEncoder.getPosition();
     // }
-    DriverStation.reportWarning("encoder connected: " + absoluteEncoder.isConnected(), false);
+    //DriverStation.reportWarning("encoder connected: " + absoluteEncoder.isConnected(), false);
     SmartDashboard.putNumber("arm location", extendEncoder.getPosition());
     SmartDashboard.putNumber("arm rotation", rotatingEncoder.getPosition());
     SmartDashboard.putNumber("arm dlocation",desiredDistance);
     SmartDashboard.putNumber("arm drotation", desiredHeight);
     SmartDashboard.putNumber("arm extension current", extendSparkMax.getOutputCurrent());
-    SmartDashboard.putNumber("annoying rev encoder rotation", absoluteEncoder.getDistance());
+    SmartDashboard.putNumber("annoying rev encoder rotation", rotatingEncoder.getPosition());
     SmartDashboard.putNumber("annoying rev encoder extension2", extensionEncoder.getDistance());
 
     double armBottomeExtension = SmartDashboard.getNumber("arm bottom extension",-51);
-    double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",34);
-    double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",-60.35);
-    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",88);
-    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", -85);
-    double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", 100.955515);
+    double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",37-5);
+    double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",-32);
+    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",95-10);
+    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", -85-5);
+    double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", 103.955515-15);
     // double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 85.142151);
-    double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 85.14);
+    double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 83.14-5);
 
     double armPickupExtension = SmartDashboard.getNumber("arm pickup extension", 0);
+
+    // double armBottomeExtension = SmartDashboard.getNumber("arm bottom extension",0);
+    // double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",75);
+    // double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",0);
+    // double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",90);
+    // double armUpperExtension = SmartDashboard.getNumber("arm upper extension",0);
+    // double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", 105);
+    // // double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 85.142151);
+    // double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 60);
+
+    // double armPickupExtension = SmartDashboard.getNumber("arm pickup extension", 0);
+
+    SmartDashboard.putNumber("arm rotation voltage: ", rotateSparkMax.getBusVoltage()*rotateSparkMax.get());
     
 
     armPositions[Positions.LOW.ordinal()] = new ArmPosition(armBottomeExtension, armBottomRotation);
@@ -191,7 +222,7 @@ public class ArmSubsystem extends SubsystemBase
 
   public void setDesiredRotation(double rotation) {
     desiredHeight = rotation;
-    rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
+    // rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
   }
 
   public void groundSetPoint() {
@@ -254,22 +285,22 @@ public class ArmSubsystem extends SubsystemBase
   }
 
   private int calculateIndexFromAngle(int angle) {
-    int index = (int)Math.round(Math.floor((angle+90) / 4));
+    int index = (int)Math.round(Math.floor(angle / 6));
     if (index < 0) {
       return 0;
-    } else if (index > 3) {
-      return 3;
+    } else if (index > 5) {
+      return 5;
     }
     return index;
   }
   
   public void resetAbsoluteEncoder() {
-    absoluteEncoder.reset();
+    rotatingEncoder.setZeroOffset(rotatingEncoder.getPosition());
     extensionEncoder.reset();
   }
 
   public void finalize() {
-    absoluteEncoder.close();
+    
   }
 
   

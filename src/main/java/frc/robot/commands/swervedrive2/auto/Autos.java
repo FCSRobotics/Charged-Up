@@ -24,6 +24,7 @@ import frc.robot.commands.MoveArmDown;
 import frc.robot.commands.MoveArmPosition;
 import frc.robot.commands.MoveTime;
 import frc.robot.commands.OpenGrabber;
+import frc.robot.commands.PidBalance;
 import frc.robot.commands.RotateSwerve;
 import frc.robot.commands.RotateTime;
 import frc.robot.commands.SetIntakePosition;
@@ -51,7 +52,7 @@ public final class Autos
    */
   public static CommandBase exampleAuto(SwerveSubsystem swerve)
   {
-    PathPlannerTrajectory example = PathPlanner.loadPath("New Path",
+    PathPlannerTrajectory example = PathPlanner.loadPath("balance",
                                                          new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
     return Commands.sequence(new FollowTrajectory(swerve, example, true));
   }

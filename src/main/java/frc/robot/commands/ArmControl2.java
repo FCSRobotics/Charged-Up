@@ -128,16 +128,8 @@ public class ArmControl2 extends CommandBase
     if (lastInputedAngle == -1) {
       long currentTime = System.currentTimeMillis();
       if (!intakeUp.getAsBoolean() && !returnToZero.getAsBoolean()) {
-        if (lastTimePositionHeld + 1000 <= currentTime) {
-          if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.PICKUP) - deltaAngle)  < 3) {
-            armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.PICKUP) - deltaExtension);
-            
-          } else {
-            armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle(Positions.PICKUP) + deltaAngle);
-          }
-        } else {
-          if (armSubsystem.getExtension() - deltaExtension >= -2) {
-            armSubsystem.setPercentage(0);
+          if (armSubsystem.getExtension() >= -2) {
+            armSubsystem.setDesiredRotation(0);
             if (Math.abs(armSubsystem.getRotation()) < 1 ) {
               armSubsystem.stopMotors();
             }
@@ -146,11 +138,10 @@ public class ArmControl2 extends CommandBase
             armSubsystem.setDesiredDistance(-1);
             grabberSubsystem.clamp();
           }
-        }
       } else {
-        if (armSubsystem.getExtension() - deltaExtension >= -2) {
-          armSubsystem.setPercentage(0);
-          if (Math.abs(armSubsystem.getRotation()) < 1 ) {
+        if (armSubsystem.getExtension() >= -2) {
+          armSubsystem.setDesiredRotation(0);
+          if (Math.abs(armSubsystem.getRotation()) < 1) {
             armSubsystem.stopMotors();
           }
         }
@@ -165,12 +156,15 @@ public class ArmControl2 extends CommandBase
       
       if (armSubsystem.getExtension() - deltaExtension >= -2) {
         armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])) + deltaAngle);
+        // DriverStation.reportWarning("oh shoot2");
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index])  + deltaAngle)) {
         armSubsystem.setDesiredDistance(-1);
       }
       if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index]) - deltaAngle) < 4) {
         armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]) - deltaExtension);
       }
+      // DriverStation.reportWarning("oh shoot");
+      
     }
 
     //armSubsystem.setRawPosition(new ArmPosition(0, voltage.getAsDouble()));

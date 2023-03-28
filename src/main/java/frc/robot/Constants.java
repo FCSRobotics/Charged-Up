@@ -60,6 +60,8 @@ public final class Constants
     public static final boolean reverseSolenoid = false;
     public static final double wheelBottomSpeedEject = 0.45;
     public static final double wheelTopSpeedEject = 0.45;
+    public static final double maxTopSpeed = 1.0;
+    public static final double maxBottomSpeed = 1.0;
   }
 
   public static class Grabber {
@@ -70,17 +72,18 @@ public final class Constants
     public static final double offCurrent = -1;
     public static final boolean disableMotors = false;
     public static final double motorSpeeds = 0.5;
+    public static double maxSpeeds = 1.0;
   }
 
   public static class Arm {
     public static final float revToMetersConversionFactor = (float) 1; // need to set
     public static final int extendSparkMaxId = 22;
-    public static final float revToAngleConversionFactor = 360/112;
+    public static final float revToAngleConversionFactor = 1;
     public static final int rotateSparkMaxId = 23;
     public static final double iExtension = 0;
-    public static final double pExtension = 0.06505600363016129*2;  
+    public static final double pExtension = 0.06505600363016129*2*1.1;  
     public static final double dExtension = 0;
-    public static final double pRotating = 0.1/2*0.95;
+    public static final double pRotating = 0.1;
     public static final double iRotating = 0;
     public static final double dRotating = 0;
     public static final int extendCancoderid = -1;
@@ -95,12 +98,18 @@ public final class Constants
     public static final int rollingAverageLength = 20;
 
     public static final double[] feedForwardMap = {
+      // 0,
+      // 0.005,
+      // 0.005,
+      // 0.006,
+      // 0.006,
+      // 0.006,
       0,
-      0,
-      0,
-      0,
-      0,
-      0,
+      0.140881,
+      0.238044,
+      0.388770,
+      0.638903,
+      0.681784,
     };
   }
 

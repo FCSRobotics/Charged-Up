@@ -29,7 +29,10 @@ import frc.robot.commands.ArmControl;
 import frc.robot.commands.ArmControl2;
 import frc.robot.commands.CloseGrabber;
 import frc.robot.commands.CycleColor;
+import frc.robot.commands.GrabberMotorsControl;
+import frc.robot.commands.IntakeMotorsControl;
 import frc.robot.commands.OpenGrabber;
+import frc.robot.commands.PidBalance;
 import frc.robot.commands.Scoring;
 import frc.robot.commands.StartGrabberMotors;
 import frc.robot.commands.StartIntake;
@@ -90,6 +93,7 @@ public class RobotContainer
                                             Arm.revToMetersConversionFactor, 
                                             Arm.revToAngleConversionFactor);
   final LightSubsystem light = new LightSubsystem();
+  final Pigeon2 gyro = new Pigeon2(31);
   
 
   // // CommandJoystick rotationController = new CommandJoystick(1);
@@ -163,14 +167,15 @@ public class RobotContainer
     drivebase.setDefaultCommand(new ParallelCommandGroup(closedFieldRel,armControl));
     m_chooser.setDefaultOption("leave and balance", Autos.leaveandbalance(drivebase, intake, grabber, arm));
     m_chooser.addOption("balance", Autos.setActionsBalance(drivebase, intake, arm, grabber));
-    m_chooser.addOption("balance gyro", Autos.gyroBalance(drivebase, intake, arm, grabber,new Pigeon2(31)));
-    m_chooser.addOption("balance pid", Autos.pidbalance(drivebase, intake, arm, grabber,new Pigeon2(31)));
+    m_chooser.addOption("balance gyro", Autos.gyroBalance(drivebase, intake, arm, grabber, gyro));
+    m_chooser.addOption("balance pid", Autos.pidbalance(drivebase, intake, arm, grabber, gyro));
     m_chooser.addOption("do nothing", Autos.nullAuto());
     m_chooser.addOption("spin", Autos.driveAndSpin(drivebase));
     m_chooser.addOption("just leave", Autos.leaveTheStadium(drivebase,arm,grabber));
     m_chooser.addOption("pickup from left", Autos.pickUpConeCube(drivebase, arm, grabber, intake, true));
     m_chooser.addOption("pickup from right", Autos.pickUpConeCube(drivebase, arm, grabber, intake, false));
     m_chooser.addOption("drop cone",Commands.sequence(Autos.dropOffCone(drivebase, arm, grabber)));
+    m_chooser.addOption("example auto",Autos.exampleAuto(drivebase));
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
@@ -185,44 +190,96 @@ public class RobotContainer
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-    new JoystickButton(driverXbox, 1).onTrue(new StartGrabberMotors(grabber,Grabber.motorSpeeds,true));
-    new JoystickButton(driverXbox, 1).onFalse(new StopGrabberMotors(grabber));
+    // new JoystickButton(driverXbox, 1).onTrue(new StartGrabberMotors(grabber,Grabber.motorSpeeds,true));
+    // new JoystickButton(driverXbox, 1).onFalse(new StopGrabberMotors(grabber));
 
-    new JoystickButton(driverXbox,4).onTrue(new StartGrabberMotors(grabber,-Grabber.motorSpeeds,false));
-    new JoystickButton(driverXbox,4).onFalse(new StopGrabberMotors(grabber));
+    // new JoystickButton(driverXbox,4).onTrue(new StartGrabberMotors(grabber,-Grabber.motorSpeeds,false));
+    // new JoystickButton(driverXbox,4).onFalse(new StopGrabberMotors(grabber));
 
     
-    new JoystickButton(driverXbox, 2).onTrue((new StartIntake(intake,true,true)));
-    new JoystickButton(driverXbox, 2).onFalse((new StopIntake(intake)));
+    // new JoystickButton(driverXbox, 2).onTrue((new StartIntake(intake,true,true)));
+    // new JoystickButton(driverXbox, 2).onFalse((new StopIntake(intake)));
 
-    new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake,true,false)));
-    new JoystickButton(driverXbox,3).onFalse((new StopIntake(intake)));
+    // new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake,true,false)));
+    // new JoystickButton(driverXbox,3).onFalse((new StopIntake(intake)));
     
-    new JoystickButton(driverXbox, 6).onTrue(new ToggleIntakePosition(intake));
+    // new JoystickButton(driverXbox, 6).onTrue(new ToggleIntakePosition(intake));
 
-    new JoystickButton(rightstick, 7).onTrue((new InstantCommand(drivebase::zeroGyro)));
+    // new JoystickButton(rightstick, 7).onTrue((new InstantCommand(drivebase::zeroGyro)));
+
+    // new JoystickButton(driverXbox, 7).onTrue((new CloseGrabber(grabber)));
+    // new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
+
+    // new JoystickButton(driverXbox, 10).onTrue(new InstantCommand(arm::setZeroPosition));
+
+    // //new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(light::cycleColor, light));
+
+    // new JoystickButton(rightstick,1).onTrue(new ToggleIntakePosition(intake));
+    // new JoystickButton(rightstick,5).onTrue(new StartIntake(intake,true,true));
+    // new JoystickButton(rightstick,5).onFalse(new StopIntake(intake));
+    // new JoystickButton(rightstick,6).onTrue((new StartIntake(intake,true,false)));
+    // new JoystickButton(rightstick,6).onFalse((new StopIntake(intake)));
+    
+    
+    // new JoystickButton(leftstick,8).onTrue((new InstantCommand(light::cycleColor, light)));
+    // new JoystickButton(leftstick, 11).onTrue(Scoring.thirdLevelCube(intake));
+    // new JoystickButton(leftstick, 12).onTrue(Scoring._thirdLevelCube(intake));
+    // new JoystickButton(leftstick, 2).onTrue(Scoring.shootCube(intake));
+    // new JoystickButton(leftstick,7).onTrue(new InstantCommand(arm::resetAbsoluteEncoder));
+    // new JoystickButton(rightstick, 3).whileTrue(Scoring.playerStation(drivebase, intake));
+    // new JoystickButton(rightstick, 3).onFalse(new StopIntake(intake));
+    // new JoystickButton(leftstick,9).onTrue(new PidBalance(drivebase,gyro,intake));
+    
+
+
+
+
+
+
+    new GrabberMotorsControl(grabber, () -> driverXbox.getRawAxis(3), () -> driverXbox.getRawButton(6));
+    new IntakeMotorsControl(intake,() -> driverXbox.getRawAxis(2), () -> driverXbox.getRawButton(5));
+    
+    new JoystickButton(driverXbox, 4).onTrue(new ToggleIntakePosition(intake));
 
     new JoystickButton(driverXbox, 7).onTrue((new CloseGrabber(grabber)));
     new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
     new JoystickButton(driverXbox, 10).onTrue(new InstantCommand(arm::setZeroPosition));
+    new JoystickButton(driverXbox,9).onTrue((new InstantCommand(light::cycleColor, light)));
+
+    new JoystickButton(driverXbox, 3).onTrue(Scoring.thirdLevelCube(intake));
+    new JoystickButton(driverXbox, 1).onTrue(Scoring.secondLevelCube(intake));
+    new JoystickButton(driverXbox, 2).onTrue(Scoring.shootCube(intake));
+
+
+
+
+
+
+    new JoystickButton(rightstick, 7).onTrue((new InstantCommand(drivebase::zeroGyro)));
+
+    
 
     //new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(light::cycleColor, light));
 
-    new JoystickButton(rightstick,1).onTrue(new ToggleIntakePosition(intake));
+    new JoystickButton(leftstick, 1).onTrue(new ToggleIntakePosition(intake));
+    new JoystickButton(leftstick,1).whileTrue(new StartIntake(intake,true,true));
+    new JoystickButton(leftstick,1).onFalse(Commands.sequence(new ToggleIntakePosition(intake),new StopIntake(intake)));
     new JoystickButton(rightstick,5).onTrue(new StartIntake(intake,true,true));
     new JoystickButton(rightstick,5).onFalse(new StopIntake(intake));
     new JoystickButton(rightstick,6).onTrue((new StartIntake(intake,true,false)));
     new JoystickButton(rightstick,6).onFalse((new StopIntake(intake)));
     
     
-    new JoystickButton(leftstick,8).onTrue((new InstantCommand(light::cycleColor, light)));
-    new JoystickButton(leftstick, 11).onTrue(Scoring.thirdLevelCube(intake));
-    new JoystickButton(leftstick, 12).onTrue(Scoring._thirdLevelCube(intake));
+    
+    
     new JoystickButton(leftstick, 2).onTrue(Scoring.shootCube(intake));
     new JoystickButton(leftstick,7).onTrue(new InstantCommand(arm::resetAbsoluteEncoder));
-    new JoystickButton(rightstick, 2).whileTrue(Scoring.playerStation(drivebase, intake));
+    new JoystickButton(rightstick, 1).whileTrue(Scoring.playerStation(drivebase, intake));
+    new JoystickButton(rightstick, 1).onFalse(Commands.sequence(new StopIntake(intake), new ToggleIntakePosition(intake)));
+    new JoystickButton(rightstick,2).whileTrue(new PidBalance(drivebase,gyro,intake));
 
+    
 //     new JoystickButton(driverXbox, 3).onTrue((new StartIntake(intake, false)))
 //                                                    .onFalse(new StopIntake(intake)); // no idea what button this is
 // //    new JoystickButton(driverXbox, 3).whileTrue(new InstantCommand(drivebase::lock, drivebase));

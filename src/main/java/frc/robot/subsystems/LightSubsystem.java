@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -21,6 +24,8 @@ public class LightSubsystem extends SubsystemBase
     private final CANdle m_candle = new CANdle(3, "rio");
     private final int LedCount = 300;
 
+    private Supplier<String> colorNameSupplier;
+
     private enum Color {
         Yellow,
         Purple,
@@ -28,6 +33,26 @@ public class LightSubsystem extends SubsystemBase
     }
 
     private Color color = Color.Yellow;
+
+    public LightSubsystem() {
+        colorNameSupplier = new Supplier<String>() {
+            public String get() {
+                switch (color) {
+                    case Yellow:
+                        return "Yellow Cone";
+                        
+                
+                    case Purple:
+                        return "Purple Cube";
+                    default:
+                        return "RGB GAMING ROBOT!!";
+                        
+                }
+            }
+            
+        };
+        Shuffleboard.getTab("Game Tab").addString("color", colorNameSupplier);
+    }
 
     public void playAuto() {
         m_candle.animate(new RainbowAnimation());
@@ -38,14 +63,10 @@ public class LightSubsystem extends SubsystemBase
             case Yellow:
                 color = Color.Purple;
                 m_candle.animate(new StrobeAnimation(255, 0, 255));
+                
                 //m_candle.setLEDs(255,0, 255);
                 break;
             case Purple:
-                color = Color.Rainbow;
-                m_candle.animate(new RainbowAnimation());
-                //m_candle.setLEDs(255,255, 0);
-                break;
-            case Rainbow:
                 color = Color.Yellow;
                 m_candle.animate(new StrobeAnimation(255, 255, 0));
                 //m_candle.setLEDs(255,255, 0);
