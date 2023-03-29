@@ -139,7 +139,7 @@ public class ArmControl2 extends CommandBase
             grabberSubsystem.clamp();
           }
       } else {
-        if (armSubsystem.getExtension() >= -2) {
+        if (armSubsystem.getExtension() >= 2) {
           armSubsystem.setDesiredRotation(0);
           if (Math.abs(armSubsystem.getRotation()) < 1) {
             armSubsystem.stopMotors();
