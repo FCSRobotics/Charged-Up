@@ -76,7 +76,7 @@ public final class Constants
   }
 
   public static class Arm {
-    public static final float revToMetersConversionFactor = (float) 1; // need to set
+    public static final float revToMetersConversionFactor = 1f; // need to set
     public static final int extendSparkMaxId = 22;
     public static final float revToAngleConversionFactor = 360;
     public static final int rotateSparkMaxId = 23;

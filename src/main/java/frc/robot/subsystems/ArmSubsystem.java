@@ -100,9 +100,10 @@ public class ArmSubsystem extends SubsystemBase
     
     extendEncoder = extendSparkMax.getEncoder();
     extendAbsoluteEncoder = extendSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-    extendEncoder.setPositionConversionFactor(-revToMetersConversionFactor);
-    extendEncoder.setVelocityConversionFactor(-revToMetersConversionFactor);
-    extendEncoder.setPosition(extendAbsoluteEncoder.getPosition() - 1);
+    extendEncoder.setPositionConversionFactor(revToMetersConversionFactor);
+    extendEncoder.setVelocityConversionFactor(revToMetersConversionFactor);
+    
+    extendEncoder.setPosition(extendAbsoluteEncoder.getPosition() - 0.764902);
     
 
     rotatingEncoder = rotateSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
@@ -119,7 +120,7 @@ public class ArmSubsystem extends SubsystemBase
     // absoluteEncoder.close();
     
     desiredDistance = 0;
-    currentDistance = extendEncoder.getPosition();
+    currentDistance = -1 *extendEncoder.getPosition();
 
     SparkMaxPIDController extendpid = extendSparkMax.getPIDController();
     SparkMaxPIDController rotatepid = rotateSparkMax.getPIDController();
@@ -142,8 +143,9 @@ public class ArmSubsystem extends SubsystemBase
     // rotatepid.setSmartMotionMaxAccel(Arm.maxAccelRotate, 0);
     // rotatepid.setSmartMotionMaxVelocity(Arm.maxSpeedRotate, 0);
 
-    setDesiredDistance(-1);
+    setDesiredDistance(0);
     setDesiredRotation(0);
+    SmartDashboard.putBoolean("Desired Rotation set", false);
 
     // extensionPID = new PIDController(Arm.pExtension, Arm.iExtension, Arm.dExtension);
     // rotatingPID = new PIDController(Arm.pRotating, Arm.iRotating, Arm.dRotating);
@@ -151,13 +153,14 @@ public class ArmSubsystem extends SubsystemBase
 
   @Override
   public void periodic() {
+
     double currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle((int)rotatingEncoder.getPosition())];
 
-    double output = MathUtil.clamp(rotatePIDController.calculate(rotatingEncoder.getPosition(),desiredHeight),-4.8,4.8);
+    double output = MathUtil.clamp(rotatePIDController.calculate(360 - rotatingEncoder.getPosition(),desiredHeight),-4.8,4.8);
 
 
-    double voltageVal = -1 * output+currentArmFeedforward;
-    SmartDashboard.putNumber("the amount of voltage being sent to the arm at this moment",voltageVal);
+    double voltageVal = currentArmFeedforward;
+    SmartDashboard.putNumber("the amount of voltage being sent to the arm at this moment",output);
     rotateSparkMax.setVoltage(voltageVal );
 
     // rotateSparkMax.getPIDController().setFF(0);
@@ -182,12 +185,14 @@ public class ArmSubsystem extends SubsystemBase
     //   currentHeight = rotatingEncoder.getPosition();
     // }
     //DriverStation.reportWarning("encoder connected: " + absoluteEncoder.isConnected(), false);
-    SmartDashboard.putNumber("arm location", extendEncoder.getPosition());
+    SmartDashboard.putNumber("arm location", -1 * extendEncoder.getPosition());
     SmartDashboard.putNumber("arm absolute location", extendAbsoluteEncoder.getPosition());
     SmartDashboard.putNumber("arm rotation", rotatingEncoder.getPosition());
+    SmartDashboard.putNumber("arm extension conversion factor", extendEncoder.getPositionConversionFactor());
     
     SmartDashboard.putNumber("arm dlocation",desiredDistance);
     SmartDashboard.putNumber("arm drotation", desiredHeight);
+    
     SmartDashboard.putNumber("arm extension current", extendSparkMax.getOutputCurrent());
     SmartDashboard.putNumber("annoying rev encoder rotation", rotatingEncoder.getPosition());
 
@@ -230,6 +235,10 @@ public class ArmSubsystem extends SubsystemBase
 
   public void setDesiredRotation(double rotation) {
     desiredHeight = rotation;
+    SmartDashboard.putNumber("arm p", rotateSparkMax.getPIDController().getP());
+    SmartDashboard.putNumber("arm i", rotateSparkMax.getPIDController().getI());
+    SmartDashboard.putNumber("arm d", rotateSparkMax.getPIDController().getD());
+    SmartDashboard.putBoolean("Desired Rotation set", true);
     rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
   }
 
@@ -261,7 +270,7 @@ public class ArmSubsystem extends SubsystemBase
   }
 
   public double getExtension() {
-    return extendEncoder.getPosition();
+    return  -1 * extendEncoder.getPosition();
   }
 
   public double getRotation() {

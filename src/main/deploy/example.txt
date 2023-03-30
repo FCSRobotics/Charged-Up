@@ -2,3 +2,9 @@ high score -78.642319
 middle score -62.785435
 intake -17.142834
 zero 
+
+
+backleft 141.152344
+backright 144.140625
+frontleft 357.451172
+frontright 180.527344

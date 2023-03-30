@@ -108,7 +108,7 @@ public class ArmControl2 extends CommandBase
       }
     }
     lastFrameAngle = angle;
-
+    SmartDashboard.putNumber("last inputted angle", lastInputedAngle);
     
     // double newPosition = armSubsystem.getRotation();
     // double oldPosition = positions[currentLocationInList];
@@ -128,24 +128,24 @@ public class ArmControl2 extends CommandBase
     if (lastInputedAngle == -1) {
       long currentTime = System.currentTimeMillis();
       if (!intakeUp.getAsBoolean() && !returnToZero.getAsBoolean()) {
-          if (armSubsystem.getExtension() >= -2) {
+          if (armSubsystem.getExtension() <= 0.5) {
             armSubsystem.setDesiredRotation(0);
             if (Math.abs(armSubsystem.getRotation()) < 1 ) {
               armSubsystem.stopMotors();
             }
           } else {
             lastTimePositionHeld = currentTime;
-            armSubsystem.setDesiredDistance(-1);
+            armSubsystem.setDesiredDistance(0);
             grabberSubsystem.clamp();
           }
       } else {
-        if (armSubsystem.getExtension() >= 2) {
+        if (armSubsystem.getExtension() <= 0.5) {
           armSubsystem.setDesiredRotation(0);
           if (Math.abs(armSubsystem.getRotation()) < 1) {
             armSubsystem.stopMotors();
           }
         }
-        armSubsystem.setDesiredDistance(-1);
+        armSubsystem.setDesiredDistance(0);
         
         grabberSubsystem.clamp();
         lastTimePositionHeld = currentTime;
@@ -154,11 +154,11 @@ public class ArmControl2 extends CommandBase
       // armSubsystem.setDesiredDistance(0);
       lastTimePositionHeld = System.currentTimeMillis();
       
-      if (armSubsystem.getExtension() - deltaExtension >= -2) {
+      if (armSubsystem.getExtension() + deltaExtension <= 0.5) {
         armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])) + deltaAngle);
         // DriverStation.reportWarning("oh shoot2");
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index])  + deltaAngle)) {
-        armSubsystem.setDesiredDistance(-1);
+        armSubsystem.setDesiredDistance(0);
       }
       if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index]) - deltaAngle) < 4) {
         armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]) - deltaExtension);
