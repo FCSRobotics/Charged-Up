@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Intake;
+import frc.robot.Constants.Priority;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.utils.MotorSpeedsSupplier;
 
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
@@ -26,25 +28,27 @@ public class StartIntake extends CommandBase
   private final IntakeSubsystem intakeSubsystem;
   boolean cone;
   boolean rotateIn;
+  private MotorSpeedsSupplier intakeMotorSpeedsSupplier;
   
 
   /**
    * Extend arm to given distance in meters
    * might not matter if it is a cone or a cube but... it's there if it is needed
    */
-  public StartIntake(IntakeSubsystem i, boolean isCone, boolean rotateIn)
+  public StartIntake(IntakeSubsystem i, boolean isCone, boolean rotateIn, MotorSpeedsSupplier intakeMotorSpeedsSupplier)
   {
     intakeSubsystem = i;
     cone = isCone;
     this.rotateIn = rotateIn;
+    this.intakeMotorSpeedsSupplier = intakeMotorSpeedsSupplier;
     addRequirements(intakeSubsystem);
   }
 
   @Override
   public void initialize() {
     double invert = rotateIn ? 1 : -1;
-    intakeSubsystem.setBottomMotorSpeed(invert * (cone ? Intake.wheelBottomSpeedCone : Intake.wheelBottomSpeedCube));
-    intakeSubsystem.setTopMotorSpeed(invert * (cone ? Intake.wheelTopSpeedCone : Intake.wheelTopSpeedCube));
+    intakeMotorSpeedsSupplier.setSpeedWithPriority(invert * (cone ? Intake.wheelBottomSpeedCone : Intake.wheelBottomSpeedCube), Priority.StartPriority);
+
   }
 
   // Returns true when the command should end.

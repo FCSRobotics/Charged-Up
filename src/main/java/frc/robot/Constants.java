@@ -138,4 +138,11 @@ public final class Constants
     public static final float MAX_INPUT_CHANGE = 10f;//5
 
   }
+
+  public static class Priority {
+    public static final int EjectPriority = 10;
+    public static final int StartPriority = 0;
+    
+    public static final int OperatorIntakeControlPriority = 0;
+  }
 }

@@ -12,10 +12,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Grabber;
 import frc.robot.Constants.Intake;
+import frc.robot.Constants.Priority;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.utils.ArmPosition;
+import frc.robot.utils.MotorSpeedsSupplier;
 
 
 /**
@@ -27,6 +29,7 @@ public class IntakeMotorsControl extends CommandBase
   private final IntakeSubsystem intake;
   private DoubleSupplier spinSpeed;
   private BooleanSupplier spinIn;
+private MotorSpeedsSupplier intakeMotorSpeedsSupplier;
   
   
 
@@ -40,11 +43,12 @@ public class IntakeMotorsControl extends CommandBase
    *                          
    * 
    */
-  public IntakeMotorsControl(IntakeSubsystem intake,DoubleSupplier spinSpeed, BooleanSupplier spinIn)
+  public IntakeMotorsControl(IntakeSubsystem intake,DoubleSupplier spinSpeed, BooleanSupplier spinIn, MotorSpeedsSupplier intakeMotorSpeedSupplier)
   {
     this.intake = intake;
     this.spinSpeed = spinSpeed;
     this.spinIn = spinIn;
+    this.intakeMotorSpeedsSupplier = intakeMotorSpeedsSupplier;
     
     addRequirements(intake);
   }
@@ -59,10 +63,10 @@ public class IntakeMotorsControl extends CommandBase
   @Override
   public void execute()
   {
-    if(spinSpeed.getAsDouble() > 0.1){
-      intake.setBottomMotorSpeed((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Intake.maxBottomSpeed);
-      intake.setTopMotorSpeed((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Intake.maxTopSpeed);
-    }
+    
+    intakeMotorSpeedsSupplier.setSpeedWithPriority((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Intake.maxBottomSpeed, Priority.OperatorIntakeControl); 
+    
+    
   }
 
   // Called once the command ends or is interrupted.

@@ -32,12 +32,13 @@ import frc.robot.commands.StartGrabberMotors;
 import frc.robot.commands.StartIntake;
 import frc.robot.commands.StopIntake;
 import frc.robot.commands.ToggleGrabberMotors;
-import frc.robot.commands.ToggleIntakeMotors;
+
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Positions;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
+import frc.robot.utils.MotorSpeedsSupplier;
 
 public final class Scoring
 {
@@ -47,46 +48,46 @@ public final class Scoring
     throw new UnsupportedOperationException("This is a utility class!");
   }
 
-  public static CommandBase thirdLevelCube(IntakeSubsystem thethingthatdoestheeating) {
+  public static CommandBase thirdLevelCube(IntakeSubsystem thethingthatdoestheeating, MotorSpeedsSupplier intakeMotorSpeedsSupplier) {
     return Commands.sequence(
       new SetIntakePosition(thethingthatdoestheeating, true),
       new WaitCommand(0.55), 
-      new EjectIntake(thethingthatdoestheeating, false, false, -0.5f),
+      new EjectIntake(thethingthatdoestheeating, intakeMotorSpeedsSupplier, false, false, -0.5f),
       new WaitCommand(0.1),
       new SetIntakePosition(thethingthatdoestheeating, false),
-      new StopIntake(thethingthatdoestheeating)
+      new StopIntake(thethingthatdoestheeating, intakeMotorSpeedsSupplier)
     );
   } 
 
-  public static CommandBase secondLevelCube(IntakeSubsystem thethingthatdoestheeating) {
+  public static CommandBase secondLevelCube(IntakeSubsystem thethingthatdoestheeating, MotorSpeedsSupplier intakeMotorSpeedsSupplier) {
     return Commands.sequence(
       new SetIntakePosition(thethingthatdoestheeating, true),
       new WaitCommand(0.68), 
-      new EjectIntake(thethingthatdoestheeating, false, false, -0.55f),
+      new EjectIntake(thethingthatdoestheeating, intakeMotorSpeedsSupplier, false, false, -0.55f),
       new WaitCommand(0.05),
       new SetIntakePosition(thethingthatdoestheeating, false),
-      new StopIntake(thethingthatdoestheeating)
+      new StopIntake(thethingthatdoestheeating, intakeMotorSpeedsSupplier)
     );
   }
 
-public static Command shootCube(IntakeSubsystem thethingthatdoestheeating) {
+public static Command shootCube(IntakeSubsystem thethingthatdoestheeating, MotorSpeedsSupplier intakeMotorSpeedsSupplier) {
   return Commands.sequence(
     new SetIntakePosition(thethingthatdoestheeating, true),
     new WaitCommand(0.65), 
-    new EjectIntake(thethingthatdoestheeating, false, false, -1f),
+    new EjectIntake(thethingthatdoestheeating, intakeMotorSpeedsSupplier, false, false, -1f),
     new WaitCommand(0.05),
     new SetIntakePosition(thethingthatdoestheeating, false),
     new WaitCommand(0.6 - 0.05),
-    new StopIntake(thethingthatdoestheeating)
+    new StopIntake(thethingthatdoestheeating, intakeMotorSpeedsSupplier)
   );
 }
 
-  public static Command playerStation(SwerveSubsystem drivebase, IntakeSubsystem intake) {
+  public static Command playerStation(SwerveSubsystem drivebase, IntakeSubsystem intake, MotorSpeedsSupplier intakeMotorSpeedsSupplier) {
     return Commands.sequence(
       new MoveTime(drivebase, 0, -0.6, 250),
       new SetIntakePosition(intake, true),
       new InstantCommand(drivebase::brakeMotors),
-      new EjectIntake(intake, false, true, 0.75f)
+      new EjectIntake(intake, intakeMotorSpeedsSupplier, false, true, 0.75f)
     );
   }
 

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.Arm;
 import frc.robot.Constants.Auton;
 import frc.robot.Constants.Intake;
+import frc.robot.commands.IntakeMotorsControl;
 import frc.robot.commands.MoveArmDown;
 import frc.robot.commands.MoveArmPosition;
 import frc.robot.commands.MoveTime;
@@ -32,12 +33,12 @@ import frc.robot.commands.StartGrabberMotors;
 import frc.robot.commands.StartIntake;
 import frc.robot.commands.StopIntake;
 import frc.robot.commands.ToggleGrabberMotors;
-import frc.robot.commands.ToggleIntakeMotors;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Positions;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
+import frc.robot.utils.MotorSpeedsSupplier;
 
 public final class Autos
 {
@@ -117,15 +118,15 @@ public final class Autos
                              new MoveArmDown(arm,grabber));
   }
 
-  public static CommandBase pickUpConeCube(SwerveSubsystem swerve, ArmSubsystem arm, GrabberSubsystem grabber, IntakeSubsystem intake, boolean turnLeft) {
+  public static CommandBase pickUpConeCube(SwerveSubsystem swerve, ArmSubsystem arm, GrabberSubsystem grabber, IntakeSubsystem intake, boolean turnLeft, MotorSpeedsSupplier intakeMotorSpeedsSupplier) {
     return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, 0, turnLeft ? -1 : 1, 500),
                              new SetIntakePosition(intake, true),
-                             new StartIntake(intake, true, true),
+                             new StartIntake(intake, true, true, intakeMotorSpeedsSupplier),
                              new MoveTime(swerve, -1, 0, 5000),
                             //  new RotateSwerve(swerve, turnLeft ? -1 : 1 ,0),
                             //  new RotateTime(swerve,0.1,1000),
-                             new StopIntake(intake));
+                             new StopIntake(intake, intakeMotorSpeedsSupplier));
   }
 
   public static CommandBase nullAuto() {

@@ -47,11 +47,7 @@ public class IntakeSubsystem extends SubsystemBase
     bottomMotor.set(speed);
   }
 
-  public void toggleIntakeMotors() {
-    setTopMotorSpeed(intaking ? Intake.wheelTopSpeedCone : -Intake.wheelTopSpeedCone);
-    setBottomMotorSpeed(intaking ? Intake.wheelBottomSpeedCone : -Intake.wheelBottomSpeedCone);
-    intaking = !intaking;
-  }
+  
 
   public void extendOut() {
     in = false;

@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Intake;
+import frc.robot.Constants.Priority;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.utils.MotorSpeedsSupplier;
 
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
@@ -27,26 +29,27 @@ public class EjectIntake extends CommandBase
   boolean cone;
   boolean rotateIn;
   private float ejectSpeed;
+  private MotorSpeedsSupplier intakeMotorSpeedsSupplier;
   
 
   /**
    * Extend arm to given distance in meters
    * might not matter if it is a cone or a cube but... it's there if it is needed
    */
-  public EjectIntake(IntakeSubsystem i, boolean isCone, boolean rotateIn, float ejectSpeed)
+  public EjectIntake(IntakeSubsystem i,MotorSpeedsSupplier intakeMotorSpeedsSupplier, boolean isCone, boolean rotateIn, float ejectSpeed)
   {
     intakeSubsystem = i;
     cone = isCone;
     this.rotateIn = rotateIn;
     addRequirements(intakeSubsystem);
     this.ejectSpeed = ejectSpeed;
+    this.intakeMotorSpeedsSupplier = intakeMotorSpeedsSupplier;
   }
 
   @Override
   public void initialize() {
     double invert = rotateIn ? 1 : -1;
-    intakeSubsystem.setBottomMotorSpeed(ejectSpeed);
-    intakeSubsystem.setTopMotorSpeed(ejectSpeed);
+    intakeMotorSpeedsSupplier.setSpeedWithPriority(ejectSpeed, Priority.EjectPriority);
   }
 
   // Returns true when the command should end.
