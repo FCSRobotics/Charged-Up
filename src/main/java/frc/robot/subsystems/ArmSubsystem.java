@@ -66,10 +66,10 @@ public class ArmSubsystem extends SubsystemBase
   
 
   public final ArmPosition[] armPositions = {
-    new ArmPosition(-85, 93.142197), //high back
-    new ArmPosition(-56.35, 80.01), //mid back
-    new ArmPosition(-51, 34), //low back
-    new ArmPosition(0, 74.142250), // change this to back
+    new ArmPosition(0.5, 93.142197), //high back
+    new ArmPosition(0.5, 80.01), //mid back
+    new ArmPosition(0.5, 34), //low back
+    new ArmPosition(0, 79.142250), // change this to back
     new ArmPosition(0,0), // low cube
   };
 
@@ -86,7 +86,7 @@ public class ArmSubsystem extends SubsystemBase
 
 
     extendSparkMax = new CANSparkMax(extendSparkMaxId, MotorType.kBrushless);
-    extendSparkMax.setSmartCurrentLimit(30);
+    extendSparkMax.setSmartCurrentLimit(40);
     extendSparkMax.setSoftLimit(SoftLimitDirection.kForward,-95);
 
     rotateSparkMax = new CANSparkMax(rotateSparkMaxId, MotorType.kBrushless);
@@ -103,7 +103,7 @@ public class ArmSubsystem extends SubsystemBase
     extendEncoder.setPositionConversionFactor(revToMetersConversionFactor);
     extendEncoder.setVelocityConversionFactor(revToMetersConversionFactor);
     
-    extendEncoder.setPosition(extendAbsoluteEncoder.getPosition() - 0.764902);
+    extendEncoder.setPosition(extendAbsoluteEncoder.getPosition() - 0.747303);
     
 
     rotatingEncoder = rotateSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
@@ -117,6 +117,7 @@ public class ArmSubsystem extends SubsystemBase
     // absoluteEncoder.setPositionOffset(0);
     // rotatingEncoder.setPosition(absoluteEncoder.getDistance()-222);
     rotatePIDController = new PIDController(Arm.pRotating,Arm.iRotating,Arm.dRotating);
+    rotatePIDController.enableContinuousInput(0, 360);
     // absoluteEncoder.close();
     
     desiredDistance = 0;
@@ -153,14 +154,16 @@ public class ArmSubsystem extends SubsystemBase
 
   @Override
   public void periodic() {
+    DriverStation.reportWarning("Desired distance: " + desiredDistance, false);
+    //extendSparkMax.getPIDController().setReference(desiredDistance, ControlType.kPosition);
 
     double currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle((int)rotatingEncoder.getPosition())];
 
     double output = MathUtil.clamp(rotatePIDController.calculate(360 - rotatingEncoder.getPosition(),desiredHeight),-4.8,4.8);
 
 
-    double voltageVal = currentArmFeedforward;
-    SmartDashboard.putNumber("the amount of voltage being sent to the arm at this moment",output);
+    double voltageVal = output + currentArmFeedforward;
+    SmartDashboard.putNumber("the amount of voltage being sent to the arm at this moment",voltageVal);
     rotateSparkMax.setVoltage(voltageVal );
 
     // rotateSparkMax.getPIDController().setFF(0);
@@ -197,14 +200,14 @@ public class ArmSubsystem extends SubsystemBase
     SmartDashboard.putNumber("annoying rev encoder rotation", rotatingEncoder.getPosition());
 
 
-    double armBottomeExtension = SmartDashboard.getNumber("arm bottom extension",-51);
+    double armBottomeExtension = SmartDashboard.getNumber("arm bottom extension",0.5);
     double armBottomRotation = SmartDashboard.getNumber("arm bottom rotation",37-5);
-    double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",-32);
-    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",95-10);
-    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", -85-5);
-    double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", 103.955515-15);
+    double armMiddleExtension = SmartDashboard.getNumber("arm middle extension",0.5);
+    double armMiddleRotation = SmartDashboard.getNumber("arm middle rotation",360 - 271.847351);
+    double armUpperExtension = SmartDashboard.getNumber("arm upper extension", 0.5);
+    double armUpperRotation = SmartDashboard.getNumber("arm upper rotation", 360 - 259.553864 + 5);
     // double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 85.142151);
-    double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 83.14-5);
+    double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 83.14);
 
     double armPickupExtension = SmartDashboard.getNumber("arm pickup extension", 0);
 
@@ -229,17 +232,15 @@ public class ArmSubsystem extends SubsystemBase
   }
 
   public void setDesiredDistance(double distance) {
+    DriverStation.reportWarning("Desired distance set" , false);
     desiredDistance = distance;
     extendSparkMax.getPIDController().setReference(distance, ControlType.kPosition);
   }
 
   public void setDesiredRotation(double rotation) {
     desiredHeight = rotation;
-    SmartDashboard.putNumber("arm p", rotateSparkMax.getPIDController().getP());
-    SmartDashboard.putNumber("arm i", rotateSparkMax.getPIDController().getI());
-    SmartDashboard.putNumber("arm d", rotateSparkMax.getPIDController().getD());
-    SmartDashboard.putBoolean("Desired Rotation set", true);
-    rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
+
+    //rotateSparkMax.getPIDController().setReference(rotation, ControlType.kPosition);
   }
 
   public void groundSetPoint() {
@@ -312,7 +313,7 @@ public class ArmSubsystem extends SubsystemBase
   }
   
   public void resetAbsoluteEncoder() {
-    rotatingEncoder.setZeroOffset(rotatingEncoder.getPosition());
+    rotatingEncoder.setZeroOffset(157.674713);
     extendEncoder.setPosition(extendAbsoluteEncoder.getPosition());
     
   }

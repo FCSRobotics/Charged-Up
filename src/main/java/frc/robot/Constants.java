@@ -76,12 +76,12 @@ public final class Constants
   }
 
   public static class Arm {
-    public static final float revToMetersConversionFactor = 1f; // need to set
+    public static final float revToMetersConversionFactor = .01f; // need to set
     public static final int extendSparkMaxId = 22;
     public static final float revToAngleConversionFactor = 360;
     public static final int rotateSparkMaxId = 23;
-    public static final double iExtension = 0;
-    public static final double pExtension = 0.06505600363016129*2*1.1;  
+    public static final double iExtension = 0.00;
+    public static final double pExtension = -0.06505600363016129*2*1.1*2;  
     public static final double dExtension = 0;
     public static final double pRotating = 0.1;
     public static final double iRotating = 0;
@@ -97,21 +97,6 @@ public final class Constants
     public static final int rotateFollowSparkMaxId = 26;
     public static final int rollingAverageLength = 20;
 
-    // public static final double[] feedForwardMap = {
-    //   // 0,
-    //   // 0.005,
-    //   // 0.005,
-    //   // 0.006,
-    //   // 0.006,
-    //   // 0.006,
-    //   0,
-    //   0.140881,
-    //   0.238044,
-    //   0.388770,
-    //   0.638903,
-    //   0.681784,
-    // };
-
     public static final double[] feedForwardMap = {
       // 0,
       // 0.005,
@@ -120,12 +105,27 @@ public final class Constants
       // 0.006,
       // 0.006,
       0,
-      0,
-      0,
-      0,
-      0,
-      0,
+      0.140881,
+      0.238044,
+      0.388770,
+      0.638903,
+      0.681784,
     };
+
+    // public static final double[] feedForwardMap = {
+    //   // 0,
+    //   // 0.005,
+    //   // 0.005,
+    //   // 0.006,
+    //   // 0.006,
+    //   // 0.006,
+    //   0,
+    //   0,
+    //   0,
+    //   0,
+    //   0,
+    //   0,
+    // };
   }
 
   public static class OperatorConstants

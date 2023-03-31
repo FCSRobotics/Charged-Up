@@ -59,9 +59,10 @@ public class IntakeMotorsControl extends CommandBase
   @Override
   public void execute()
   {
-
-    intake.setBottomMotorSpeed((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Intake.maxBottomSpeed);
-    intake.setTopMotorSpeed((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Intake.maxTopSpeed);
+    if(spinSpeed.getAsDouble() > 0.1){
+      intake.setBottomMotorSpeed((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Intake.maxBottomSpeed);
+      intake.setTopMotorSpeed((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Intake.maxTopSpeed);
+    }
   }
 
   // Called once the command ends or is interrupted.

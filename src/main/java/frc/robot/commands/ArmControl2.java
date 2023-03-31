@@ -13,7 +13,10 @@ import javax.swing.text.Position;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.Arm;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
@@ -109,6 +112,13 @@ public class ArmControl2 extends CommandBase
     }
     lastFrameAngle = angle;
     SmartDashboard.putNumber("last inputted angle", lastInputedAngle);
+
+    if(lastInputedAngle != -1) {
+      armSubsystem.setDesiredRotation(90);
+      armSubsystem.setDesiredDistance(0.3);
+    } else {
+      Commands.sequence(new InstantCommand(() -> armSubsystem.setDesiredRotation(0), armSubsystem),new InstantCommand(() -> armSubsystem.setDesiredDistance(0), armSubsystem));
+    }
     
     // double newPosition = armSubsystem.getRotation();
     // double oldPosition = positions[currentLocationInList];
@@ -118,58 +128,59 @@ public class ArmControl2 extends CommandBase
     // currentLocationInList++;
     // currentLocationInList = currentLocationInList % Arm.rollingAverageLength;
     // double currentAverage = currentSum/Arm.rollingAverageLength;
-    double currentAverage = rotationMovingAverage.addValue(armSubsystem.getRotation());
-    SmartDashboard.putNumber("current average of arm position", currentAverage);
+    // double currentAverage = rotationMovingAverage.addValue(armSubsystem.getRotation());
+    // SmartDashboard.putNumber("current average of arm position", currentAverage);
 
 
-    int index = lastInputedAngle / 90;
-    double deltaAngle = voltage.getAsDouble() * 20;
-    double deltaExtension = extensionSupplier.getAsDouble() * 20;
-    if (lastInputedAngle == -1) {
-      long currentTime = System.currentTimeMillis();
-      if (!intakeUp.getAsBoolean() && !returnToZero.getAsBoolean()) {
-          if (armSubsystem.getExtension() <= 0.5) {
-            armSubsystem.setDesiredRotation(0);
-            if (Math.abs(armSubsystem.getRotation()) < 1 ) {
-              armSubsystem.stopMotors();
-            }
-          } else {
-            lastTimePositionHeld = currentTime;
-            armSubsystem.setDesiredDistance(0);
-            grabberSubsystem.clamp();
-          }
-      } else {
-        if (armSubsystem.getExtension() <= 0.5) {
-          armSubsystem.setDesiredRotation(0);
-          if (Math.abs(armSubsystem.getRotation()) < 1) {
-            armSubsystem.stopMotors();
-          }
-        }
-        armSubsystem.setDesiredDistance(0);
+    // int index = lastInputedAngle / 90;
+    // double deltaAngle = voltage.getAsDouble() * 20;
+    // double deltaExtension = extensionSupplier.getAsDouble() * 20;
+    // if (lastInputedAngle == -1) {
+    //   long currentTime = System.currentTimeMillis();
+    //   if (!intakeUp.getAsBoolean() && !returnToZero.getAsBoolean()) {
+    //       if (armSubsystem.getExtension() <= 0.1) {
+    //         armSubsystem.setDesiredRotation(0);
+    //         if (Math.abs(armSubsystem.getRotation()) < 1 ) {
+    //           armSubsystem.stopMotors();
+    //         }
+    //       } else {
+    //         lastTimePositionHeld = currentTime;
+    //         armSubsystem.setDesiredDistance(0);
+    //         grabberSubsystem.clamp();
+    //       }
+    //   } else {
+    //     if (armSubsystem.getExtension() <= 0.1) {
+    //       armSubsystem.setDesiredRotation(0);
+    //       if (Math.abs(armSubsystem.getRotation()) < 1) {
+    //         armSubsystem.stopMotors();
+    //       }
+    //     }
+    //     armSubsystem.setDesiredDistance(0);
         
-        grabberSubsystem.clamp();
-        lastTimePositionHeld = currentTime;
-      }
-    } else {
-      // armSubsystem.setDesiredDistance(0);
-      lastTimePositionHeld = System.currentTimeMillis();
+    //     grabberSubsystem.clamp();
+    //     lastTimePositionHeld = currentTime;
+    //   }
+    // } else {
+    //   // armSubsystem.setDesiredDistance(0);
+    //   lastTimePositionHeld = System.currentTimeMillis();
       
-      if (armSubsystem.getExtension() + deltaExtension <= 0.5) {
-        armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])) + deltaAngle);
-        // DriverStation.reportWarning("oh shoot2");
-      } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index])  + deltaAngle)) {
-        armSubsystem.setDesiredDistance(0);
-      }
-      if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index]) - deltaAngle) < 4) {
-        armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]) - deltaExtension);
-      }
-      // DriverStation.reportWarning("oh shoot");
+    //   if (armSubsystem.getExtension() <= 0.1) {
+    //     armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])) + deltaAngle);
+    //     // DriverStation.reportWarning("oh shoot2");
+    //   } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index])  + deltaAngle)) {
+    //     armSubsystem.setDesiredDistance(0);
+    //   }
+    //   if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index])) < 20) {
+    //     SmartDashboard.putBoolean("extension set", true);
+    //     armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]));
+    //   }
+    //   // DriverStation.reportWarning("oh shoot");
       
-    }
+    // }
 
-    //armSubsystem.setRawPosition(new ArmPosition(0, voltage.getAsDouble()));
-    SmartDashboard.putNumber("Angle ", deltaAngle);
-    SmartDashboard.putBoolean("check", true);
+    // //armSubsystem.setRawPosition(new ArmPosition(0, voltage.getAsDouble()));
+    // SmartDashboard.putNumber("Angle ", deltaAngle);
+    // SmartDashboard.putBoolean("check", true);
   }
 
 

@@ -66,4 +66,8 @@ public class  GrabberSubsystem extends SubsystemBase
   public void unclamp() {
     solenoid.set(kForward);
   }
+
+  public void zeroMotors() {
+    this.setMotorsSpeeds(0, true);
+  }
 }

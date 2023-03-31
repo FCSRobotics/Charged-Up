@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -50,14 +49,16 @@ public class GrabberMotorsControl extends CommandBase
   @Override
   public void initialize()
   { 
-    SmartDashboard.putBoolean("check", false);
+    SmartDashboard.putBoolean("grabber check", false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute()
   {
-    grabberSubsystem.setMotorsSpeeds((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Grabber.maxSpeeds, spinIn.getAsBoolean() );
+    if(spinSpeed.getAsDouble() > 0.1){
+      grabberSubsystem.setMotorsSpeeds((spinIn.getAsBoolean() ? 1 : -1) * spinSpeed.getAsDouble() * Grabber.maxSpeeds, spinIn.getAsBoolean() );
+    }
   }
 
   // Called once the command ends or is interrupted.

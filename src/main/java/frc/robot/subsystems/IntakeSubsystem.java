@@ -74,4 +74,10 @@ public class IntakeSubsystem extends SubsystemBase
   public boolean isIn() {
     return in;
   }
+
+
+  public void zeroMotors() {
+    this.setTopMotorSpeed(0);
+    this.setBottomMotorSpeed(0);
+  }
 }
