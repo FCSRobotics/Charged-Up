@@ -28,7 +28,7 @@ public class CloseGrabber extends CommandBase
 
   @Override
   public void initialize() {
-    grabberSubsystem.setMotorsSpeeds(-Grabber.motorSpeeds, true);
+    grabberSubsystem.setMotorsSpeeds(0, true);
     grabberSubsystem.clamp();
     
   }

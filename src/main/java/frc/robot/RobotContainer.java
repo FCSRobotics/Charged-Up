@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -31,6 +32,8 @@ import frc.robot.commands.CloseGrabber;
 import frc.robot.commands.CycleColor;
 import frc.robot.commands.GrabberMotorsControl;
 import frc.robot.commands.IntakeMotorsControl;
+import frc.robot.commands.MoveArmDown;
+import frc.robot.commands.MoveArmPosition;
 import frc.robot.commands.OpenGrabber;
 import frc.robot.commands.PidBalance;
 import frc.robot.commands.Scoring;
@@ -53,6 +56,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightSubsystem;
+import frc.robot.subsystems.ArmSubsystem.Positions;
 // import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.GrabberSubsystem;
 // import frc.robot.subsystems.IntakeSubsystem;
@@ -177,6 +181,7 @@ public class RobotContainer
     m_chooser.addOption("just leave", Autos.leaveTheStadium(drivebase,arm,grabber));
     m_chooser.addOption("pickup from left", Autos.pickUpConeCube(drivebase, arm, grabber, intake, true));
     m_chooser.addOption("pickup from right", Autos.pickUpConeCube(drivebase, arm, grabber, intake, false));
+    //m_chooser.addOption("third cone and balance", Autos.thirdAndBalance(drivebase, gyro, arm, grabber, intake));
     m_chooser.addOption("drop cone",Commands.sequence(Autos.dropOffCone(drivebase, arm, grabber)));
     m_chooser.addOption("example auto",Autos.exampleAuto(drivebase));
     SmartDashboard.putData("choices for auto", m_chooser);
@@ -271,7 +276,9 @@ public class RobotContainer
     new JoystickButton(rightstick,5).onFalse(new StopIntake(intake));
     new JoystickButton(rightstick,6).onTrue((new StartIntake(intake,true,false)));
     new JoystickButton(rightstick,6).onFalse((new StopIntake(intake)));
-    
+    new JoystickButton(leftstick,8).onTrue(Commands.sequence(new MoveArmPosition(arm, Positions.PICKUPSTATION), new OpenGrabber(grabber)));
+    new JoystickButton(leftstick,8).whileTrue(new InstantCommand(() -> drivebase.drive(new Translation2d(-0.5, 0), 0, true, false)));
+    new JoystickButton(leftstick, 8).onFalse(new CloseGrabber(grabber));
     
     
     

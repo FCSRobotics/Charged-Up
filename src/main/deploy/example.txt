@@ -1,10 +1,12 @@
-high score -78.642319
-middle score -62.785435
-intake -17.142834
-zero 
+high score 360 - 260.616547 0.808414
+middle score 360 - 274.635986 0.281239
+intake 
+player  279.909149 0
 
 
 backleft 141.152344
 backright 144.140625
 frontleft 357.451172
 frontright 180.527344
+
+

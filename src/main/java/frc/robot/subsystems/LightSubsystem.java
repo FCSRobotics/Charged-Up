@@ -35,6 +35,8 @@ public class LightSubsystem extends SubsystemBase
     private Color color = Color.Yellow;
 
     public LightSubsystem() {
+        CANdleConfiguration config = new CANdleConfiguration();
+        //config.;
         colorNameSupplier = new Supplier<String>() {
             public String get() {
                 switch (color) {

@@ -68,10 +68,10 @@ public class MoveArmDown extends CommandBase {
     currentSum += newPosition;
     currentLocationInList++;
     currentLocationInList = currentLocationInList % Arm.rollingAverageLength;
-    double currentAverage = currentSum/Arm.rollingAverageLength;
+    double currentAverage = 360 - currentSum/Arm.rollingAverageLength;
     switch (phase) {
       case MovingIn:
-        if (arm.getExtension() >= -2) {
+        if (arm.getExtension() >= -0.2) {
           phase = MotionLocation.GoingToLocation;
           arm.setDesiredRotation(0);
           grabber.clamp();
@@ -85,7 +85,7 @@ public class MoveArmDown extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (Math.abs(arm.getRotation()) < 1) {
+    if (Math.abs(360-arm.getRotation()) < 7) {
       return true;
     }
     return false;

@@ -56,13 +56,13 @@ public class MoveArmPosition extends CommandBase {
     DriverStation.reportWarning("arm extension auto: " + arm.getExtension(), false);
     DriverStation.reportWarning("arm rotation auto: " + arm.getRotation(),false);
 
-    currentAverage = rotateMovingAverage.addValue(arm.getRotation());
+    currentAverage = 360 - rotateMovingAverage.addValue(arm.getRotation());
 
     SmartDashboard.putNumber("current average of arm position", currentAverage);
 
     switch (phase) {
       case MovingIn:
-        if (arm.getExtension() >= -2) {
+        if (arm.getExtension() >= -0.1) {
           arm.setDesiredRotation(arm.getPostionAngle(pos));
           phase = MotionLocation.GoingToLocation;
         }
@@ -82,7 +82,7 @@ public class MoveArmPosition extends CommandBase {
   @Override
   public boolean isFinished() {
     if (phase == MotionLocation.Extending
-      && Math.abs(arm.getExtension() - arm.getPostionExtension(pos)) < 4) {
+      && Math.abs(arm.getExtension() + arm.getPostionExtension(pos)) < 0.04) {
       return true;
     }
     return false;

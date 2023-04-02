@@ -74,12 +74,12 @@ public final class Autos
   }
 
   public static CommandBase gyroBalance(SwerveSubsystem swerve,IntakeSubsystem intake,ArmSubsystem arm, GrabberSubsystem grabber, Pigeon2 pigeon) {
-    return Commands.sequence(//dropOffCone(swerve, arm, grabber),
+    return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new WithGyroBalance(swerve, pigeon, intake));
   }
 
   public static CommandBase pidbalance(SwerveSubsystem swerve,IntakeSubsystem intake,ArmSubsystem arm, GrabberSubsystem grabber, Pigeon2 pigeon) {
-    return Commands.sequence(//dropOffCone(swerve, arm, grabber),
+    return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, -1, 0, 1000),
                              new SetIntakePosition(intake, true),
                              new MoveTime(swerve, -1, 0, 3000),
@@ -103,17 +103,18 @@ public final class Autos
 
   public static CommandBase leaveTheStadium(SwerveSubsystem swerve,ArmSubsystem arm, GrabberSubsystem grabber)
   {
-    return Commands.sequence(//dropOffCone(swerve, arm, grabber),
+    return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, -1, 0, 1000+2250+2000));
   }
   public static CommandBase dropOffCone(SwerveSubsystem swerve,ArmSubsystem arm,GrabberSubsystem grabber) {
     return Commands.sequence(new InstantCommand(arm::bringIn),
                              new WaitCommand(1),
                             //  new InstantCommand(arm::setZeroPosition),
-                             new StartGrabberMotors(grabber,-0.1, true),
-                             new MoveArmPosition(arm,Positions.MIDDLE),
+                            //  new StartGrabberMotors(grabber,-0.1, true),
+                             new MoveArmPosition(arm,Positions.UP),
                             //  new StartGrabberMotors(grabber, 0.1, false),
                              new OpenGrabber(grabber),
+                             new WaitCommand(0.5),
                              new MoveArmDown(arm,grabber));
   }
 
@@ -127,6 +128,8 @@ public final class Autos
                             //  new RotateTime(swerve,0.1,1000),
                              new StopIntake(intake));
   }
+
+
 
   public static CommandBase nullAuto() {
     return Commands.sequence();

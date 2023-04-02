@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.PIDBalance;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
@@ -33,6 +34,7 @@ public class PidBalance extends CommandBase
   private final Pigeon2 gyro;
   private boolean onStation;
   private PIDController pid;
+  private final long startTime;
   
   /**
    * Extend arm to given distance in meters
@@ -50,8 +52,8 @@ public class PidBalance extends CommandBase
     this.gyro = gyro;
     onStation = false;
     this.intake = intake;
-    pid = new PIDController(0.04, 0, 0);
-
+    pid = new PIDController(0.03275, 0, 0);
+    startTime = System.currentTimeMillis();
     
     addRequirements(swerve);
   }
@@ -73,7 +75,12 @@ public class PidBalance extends CommandBase
     //     intake.extendOut();
     //   }
     // } else {
-      swerve.drive(new Translation2d(pid.calculate(tilt, -3),0), 0, true, false);
+    if (System.currentTimeMillis() - startTime % (PIDBalance.moveTime + PIDBalance.waitTime) > PIDBalance.moveTime ) {
+      swerve.drive(new Translation2d(0,0),0,true,true);
+      swerve.brakeMotors();
+    } else {
+      swerve.drive(new Translation2d(pid.calculate(tilt, 6.811523),0), 0, true, false);
+    }
     // }
   }
 

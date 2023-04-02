@@ -51,8 +51,8 @@ public final class Constants
   public static final class Intake {
     public static final double wheelTopSpeedCube = 0.1;
     public static final double wheelBottomSpeedCube = 0.1;
-    public static final double wheelTopSpeedCone = 0.3;
-    public static final double wheelBottomSpeedCone = 0.3;
+    public static final double wheelTopSpeedCone = 0.5;
+    public static final double wheelBottomSpeedCone = 0.5;
     public static final int topMotor = 28;
     public static final int bottomMotor = 27;
     public static final int extendChannel = 12;
@@ -81,7 +81,7 @@ public final class Constants
     public static final float revToAngleConversionFactor = 360;
     public static final int rotateSparkMaxId = 23;
     public static final double iExtension = 0.00;
-    public static final double pExtension = -0.06505600363016129*2*1.1*2;  
+    public static final double pExtension = 0.06505600363016129*2*1.1*2 * 10;  
     public static final double dExtension = 0;
     public static final double pRotating = 0.1;
     public static final double iRotating = 0;
@@ -136,6 +136,15 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND = 0.01;
 
     public static final float MAX_INPUT_CHANGE = 10f;//5
+
+  }
+
+  public static class PIDBalance
+  {
+
+    // Joystick Deadband
+    public static final long moveTime = 1000;
+    public static final long waitTime = 500;
 
   }
 }
