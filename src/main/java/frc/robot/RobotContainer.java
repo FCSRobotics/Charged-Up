@@ -252,7 +252,7 @@ public class RobotContainer
     new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
     new JoystickButton(driverXbox, 10).onTrue(new InstantCommand(arm::setZeroPosition));
-    new JoystickButton(driverXbox,9).onTrue((new InstantCommand(light::cycleColor, light)));
+    new JoystickButton(driverXbox,9).onTrue((new InstantCommand(light::incrementAnimation, light)));
 
     new JoystickButton(driverXbox, 3).onTrue(Scoring.thirdLevelCube(intake));
     new JoystickButton(driverXbox, 1).onTrue(Scoring.secondLevelCube(intake));

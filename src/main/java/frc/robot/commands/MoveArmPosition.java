@@ -48,7 +48,7 @@ public class MoveArmPosition extends CommandBase {
 
   @Override
   public void initialize() {
-    arm.setDesiredDistance(-1);
+    arm.setDesiredDistance(0);
   }
 
   @Override
@@ -62,7 +62,7 @@ public class MoveArmPosition extends CommandBase {
 
     switch (phase) {
       case MovingIn:
-        if (arm.getExtension() >= -0.1) {
+        if (arm.getExtension() >= -0.2) {
           arm.setDesiredRotation(arm.getPostionAngle(pos));
           phase = MotionLocation.GoingToLocation;
         }

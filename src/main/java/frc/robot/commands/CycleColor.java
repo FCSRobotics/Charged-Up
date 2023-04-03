@@ -27,7 +27,7 @@ public class CycleColor extends CommandBase
 
   @Override
   public void initialize() {
-    lightSubsystem.cycleColor();
+    lightSubsystem.incrementAnimation();
   }
 
   // Returns true when the command should end.

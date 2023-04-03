@@ -210,9 +210,9 @@ intake
 player  279.909149 0 */
 
     double armBottomeExtension = 0;
-    double armBottomRotation = 360 - 40;
+    double armBottomRotation = 0;
     double armMiddleRotation =  360 - 274.635986;
-    double armUpperExtension = 0.808414;
+    double armUpperExtension = 0.858414;
     double armUpperRotation = 360 - 260.616547 + 5;
     double armMiddleExtension = 0.281239;
     // double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 85.142151);
