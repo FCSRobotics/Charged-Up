@@ -83,7 +83,7 @@ public final class Constants
     public static final double iExtension = 0.00;
     public static final double pExtension = 0.06505600363016129*2*1.1*2 * 10;  
     public static final double dExtension = 0;
-    public static final double pRotating = 0.1;
+    public static final double pRotating = 0.11;
     public static final double iRotating = 0;
     public static final double dRotating = 0;
     public static final int extendCancoderid = -1;
@@ -135,7 +135,10 @@ public final class Constants
     public static final double LEFT_X_DEADBAND = 0.01;
     public static final double LEFT_Y_DEADBAND = 0.01;
 
-    public static final float MAX_INPUT_CHANGE = 10f;//5
+    // public static final float MAX_INPUT_CHANGE = 10f;//5
+    public static final double MAX_ANGLE_CHANGE = 30;
+    public static final double MAX_AMPLITUDE_CHANGE = 10;
+    public static final double MAX_INPUT_CHANGE = 10;
 
   }
 
@@ -143,7 +146,7 @@ public final class Constants
   {
 
     // Joystick Deadband
-    public static final long moveTime = 1000;
+    public static final long moveTime = 750;
     public static final long waitTime = 500;
 
   }

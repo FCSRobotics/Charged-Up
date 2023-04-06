@@ -85,7 +85,7 @@ public class MoveArmDown extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (Math.abs(360-arm.getRotation()) < 7) {
+    if (Math.abs(360-arm.getRotation()) < 9) {
       return true;
     }
     return false;

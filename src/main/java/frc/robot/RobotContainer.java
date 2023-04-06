@@ -37,6 +37,7 @@ import frc.robot.commands.MoveArmPosition;
 import frc.robot.commands.OpenGrabber;
 import frc.robot.commands.PidBalance;
 import frc.robot.commands.Scoring;
+import frc.robot.commands.SetIntakePosition;
 import frc.robot.commands.StartGrabberMotors;
 import frc.robot.commands.StartIntake;
 import frc.robot.commands.StopGrabberMotors;
@@ -149,14 +150,14 @@ public class RobotContainer
     //   driverController.getLeftY()) * 180/Math.PI);
 
     ArmControl2 armControl = new ArmControl2(arm,
-      () -> driverController.getLeftY(),
+      () -> driverController.getLeftY() * (driverXbox.getRawButton(6) ? 0.2 : 1),
       () -> driverController.getRightY(), 
       () -> driverController.getHID().getPOV(),
       () -> intake.isIn(),
       () -> driverXbox.getL1Button(),
       grabber);
 
-    GrabberMotorsControl grabberMotorsControl = new GrabberMotorsControl(grabber, () -> driverXbox.getRawAxis(3), () -> driverXbox.getRawButton(6));
+    //GrabberMotorsControl grabberMotorsControl = new GrabberMotorsControl(grabber, () -> driverXbox.getRawAxis(3), () -> driverXbox.getRawButton(6));
     IntakeMotorsControl intakeMotorsControl = new IntakeMotorsControl(intake,() -> driverXbox.getRawAxis(2), () -> driverXbox.getRawButton(5));
 
     // SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
@@ -172,19 +173,19 @@ public class RobotContainer
     // );
 
     drivebase.setDefaultCommand(new ParallelCommandGroup(closedFieldRel,armControl));//, grabberMotorsControl, intakeMotorsControl));
-    m_chooser.setDefaultOption("leave and balance", Autos.leaveandbalance(drivebase, intake, grabber, arm));
+    m_chooser.setDefaultOption("leave and balance", Autos.leaveandbalance(drivebase, intake, grabber, arm,gyro));
     m_chooser.addOption("balance", Autos.setActionsBalance(drivebase, intake, arm, grabber));
     m_chooser.addOption("balance gyro", Autos.gyroBalance(drivebase, intake, arm, grabber, gyro));
     m_chooser.addOption("balance pid", Autos.pidbalance(drivebase, intake, arm, grabber, gyro));
     m_chooser.addOption("do nothing", Autos.nullAuto());
     m_chooser.addOption("spin", Autos.driveAndSpin(drivebase));
-    m_chooser.addOption("just leave", Autos.leaveTheStadium(drivebase,arm,grabber));
+    m_chooser.addOption("just leave", Autos.leaveTheStadium(drivebase,arm,grabber,intake));
     m_chooser.addOption("pickup from left", Autos.pickUpConeCube(drivebase, arm, grabber, intake, true));
     m_chooser.addOption("pickup from right", Autos.pickUpConeCube(drivebase, arm, grabber, intake, false));
     //m_chooser.addOption("third cone and balance", Autos.thirdAndBalance(drivebase, gyro, arm, grabber, intake));
     m_chooser.addOption("drop cone",Commands.sequence(Autos.dropOffCone(drivebase, arm, grabber)));
     m_chooser.addOption("example auto",Autos.exampleAuto(drivebase));
-    SmartDashboard.putData("choices for auto", m_chooser);
+    SmartDashboard.putData("the options for the autonomous period", m_chooser);
   }
 
   /**
@@ -269,9 +270,9 @@ public class RobotContainer
 
     //new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(light::cycleColor, light));
 
-    new JoystickButton(rightstick, 1).onTrue(new ToggleIntakePosition(intake));
+    new JoystickButton(rightstick, 1).onTrue(new SetIntakePosition(intake, true));
     //new JoystickButton(rightstick,1).whileTrue(new StartIntake(intake,true,true));
-    new JoystickButton(rightstick,1).onFalse(Commands.sequence(new ToggleIntakePosition(intake),new StopIntake(intake)));
+    new JoystickButton(rightstick,1).onFalse(Commands.sequence(new SetIntakePosition(intake, false),new StopIntake(intake)));
     new JoystickButton(rightstick,5).onTrue(new StartIntake(intake,true,true));
     new JoystickButton(rightstick,5).onFalse(new StopIntake(intake));
     new JoystickButton(rightstick,6).onTrue((new StartIntake(intake,true,false)));

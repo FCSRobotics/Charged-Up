@@ -118,10 +118,12 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
@@ -148,17 +150,22 @@ public class LightSubsystem extends SubsystemBase {
         TwinkleOff,
         SetAll
     }
+    Animation a;
     private AnimationTypes m_currentAnimation = AnimationTypes.Fire;
 
     public LightSubsystem() {
-        changeAnimation(AnimationTypes.SetAll);
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false;
         configAll.stripType = LEDStripType.GRB;
-        configAll.brightnessScalar = 0.1;
-        configAll.vBatOutputMode = VBatOutputMode.Modulated;
+        configAll.brightnessScalar = 0.5;
+        configAll.vBatOutputMode = VBatOutputMode.Off;
         m_candle.configAllSettings(configAll, 100);
+        changeAnimation(AnimationTypes.SetAll);
+        CANdleFaults faults = new CANdleFaults();
+        ErrorCode faultsError = m_candle.getFaults(faults);
+        DriverStation.reportError("Error code: " + faultsError, false);
+        a = new StrobeAnimation(240, 10, 180, 0, 0, LedCount);
     }
 
     public void incrementAnimation() {
@@ -250,9 +257,11 @@ public class LightSubsystem extends SubsystemBase {
         //                       (int)(1 * 255), 
         //                       (int)(1 * 255));
         // } else {
-            m_candle.animate(m_toAnimate);
+            // m_candle.animate(m_toAnimate);
         // }
-        m_candle.modulateVBatOutput(1);
+        // m_candle.modulateVBatOutput(1);
+        // m_candle.setLEDs(0, 0, 255, 0, 0, 20);
+        m_candle.animate(a);
     }
 
     @Override

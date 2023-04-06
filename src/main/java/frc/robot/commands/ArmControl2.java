@@ -162,7 +162,7 @@ public class ArmControl2 extends CommandBase
       } else if (armSubsystem.leftSide(Positions.values()[index]) != armSubsystem.leftSide(armSubsystem.getPostionAngle(Positions.values()[index])  + deltaAngle)) {
         armSubsystem.setDesiredDistance(0);
       }
-      if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index]) - deltaAngle) < 10) {
+      if (Math.abs(currentAverage - armSubsystem.getPostionAngle(Positions.values()[index]) - deltaAngle) < 20) {
         SmartDashboard.putBoolean("extension set", true);
         armSubsystem.setDesiredDistance(armSubsystem.getPostionExtension(Positions.values()[index]));
         armSubsystem.setDesiredRotation(armSubsystem.getPostionAngle((Positions.values()[index])) + deltaAngle);

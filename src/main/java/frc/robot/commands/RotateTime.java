@@ -20,12 +20,13 @@ import swervelib.math.SwerveMath;
 public class RotateTime extends CommandBase {
 
   private SwerveSubsystem swerve;
-  private int time;
+  private long time;
   private double rotationSpeed;
+  private long startTime;
   /**
    * bring the intake in or out
    * */
-  public RotateTime(SwerveSubsystem swerve,double rotationSpeed,int time) {
+  public RotateTime(SwerveSubsystem swerve,double rotationSpeed,long time) {
     this.swerve = swerve;
     this.rotationSpeed = rotationSpeed;
     this.time = time;
@@ -36,6 +37,7 @@ public class RotateTime extends CommandBase {
   @Override
   public void initialize() {
     // swerve.drive(new Translation2d(speed,0), 0, true,true);
+    startTime = System.currentTimeMillis();
   }
 
   @Override
@@ -56,6 +58,6 @@ public class RotateTime extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return rotationSpeed < 0.5;
+    return System.currentTimeMillis() > (startTime + time);
   }
 }

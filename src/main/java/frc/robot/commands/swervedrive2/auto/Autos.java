@@ -79,42 +79,47 @@ public final class Autos
   }
 
   public static CommandBase pidbalance(SwerveSubsystem swerve,IntakeSubsystem intake,ArmSubsystem arm, GrabberSubsystem grabber, Pigeon2 pigeon) {
+    double zero = pigeon.getPitch();
     return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, -1, 0, 1000),
                              new SetIntakePosition(intake, true),
                              new MoveTime(swerve, -1, 0, 3000),
                              new SetIntakePosition(intake, false),
-                             new PidBalance(swerve, pigeon, intake));
+                             new PidBalance(swerve, pigeon, intake,zero));
   }
 
-  public static CommandBase leaveandbalance(SwerveSubsystem swerve,IntakeSubsystem intake,GrabberSubsystem grabber, ArmSubsystem arm)
+  public static CommandBase leaveandbalance(SwerveSubsystem swerve,IntakeSubsystem intake,GrabberSubsystem grabber, ArmSubsystem arm,Pigeon2 gyro)
   {
+    double zero = gyro.getPitch();
     return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, -1, 0, 1000),
                              new SetIntakePosition(intake, true),
                              new WaitCommand(1),
                              new MoveTime(swerve, -1, 0,2250),
                              new SetIntakePosition(intake, false),
-                             new MoveTime(swerve, -1, 0, 2150),
-                             new RotateSwerve(swerve, 0, -1),
-                             new SetIntakePosition(intake, true));
+                             new MoveTime(swerve, -1, 0, 1500),
+                             new RotateTime(swerve, Math.PI, 1150),
+                             new SetIntakePosition(intake, true),
+                             new MoveTime(swerve, 1, 0, 2000),
+                             new SetIntakePosition(intake, false),
+                             new PidBalance(swerve, gyro, intake, zero));
                              
   }
 
-  public static CommandBase leaveTheStadium(SwerveSubsystem swerve,ArmSubsystem arm, GrabberSubsystem grabber)
+  public static CommandBase leaveTheStadium(SwerveSubsystem swerve,ArmSubsystem arm, GrabberSubsystem grabber,IntakeSubsystem intake)
   {
     return Commands.sequence(dropOffCone(swerve, arm, grabber),
-                             new MoveTime(swerve, -1, 0, 1000+2250+2000));
+                             new SetIntakePosition(intake, true),
+                             new StartIntake(intake, true, true),
+                             new MoveTime(swerve, -1, 0, 1000+2250+2000 - 1250));
   }
   public static CommandBase dropOffCone(SwerveSubsystem swerve,ArmSubsystem arm,GrabberSubsystem grabber) {
-    return Commands.sequence(new InstantCommand(arm::bringIn),
-                             new WaitCommand(1),
-                            //  new InstantCommand(arm::setZeroPosition),
+    return Commands.sequence(//  new InstantCommand(arm::setZeroPosition),
                             //  new StartGrabberMotors(grabber,-0.1, true),
                              new MoveArmPosition(arm,Positions.UP),
                             //  new StartGrabberMotors(grabber, 0.1, false),
                              new OpenGrabber(grabber),
-                             new WaitCommand(0.5),
+                             new WaitCommand(0.3),
                              new MoveArmDown(arm,grabber));
   }
 

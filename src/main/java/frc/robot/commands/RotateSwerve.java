@@ -4,6 +4,9 @@
 
 package frc.robot.commands;
 
+import com.ctre.phoenix.sensors.Pigeon2;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -20,16 +23,17 @@ import swervelib.math.SwerveMath;
 public class RotateSwerve extends CommandBase {
 
   private SwerveSubsystem swerve;
-  private double headingx;
-  private double headingy;
+  private double theta;
   private double rotationSpeed;
+  private Pigeon2 gyro;
+  private PIDController pid;
   /**
    * bring the intake in or out
    * */
-  public RotateSwerve(SwerveSubsystem swerve,double headingx,double headingy) {
+  public RotateSwerve(SwerveSubsystem swerve, double theta, Pigeon2 gyro) {
     this.swerve = swerve;
-    this.headingx = headingx;
-    this.headingy = headingy;
+    this.theta= theta;
+    pid = new PIDController(0.6, 0, 0);
 
     addRequirements(swerve);
   }
@@ -41,22 +45,14 @@ public class RotateSwerve extends CommandBase {
 
   @Override
   public void execute() {
-    ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(0, 0,
-      headingx,
-      headingy,
-      swerve.getHeading().getRadians());
-    Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
-    translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(),
-                                             Constants.LOOP_TIME,
-                                             Constants.CHASSIS_MASS, Constants.ROBOT_MASS, Constants.CHASSIS_CG,
-                                             swerve.getSwerveDriveConfiguration());
-    rotationSpeed = desiredSpeeds.omegaRadiansPerSecond;
-    swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true, false);
+    double currentRotation = gyro.getYaw();
+    rotationSpeed = pid.calculate(currentRotation,theta);
+    swerve.drive(new Translation2d(0,0), rotationSpeed, true, false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return rotationSpeed == 0;
+    return true;
   }
 }

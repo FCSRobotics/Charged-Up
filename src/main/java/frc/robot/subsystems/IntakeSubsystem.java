@@ -31,8 +31,10 @@ public class IntakeSubsystem extends SubsystemBase
     in = true;
     intaking = true;
     bottomMotor = new CANSparkMax(bottomMotorId,MotorType.kBrushless);
+    bottomMotor.restoreFactoryDefaults();
     bottomMotor.setSmartCurrentLimit(40);
     topMotor = new CANSparkMax(topMotorId, MotorType.kBrushless);
+    topMotor.restoreFactoryDefaults();
     topMotor.setSmartCurrentLimit(40);
     solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, extendChannel, retractChannel);
     reversed = reverseSolenoid;

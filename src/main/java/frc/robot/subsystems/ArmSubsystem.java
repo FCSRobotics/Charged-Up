@@ -92,6 +92,7 @@ public class ArmSubsystem extends SubsystemBase
     
 
     rotateSparkMax = new CANSparkMax(rotateSparkMaxId, MotorType.kBrushless);
+    rotateSparkMax.restoreFactoryDefaults();
     rotateSparkMax.setSmartCurrentLimit(40);
     rotateSparkMax.setIdleMode(IdleMode.kCoast);
     rotateSparkMax.setInverted(false);
@@ -211,12 +212,12 @@ player  279.909149 0 */
 
     double armBottomeExtension = 0;
     double armBottomRotation = 0;
-    double armMiddleRotation =  360 - 274.635986;
-    double armUpperExtension = 0.858414;
+    double armMiddleRotation =  360 - 270;
+    double armUpperExtension = 0.86;
     double armUpperRotation = 360 - 260.616547 + 5;
-    double armMiddleExtension = 0.281239;
+    double armMiddleExtension = 0.3;
     // double armPickupRotation = SmartDashboard.getNumber("arm pickup rotation", 85.142151);
-    double armPickupRotation = 360 - 279.909149 - 3;
+    double armPickupRotation = 81.840271;
 
     double armPickupExtension = 0;
 

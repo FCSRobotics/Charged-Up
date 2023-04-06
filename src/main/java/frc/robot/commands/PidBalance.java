@@ -34,7 +34,8 @@ public class PidBalance extends CommandBase
   private final Pigeon2 gyro;
   private boolean onStation;
   private PIDController pid;
-  private final long startTime;
+  private long startTime;
+  private final double zero;
   
   /**
    * Extend arm to given distance in meters
@@ -46,14 +47,15 @@ public class PidBalance extends CommandBase
    *                          
    * 
    */
-  public PidBalance(SwerveSubsystem swerve, Pigeon2 gyro,IntakeSubsystem intake)
+  public PidBalance(SwerveSubsystem swerve, Pigeon2 gyro,IntakeSubsystem intake, double zero)
   {
     this.swerve = swerve;
     this.gyro = gyro;
     onStation = false;
     this.intake = intake;
-    pid = new PIDController(0.03275, 0, 0);
+    pid = new PIDController(0.04, 0, 0);
     startTime = System.currentTimeMillis();
+    this.zero = zero;
     
     addRequirements(swerve);
   }
@@ -61,6 +63,7 @@ public class PidBalance extends CommandBase
   @Override
   public void initialize()
   { 
+    startTime = System.currentTimeMillis();
     swerve.drive(new Translation2d(-0.5,0), 0, true, true);
   }
 
@@ -75,11 +78,13 @@ public class PidBalance extends CommandBase
     //     intake.extendOut();
     //   }
     // } else {
-    if (System.currentTimeMillis() - startTime % (PIDBalance.moveTime + PIDBalance.waitTime) > PIDBalance.moveTime ) {
+    if ((System.currentTimeMillis() - startTime) % (PIDBalance.moveTime + PIDBalance.waitTime) > PIDBalance.moveTime ) {
       swerve.drive(new Translation2d(0,0),0,true,true);
       swerve.brakeMotors();
+      SmartDashboard.putString("moving", "no I am not moving");
     } else {
-      swerve.drive(new Translation2d(pid.calculate(tilt, 6.811523),0), 0, true, false);
+      SmartDashboard.putString("moving", "yes I am moving");
+      swerve.drive(new Translation2d(pid.calculate(tilt,-4.921875),0), 0, true, false);
     }
     // }
   }
