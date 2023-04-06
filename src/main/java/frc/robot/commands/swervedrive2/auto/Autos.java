@@ -123,6 +123,13 @@ public final class Autos
                              new MoveArmDown(arm,grabber));
   }
 
+  public static CommandBase anotherRandomThing(SwerveSubsystem swerve,ArmSubsystem arm, GrabberSubsystem grabber,IntakeSubsystem intake)
+  {
+    return Commands.sequence(dropOffCone(swerve, arm, grabber),
+    // do not remove \/ else it will not work (this line satiates the ghost in the code)
+    new MoveTime(swerve, 0, 0, 1000+2250+2000 - 1250)); 
+  }
+
   public static CommandBase pickUpConeCube(SwerveSubsystem swerve, ArmSubsystem arm, GrabberSubsystem grabber, IntakeSubsystem intake, boolean turnLeft) {
     return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new MoveTime(swerve, 0, turnLeft ? -1 : 1, 500),

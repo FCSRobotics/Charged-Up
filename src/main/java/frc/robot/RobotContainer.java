@@ -11,12 +11,14 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -29,11 +31,12 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.ArmControl2;
 import frc.robot.commands.CloseGrabber;
-import frc.robot.commands.CycleColor;
+//import frc.robot.commands.CycleColor;
 import frc.robot.commands.GrabberMotorsControl;
 import frc.robot.commands.IntakeMotorsControl;
 import frc.robot.commands.MoveArmDown;
 import frc.robot.commands.MoveArmPosition;
+import frc.robot.commands.MoveTime;
 import frc.robot.commands.OpenGrabber;
 import frc.robot.commands.PidBalance;
 import frc.robot.commands.Scoring;
@@ -56,7 +59,7 @@ import frc.robot.commands.swervedrive2.drivebase.TeleopDrive2;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LightSubsystem;
+//import frc.robot.subsystems.LightSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Positions;
 // import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.GrabberSubsystem;
@@ -97,7 +100,7 @@ public class RobotContainer
                                             Arm.rotateOffset,
                                             Arm.revToMetersConversionFactor, 
                                             Arm.revToAngleConversionFactor);
-  final LightSubsystem light = new LightSubsystem();
+  //final LightSubsystem light = new LightSubsystem();
   final Pigeon2 gyro = new Pigeon2(31);
   
 
@@ -173,18 +176,22 @@ public class RobotContainer
     // );
 
     drivebase.setDefaultCommand(new ParallelCommandGroup(closedFieldRel,armControl));//, grabberMotorsControl, intakeMotorsControl));
-    m_chooser.setDefaultOption("leave and balance", Autos.leaveandbalance(drivebase, intake, grabber, arm,gyro));
-    m_chooser.addOption("balance", Autos.setActionsBalance(drivebase, intake, arm, grabber));
-    m_chooser.addOption("balance gyro", Autos.gyroBalance(drivebase, intake, arm, grabber, gyro));
-    m_chooser.addOption("balance pid", Autos.pidbalance(drivebase, intake, arm, grabber, gyro));
+    // m_chooser.setDefaultOption("leave and balance", Autos.leaveandbalance(drivebase, intake, grabber, arm,gyro));
+    // m_chooser.addOption("balance", Autos.setActionsBalance(drivebase, intake, arm, grabber));
+    // m_chooser.addOption("balance gyro", Autos.gyroBalance(drivebase, intake, arm, grabber, gyro));
+    m_chooser.addOption("balance pid (score top level cone and balance)", Autos.pidbalance(drivebase, intake, arm, grabber, gyro));
     m_chooser.addOption("do nothing", Autos.nullAuto());
-    m_chooser.addOption("spin", Autos.driveAndSpin(drivebase));
-    m_chooser.addOption("just leave", Autos.leaveTheStadium(drivebase,arm,grabber,intake));
-    m_chooser.addOption("pickup from left", Autos.pickUpConeCube(drivebase, arm, grabber, intake, true));
-    m_chooser.addOption("pickup from right", Autos.pickUpConeCube(drivebase, arm, grabber, intake, false));
-    //m_chooser.addOption("third cone and balance", Autos.thirdAndBalance(drivebase, gyro, arm, grabber, intake));
-    m_chooser.addOption("drop cone",Commands.sequence(Autos.dropOffCone(drivebase, arm, grabber)));
-    m_chooser.addOption("example auto",Autos.exampleAuto(drivebase));
+    // m_chooser.addOption("spin", Autos.driveAndSpin(drivebase));
+    m_chooser.addOption("just leave (score top level cone and score mobility)", Autos.leaveTheStadium(drivebase,arm,grabber,intake));
+    // m_chooser.addOption("pickup from left", Autos.pickUpConeCube(drivebase, arm, grabber, intake, true));
+    // m_chooser.addOption("pickup from right", Autos.pickUpConeCube(drivebase, arm, grabber, intake, false));
+    // m_chooser.addOption("third cone and balance", Autos.thirdAndBalance(drivebase, gyro, arm, grabber, intake));
+    m_chooser.setDefaultOption("drop cone (score top level cone)",Autos.anotherRandomThing(drivebase, arm, grabber, intake));
+    m_chooser.addOption("score and leave later", Commands.sequence(Autos.dropOffCone(drivebase, arm, grabber),
+                                                                         new WaitCommand(5*1.5),
+                                                                         new SetIntakePosition(intake, true),
+                                                                         new MoveTime(drivebase, -1, 0, 1000+2250+2000 - 1250)));
+    // m_chooser.addOption("example auto",Autos.exampleAuto(drivebase));
     SmartDashboard.putData("the options for the autonomous period", m_chooser);
   }
 
@@ -253,7 +260,7 @@ public class RobotContainer
     new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
     new JoystickButton(driverXbox, 10).onTrue(new InstantCommand(arm::setZeroPosition));
-    new JoystickButton(driverXbox,9).onTrue((new InstantCommand(light::incrementAnimation, light)));
+    //new JoystickButton(driverXbox,9).onTrue((new InstantCommand(light::cycleColor, light)));
 
     new JoystickButton(driverXbox, 3).onTrue(Scoring.thirdLevelCube(intake));
     new JoystickButton(driverXbox, 1).onTrue(Scoring.secondLevelCube(intake));
@@ -313,6 +320,7 @@ public class RobotContainer
     //light.playAuto();
     DriverStation.reportWarning(m_chooser.getSelected().toString(), false);
     // An example command will be run in autonomous
+    Shuffleboard.getTab("Game Tab").addString("Selected auto", () ->  m_chooser.getSelected().toString());
     return m_chooser.getSelected(); // Autos.leaveandbalance(drivebase,intake);
   }
 

@@ -212,7 +212,7 @@ player  279.909149 0 */
 
     double armBottomeExtension = 0;
     double armBottomRotation = 0;
-    double armMiddleRotation =  360 - 270;
+    double armMiddleRotation =  360 - 270 - 2.5;
     double armUpperExtension = 0.86;
     double armUpperRotation = 360 - 260.616547 + 5;
     double armMiddleExtension = 0.3;
