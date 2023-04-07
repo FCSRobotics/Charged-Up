@@ -141,6 +141,7 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic()
   {
+    m_robotContainer.autoPeriodic();
   }
 
   @Override

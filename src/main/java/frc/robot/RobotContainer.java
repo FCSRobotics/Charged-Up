@@ -59,7 +59,7 @@ import frc.robot.commands.swervedrive2.drivebase.TeleopDrive2;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-//import frc.robot.subsystems.LightSubsystem;
+import frc.robot.subsystems.LightSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Positions;
 // import frc.robot.subsystems.LightSubsystem;
 // import frc.robot.subsystems.GrabberSubsystem;
@@ -100,8 +100,15 @@ public class RobotContainer
                                             Arm.rotateOffset,
                                             Arm.revToMetersConversionFactor, 
                                             Arm.revToAngleConversionFactor);
-  //final LightSubsystem light = new LightSubsystem();
+  final LightSubsystem light = new LightSubsystem();
   final Pigeon2 gyro = new Pigeon2(31);
+
+  private enum AutoLedBehavior {
+    Dart,
+    Rainbow
+  }
+
+  private AutoLedBehavior autoLedBehavior;
   
 
   // // CommandJoystick rotationController = new CommandJoystick(1);
@@ -123,6 +130,10 @@ public class RobotContainer
   {
     // Configure the trigger bindings
     configureBindings();
+    
+
+    autoLedBehavior = AutoLedBehavior.Rainbow;//(AutoLedBehavior)AutoLedBehavior.values()[Math.round((float)Math.random() * (AutoLedBehavior.values().length - 1))];
+
 
     CameraServer.startAutomaticCapture();
     CameraServer.startAutomaticCapture();
@@ -161,7 +172,7 @@ public class RobotContainer
       grabber);
 
     //GrabberMotorsControl grabberMotorsControl = new GrabberMotorsControl(grabber, () -> driverXbox.getRawAxis(3), () -> driverXbox.getRawButton(6));
-    IntakeMotorsControl intakeMotorsControl = new IntakeMotorsControl(intake,() -> driverXbox.getRawAxis(2), () -> driverXbox.getRawButton(5));
+    //IntakeMotorsControl intakeMotorsControl = new IntakeMotorsControl(intake,() -> driverXbox.getRawAxis(2), () -> driverXbox.getRawButton(5));
 
     // SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
     //   drivebase::getPose, // Pose2d supplier
@@ -260,7 +271,7 @@ public class RobotContainer
     new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
     new JoystickButton(driverXbox, 10).onTrue(new InstantCommand(arm::setZeroPosition));
-    //new JoystickButton(driverXbox,9).onTrue((new InstantCommand(light::cycleColor, light)));
+    new JoystickButton(driverXbox,5).onTrue((new InstantCommand(light::cycleColor, light)));
 
     new JoystickButton(driverXbox, 3).onTrue(Scoring.thirdLevelCube(intake));
     new JoystickButton(driverXbox, 1).onTrue(Scoring.secondLevelCube(intake));
@@ -322,6 +333,19 @@ public class RobotContainer
     // An example command will be run in autonomous
     Shuffleboard.getTab("Game Tab").addString("Selected auto", () ->  m_chooser.getSelected().toString());
     return m_chooser.getSelected(); // Autos.leaveandbalance(drivebase,intake);
+  }
+
+  public void autoPeriodic() {
+    switch (autoLedBehavior) {
+      case Rainbow:
+        light.rainbow();
+        break;
+      case Dart:
+        light.dart();
+        break;
+      default:
+        break;
+    }
   }
 
   public void setDriveMode()
