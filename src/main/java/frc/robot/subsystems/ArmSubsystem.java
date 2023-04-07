@@ -162,9 +162,9 @@ public class ArmSubsystem extends SubsystemBase
     DriverStation.reportWarning("Desired distance: " + desiredDistance, false);
     //extendSparkMax.getPIDController().setReference(desiredDistance, ControlType.kPosition);
 
-    double currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle((int)rotatingEncoder.getPosition())];
+      double currentArmFeedforward = Arm.feedForwardMap[calculateIndexFromAngle((int)rotatingEncoder.getPosition())];
 
-    double output = MathUtil.clamp(rotatePIDController.calculate(360 - rotatingEncoder.getPosition(),desiredHeight),-4.8,4.8);
+    double output = MathUtil.clamp(rotatePIDController.calculate(360 - rotatingEncoder.getPosition(),desiredHeight),-4.8,5.8);
 
 
     double voltageVal = output + currentArmFeedforward;

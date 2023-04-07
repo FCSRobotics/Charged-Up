@@ -26,17 +26,16 @@ import swervelib.SwerveDrive;
 /**
  * An example command that uses an example subsystem.
  */
-public class PidBalance extends CommandBase
+public class PANIC extends CommandBase
 {
 
   private final SwerveSubsystem swerve;
-  private final IntakeSubsystem intake;
   private final Pigeon2 gyro;
-  private boolean onStation;
   private PIDController pid;
-  private long startTime;
-  private final double zero;
-  
+  private long startTime;  
+  private double zeroPitch;
+  private double zeroRoll;
+
   /**
    * Extend arm to given distance in meters
    *
@@ -47,46 +46,25 @@ public class PidBalance extends CommandBase
    *                          
    * 
    */
-  public PidBalance(SwerveSubsystem swerve, Pigeon2 gyro,IntakeSubsystem intake, double zero)
+  public PANIC(SwerveSubsystem swerve, Pigeon2 gyro, double zeroPitch,double zeroRoll)
   {
     this.swerve = swerve;
     this.gyro = gyro;
-    onStation = false;
-    this.intake = intake;
-    pid = new PIDController(0.04, 0, 0);
-    startTime = System.currentTimeMillis();
-    this.zero = zero;
+    this.zeroPitch = zeroPitch;
+    this.zeroRoll = zeroRoll;
     
     addRequirements(swerve);
   }
 
   @Override
-  public void initialize()
-  { 
-    startTime = System.currentTimeMillis();
-    swerve.drive(new Translation2d(-0.5,0), 0, true, true);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double tilt = gyro.getPitch();
-    SmartDashboard.putNumber("gyro: ", tilt);
-    // if (!onStation) {
-    //   if (Math.abs(tilt + 90) > 2) {
-    //     onStation = true;
-    //     intake.extendOut();
-    //   }
-    // } else {
-    if ((System.currentTimeMillis() - startTime) % (PIDBalance.moveTime + PIDBalance.waitTime) > PIDBalance.moveTime ) {
-      swerve.drive(new Translation2d(0,0),0,true,true);
-      swerve.brakeMotors();
-      SmartDashboard.putString("moving", "no I am not moving");
-    } else {
-      SmartDashboard.putString("moving", "yes I am moving");
-      swerve.drive(new Translation2d(pid.calculate(tilt,zero),0), 0, true, false);
-    }
-    // }
+    double pitch = gyro.getPitch();
+    double roll = gyro.getRoll();
+    swerve.drive(new Translation2d((pitch-zeroPitch) > 0 ? -1 : 1, (roll-zeroRoll) > 0 ? -1 : 1), 0, false,false);
   }
 
   // Called once the command ends or is interrupted.

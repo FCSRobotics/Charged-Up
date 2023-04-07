@@ -81,9 +81,9 @@ public final class Autos
   public static CommandBase pidbalance(SwerveSubsystem swerve,IntakeSubsystem intake,ArmSubsystem arm, GrabberSubsystem grabber, Pigeon2 pigeon) {
     double zero = pigeon.getPitch();
     return Commands.sequence(dropOffCone(swerve, arm, grabber),
-                             new MoveTime(swerve, -1, 0, 1000),
+                             new MoveTime(swerve, -2, 0, 550),
                              new SetIntakePosition(intake, true),
-                             new MoveTime(swerve, -1, 0, 3000),
+                             new MoveTime(swerve, -1, 0, 2500),
                              new SetIntakePosition(intake, false),
                              new PidBalance(swerve, pigeon, intake,zero));
   }
@@ -111,7 +111,7 @@ public final class Autos
     return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new SetIntakePosition(intake, true),
                              new StartIntake(intake, true, true),
-                             new MoveTime(swerve, -1, 0, 1000+2250+2000 - 1250));
+                             new MoveTime(swerve, -1, 0, 1000+2250+2000 - 500));
   }
   public static CommandBase dropOffCone(SwerveSubsystem swerve,ArmSubsystem arm,GrabberSubsystem grabber) {
     return Commands.sequence(//  new InstantCommand(arm::setZeroPosition),

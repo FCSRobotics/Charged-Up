@@ -125,6 +125,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import java.util.Random;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -154,26 +156,120 @@ public class LightSubsystem extends SubsystemBase {
 
     private final int reciprocalOfBrightness = 2;
     private int rainbowFirstPixelHue;
+    private int tally = 0;
+    private long lastAlternate = System.currentTimeMillis();
+    private int[] color = new int[] {0, 255/ reciprocalOfBrightness, 0};
 
     public LightSubsystem() {
         
         
         ledStrip.setLength(buffer.getLength());
         
-        setAll(0, 0, 0);
+        setAll(0, 255 / reciprocalOfBrightness, 0);
         
         ledStrip.start();
+
+        
+
+        for (int i = 0; i < evenBuffer.getLength(); i++ ) {
+            if(i % 2 == 0) {
+                evenBuffer.setRGB(i, color[0], color[1], color[2]);
+            } else {
+                oddBuffer.setRGB(i, color[0],color[1], color[2]);
+            }
+            
+        }
+        
+    }
+
+    public void setColor(int r, int g, int b) {
+        if (color[0] != r || color[1] != g || color[2] != b) { 
+            
+            color = new int[] {r/ reciprocalOfBrightness, g / reciprocalOfBrightness, b /reciprocalOfBrightness};
+            for (int i = 0; i < evenBuffer.getLength(); i++ ) {
+                if(i % 2 == 0) {
+                    evenBuffer.setRGB(i, color[0], color[1], color[2]);
+                } else {
+                    oddBuffer.setRGB(i, color[0],color[1], color[2]);
+                }
+                
+            }
+        }
+    }
+
+    public void fade() {
+        long time = System.currentTimeMillis();
+        float brightness = (float)Math.abs(Math.sin((((float)time)/6000f)%Math.PI))/(float)reciprocalOfBrightness;
+        for (int i = 0; i < buffer.getLength(); i++) {
+            buffer.setRGB(i, (int)Math.round((float)color[0] *  brightness), (int)Math.round((float)color[1] * brightness), (int)Math.round((float)color[2] * brightness));
+        }
+        ledStrip.setData(buffer);
     }
 
     public void rainbow() {
+        tally++;
         for (int i = 0; i < buffer.getLength(); i ++) {
             final var hue = (rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
-            buffer.setHSV(i, hue, 255 / reciprocalOfBrightness, 128);
+            buffer.setHSV(i, hue, 255, 128);
             
         }
         rainbowFirstPixelHue += 3;
         rainbowFirstPixelHue %= 180;
         ledStrip.setData(buffer);
+    }
+
+    private boolean alternateEven = false;
+    private AddressableLEDBuffer evenBuffer = new AddressableLEDBuffer(LedCount);
+    private AddressableLEDBuffer oddBuffer = new AddressableLEDBuffer(evenBuffer.getLength());
+
+    public void alternate() {
+        tally++;
+        if (System.currentTimeMillis() - lastAlternate >= 500) {
+            alternateEven = !alternateEven;
+            lastAlternate = System.currentTimeMillis();
+            if (alternateEven) {
+                ledStrip.setData(evenBuffer);
+                
+            } else {
+                ledStrip.setData(oddBuffer);
+            }
+        }
+    }
+
+    private int movingUpLed;
+    private int movingDownLed;
+    private boolean turningOnLeds;
+    private long lastUpdate = 0;
+    private int ripplePoint = 0;
+    private long lastRipple = 0;
+
+    public void rain () {
+        if (System.currentTimeMillis() - lastUpdate > 100) {
+            lastUpdate = System.currentTimeMillis();
+            
+            
+
+            if (movingDownLed > 0) {
+                buffer.setRGB(movingDownLed, color[0]/reciprocalOfBrightness, color[1] / reciprocalOfBrightness, color[2] / reciprocalOfBrightness);
+            }
+            else if (movingDownLed == 0) {
+                movingDownLed = ripplePoint;
+                for (int i = 0; i < LedCount; i++) {
+                    buffer.setRGB(i, 0, 0, 0);
+                }
+                lastRipple = System.currentTimeMillis();
+                ripplePoint = (new Random()).nextInt(buffer.getLength());
+                
+            }
+
+            
+            movingDownLed += 2;
+            
+
+
+
+            ledStrip.setData(buffer);
+        }
     }
 
     
@@ -184,7 +280,7 @@ public class LightSubsystem extends SubsystemBase {
     private final int[] dartColorRGB = new int[] {255, 255, 255};
 
     public void dart() {
-        
+        tally++;
         
 
         dartTail++;
@@ -194,7 +290,7 @@ public class LightSubsystem extends SubsystemBase {
         dartHead %= LedCount - 1;
         
         buffer.setRGB(dartTail, 0, 0, 0);
-        buffer.setRGB(dartHead, dartColorRGB[0] / reciprocalOfBrightness, dartColorRGB[1] / reciprocalOfBrightness, dartColorRGB[2] / reciprocalOfBrightness);
+        buffer.setRGB(dartHead, color[0], color[1],color[2]);
 
         ledStrip.setData(buffer);
         

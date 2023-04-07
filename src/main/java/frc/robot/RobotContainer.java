@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,6 +39,7 @@ import frc.robot.commands.MoveArmDown;
 import frc.robot.commands.MoveArmPosition;
 import frc.robot.commands.MoveTime;
 import frc.robot.commands.OpenGrabber;
+import frc.robot.commands.PANIC;
 import frc.robot.commands.PidBalance;
 import frc.robot.commands.Scoring;
 import frc.robot.commands.SetIntakePosition;
@@ -67,6 +69,9 @@ import frc.robot.subsystems.ArmSubsystem.Positions;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
 
 import java.io.File;
+import java.util.Random;
+
+import javax.swing.GroupLayout.Alignment;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.auto.PIDConstants;
@@ -105,6 +110,9 @@ public class RobotContainer
 
   private enum AutoLedBehavior {
     Dart,
+    Alternate,
+    Ripple,
+    // Blink,
     Rainbow
   }
 
@@ -122,17 +130,22 @@ public class RobotContainer
   Joystick leftstick = new Joystick(1);
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
   private boolean l1buttonPressed = false;
+  double zeroPitch = gyro.getPitch();
+  double zeroRoll = gyro.getRoll();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+
   public RobotContainer()
   {
+  
+    
     // Configure the trigger bindings
     configureBindings();
     
-
-    autoLedBehavior = AutoLedBehavior.Rainbow;//(AutoLedBehavior)AutoLedBehavior.values()[Math.round((float)Math.random() * (AutoLedBehavior.values().length - 1))];
+//(Math.random() > 0.5) ? AutoLedBehavior.Rainbow : 
+    autoLedBehavior = AutoLedBehavior.Rainbow;
 
 
     CameraServer.startAutomaticCapture();
@@ -155,8 +168,8 @@ public class RobotContainer
     SmartDashboard.putNumber("High rightx", driverXbox.getRightX());
     TeleopDrive2 closedFieldRel = new TeleopDrive2(
         drivebase,
-        () -> (Math.abs(leftstick.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (!leftstick.getRawButton(1) ? 1: .5) * leftstick.getY() : 0,
-        () -> (Math.abs(leftstick.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? (!leftstick.getRawButton(1) ? 1 :  .5) * leftstick.getX() : 0,
+        () -> (Math.abs(leftstick.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? getMultiplier(leftstick) * leftstick.getY() : 0,
+        () -> (Math.abs(leftstick.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? getMultiplier(leftstick) * leftstick.getX() : 0,
         () -> rightstick.getX(), () -> true, false);
 
     // ArmControl armControl = new ArmControl(arm,() -> 
@@ -170,6 +183,7 @@ public class RobotContainer
       () -> intake.isIn(),
       () -> driverXbox.getL1Button(),
       grabber);
+    
 
     //GrabberMotorsControl grabberMotorsControl = new GrabberMotorsControl(grabber, () -> driverXbox.getRawAxis(3), () -> driverXbox.getRawButton(6));
     //IntakeMotorsControl intakeMotorsControl = new IntakeMotorsControl(intake,() -> driverXbox.getRawAxis(2), () -> driverXbox.getRawButton(5));
@@ -204,6 +218,19 @@ public class RobotContainer
                                                                          new MoveTime(drivebase, -1, 0, 1000+2250+2000 - 1250)));
     // m_chooser.addOption("example auto",Autos.exampleAuto(drivebase));
     SmartDashboard.putData("the options for the autonomous period", m_chooser);
+  }
+
+  private double getMultiplier(Joystick stick) {
+    if(stick.getRawButton(1)) return 0.5;
+    switch(stick.getPOV()) {
+      case 0:
+        return 1;
+      case 180:
+        return 0.5;
+      default:
+        return 0.82;
+    }
+    
   }
 
   /**
@@ -271,7 +298,7 @@ public class RobotContainer
     new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
 
     new JoystickButton(driverXbox, 10).onTrue(new InstantCommand(arm::setZeroPosition));
-    new JoystickButton(driverXbox,5).onTrue((new InstantCommand(light::cycleColor, light)));
+    new JoystickButton(driverXbox,5).whileTrue(new PANIC(drivebase, gyro, zeroPitch, zeroRoll));
 
     new JoystickButton(driverXbox, 3).onTrue(Scoring.thirdLevelCube(intake));
     new JoystickButton(driverXbox, 1).onTrue(Scoring.secondLevelCube(intake));
@@ -319,6 +346,38 @@ public class RobotContainer
 
   public void periodic() {
     grabber.setMotorsSpeeds(0, true);
+    switch (autoLedBehavior) {
+    // case Blink:
+    //   light.fade();
+    //   break;
+      case Dart:
+        light.dart();
+        break;
+      case Alternate:
+        light.alternate();
+        break;
+      case Rainbow:
+        light.rainbow();
+        break;
+      case Ripple:
+        light.rain();
+        break;
+      default:
+        break;
+    }
+
+    switch (DriverStation.getAlliance()) {
+      case Red:
+      light.setColor(255, 0, 0);
+      break;
+      case Blue:
+      light.setColor(0, 0, 255);
+      break;
+      default:
+      light.setColor(0, 255, 0);
+      break;
+      
+    }
   }
 
   /**
@@ -336,16 +395,12 @@ public class RobotContainer
   }
 
   public void autoPeriodic() {
-    switch (autoLedBehavior) {
-      case Rainbow:
-        light.rainbow();
-        break;
-      case Dart:
-        light.dart();
-        break;
-      default:
-        break;
-    }
+    
+  }
+
+  public void teleopInit() {
+    Random ran = new Random();
+    autoLedBehavior = AutoLedBehavior.Ripple;//(AutoLedBehavior)AutoLedBehavior.values()[ran.nextInt(AutoLedBehavior.values().length - 1)];
   }
 
   public void setDriveMode()

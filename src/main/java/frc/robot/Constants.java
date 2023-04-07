@@ -81,7 +81,7 @@ public final class Constants
     public static final float revToAngleConversionFactor = 360;
     public static final int rotateSparkMaxId = 23;
     public static final double iExtension = 0.00;
-    public static final double pExtension = 0.06505600363016129*2*1.1*2 * 10;  
+    public static final double pExtension = 6.75;  
     public static final double dExtension = 0;
     public static final double pRotating = 0.11;
     public static final double iRotating = 0;
