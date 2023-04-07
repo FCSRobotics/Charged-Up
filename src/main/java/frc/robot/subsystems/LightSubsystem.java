@@ -173,6 +173,7 @@ public class LightSubsystem extends SubsystemBase {
         }
         rainbowFirstPixelHue += 3;
         rainbowFirstPixelHue %= 180;
+        ledStrip.setData(buffer);
     }
 
     
@@ -195,7 +196,7 @@ public class LightSubsystem extends SubsystemBase {
         buffer.setRGB(dartTail, 0, 0, 0);
         buffer.setRGB(dartHead, dartColorRGB[0] / reciprocalOfBrightness, dartColorRGB[1] / reciprocalOfBrightness, dartColorRGB[2] / reciprocalOfBrightness);
 
-
+        ledStrip.setData(buffer);
         
     }
 
@@ -214,8 +215,8 @@ public class LightSubsystem extends SubsystemBase {
                 currentColor = Color.Yellow;
                 break;
             case Yellow:
-                //setAll(0, 0, 200);
-                setAll(255, 0, 0);
+                setAll(0, 0, 0);
+                // setAll(255, 0, 0);
                 currentColor = Color.Off;
                 break;
             case Off:
