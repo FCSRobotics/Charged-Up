@@ -111,7 +111,7 @@ public class RobotContainer
   private enum AutoLedBehavior {
     Dart,
     Alternate,
-    Ripple,
+    // Ripple,
     // Blink,
     Rainbow
   }
@@ -359,9 +359,9 @@ public class RobotContainer
       case Rainbow:
         light.rainbow();
         break;
-      case Ripple:
-        light.rain();
-        break;
+      // case Ripple:
+      //   light.rain();
+      //   break;
       default:
         break;
     }
@@ -400,7 +400,7 @@ public class RobotContainer
 
   public void teleopInit() {
     Random ran = new Random();
-    autoLedBehavior = AutoLedBehavior.Ripple;//(AutoLedBehavior)AutoLedBehavior.values()[ran.nextInt(AutoLedBehavior.values().length - 1)];
+    autoLedBehavior = (AutoLedBehavior)AutoLedBehavior.values()[ran.nextInt(AutoLedBehavior.values().length - 1)];
   }
 
   public void setDriveMode()
