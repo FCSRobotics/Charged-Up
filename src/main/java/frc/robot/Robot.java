@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.Drivebase;
 import swervelib.parser.SwerveParser;
 import java.io.*;
-
+import edu.wpi.first.networktables.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -89,6 +89,11 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition());
     SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition());
     SmartDashboard.putNumber("pigeon", pigeon.getYaw());
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    double ta = table.getEntry("ta").getDouble(0);
+    SmartDashboard.putNumber("lime area", ta);
+    double[] id = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDoubleArray(new double[6]);
+    SmartDashboard.putNumberArray("april id", id);
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic

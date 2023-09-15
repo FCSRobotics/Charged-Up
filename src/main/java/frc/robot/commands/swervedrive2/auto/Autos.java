@@ -52,8 +52,7 @@ public final class Autos
    */
   public static CommandBase exampleAuto(SwerveSubsystem swerve)
   {
-    PathPlannerTrajectory example = PathPlanner.loadPath("balance",
-                                                         new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
+    PathPlannerTrajectory example = PathPlanner.loadPath("testpath", new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
     return Commands.sequence(new FollowTrajectory(swerve, example, true));
   }
 
@@ -111,7 +110,7 @@ public final class Autos
     return Commands.sequence(dropOffCone(swerve, arm, grabber),
                              new SetIntakePosition(intake, true),
                              new StartIntake(intake, true, true),
-                             new MoveTime(swerve, -1, 0, 1000+2250+2000 - 500));
+                             new MoveTime(swerve, -1, 0, 1000+2250+2000 - 250));
   }
   public static CommandBase dropOffCone(SwerveSubsystem swerve,ArmSubsystem arm,GrabberSubsystem grabber) {
     return Commands.sequence(//  new InstantCommand(arm::setZeroPosition),

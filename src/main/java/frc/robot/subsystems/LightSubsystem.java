@@ -122,6 +122,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -144,13 +145,15 @@ public class LightSubsystem extends SubsystemBase {
 
     private Animation m_toAnimate = null;
 
-    public enum Color {
-        Yellow,
-        Purple,
-        Off
-    }
+    // public enum Color {
+    //     Yellow,
+    //     Purple,
+    //     Off
+    // }
 
-    private Color currentColor = Color.Yellow;
+    // private boolean overridenByBoost = false;
+
+    //private Color currentColor = Color.Yellow;
     Animation a;
     private AddressableLED ledStrip = new AddressableLED(0);
 
@@ -159,6 +162,7 @@ public class LightSubsystem extends SubsystemBase {
     private int tally = 0;
     private long lastAlternate = System.currentTimeMillis();
     private int[] color = new int[] {0, 255/ reciprocalOfBrightness, 0};
+    private int hue = 104;
 
     public LightSubsystem() {
         
@@ -182,7 +186,8 @@ public class LightSubsystem extends SubsystemBase {
         
     }
 
-    public void setColor(int r, int g, int b) {
+    public void setColor(int r, int g, int b,int h) {
+        hue = h;
         if (color[0] != r || color[1] != g || color[2] != b) { 
             
             color = new int[] {r/ reciprocalOfBrightness, g / reciprocalOfBrightness, b /reciprocalOfBrightness};
@@ -199,18 +204,32 @@ public class LightSubsystem extends SubsystemBase {
 
     public void fade() {
         long time = System.currentTimeMillis();
-        float brightness = (float)Math.abs(Math.sin((((float)time)/6000f)%Math.PI))/(float)reciprocalOfBrightness;
+        float brightness = (float)Math.abs(Math.sin(time/5000));
         for (int i = 0; i < buffer.getLength(); i++) {
             buffer.setRGB(i, (int)Math.round((float)color[0] *  brightness), (int)Math.round((float)color[1] * brightness), (int)Math.round((float)color[2] * brightness));
         }
+        // if(!overridenByBoost) {
         ledStrip.setData(buffer);
+        // }
     }
 
     public void rainbow() {
         tally++;
         for (int i = 0; i < buffer.getLength(); i ++) {
             final var hue = (rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
-            buffer.setHSV(i, hue, 255, 128);
+            buffer.setHSV(i, hue, 255, 255 / reciprocalOfBrightness);
+            
+        }
+        rainbowFirstPixelHue += 3;
+        rainbowFirstPixelHue %= 180;
+        ledStrip.setData(buffer);
+    }
+
+    public void rainbow2() {
+        tally++;
+        for (int i = 0; i < buffer.getLength(); i ++) {
+            final var hue = (rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
+            buffer.setHSV(i, 255, 255, hue / reciprocalOfBrightness);
             
         }
         rainbowFirstPixelHue += 3;
@@ -305,21 +324,21 @@ public class LightSubsystem extends SubsystemBase {
     }
 
     public void cycleColor() {
-        switch (currentColor) {
-            case Purple:
-                setAll(255, 255, 0);
-                currentColor = Color.Yellow;
-                break;
-            case Yellow:
-                setAll(0, 0, 0);
-                // setAll(255, 0, 0);
-                currentColor = Color.Off;
-                break;
-            case Off:
-                setAll(255, 0, 255);
-                currentColor = Color.Purple;
-                break;
-        }
+        // switch (currentColor) {
+        //     case Purple:
+        //         setAll(255, 255, 0);
+        //         currentColor = Color.Yellow;
+        //         break;
+        //     case Yellow:
+        //         setAll(0, 0, 0);
+        //         // setAll(255, 0, 0);
+        //         currentColor = Color.Off;
+        //         break;
+        //     case Off:
+        //         setAll(255, 0, 255);
+        //         currentColor = Color.Purple;
+        //         break;
+        // }
     }
 
     @Override

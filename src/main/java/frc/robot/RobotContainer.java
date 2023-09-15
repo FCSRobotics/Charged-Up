@@ -31,6 +31,7 @@ import frc.robot.Constants.Intake;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.ArmControl2;
+import frc.robot.commands.AutoScore;
 import frc.robot.commands.CloseGrabber;
 //import frc.robot.commands.CycleColor;
 import frc.robot.commands.GrabberMotorsControl;
@@ -41,6 +42,9 @@ import frc.robot.commands.MoveTime;
 import frc.robot.commands.OpenGrabber;
 import frc.robot.commands.PANIC;
 import frc.robot.commands.PidBalance;
+import frc.robot.commands.PidStrafe;
+import frc.robot.commands.PidTurn;
+import frc.robot.commands.PidZoom;
 import frc.robot.commands.Scoring;
 import frc.robot.commands.SetIntakePosition;
 import frc.robot.commands.StartGrabberMotors;
@@ -132,6 +136,7 @@ public class RobotContainer
   private boolean l1buttonPressed = false;
   double zeroPitch = gyro.getPitch();
   double zeroRoll = gyro.getRoll();
+  double zeroYaw = gyro.getYaw();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -180,7 +185,7 @@ public class RobotContainer
       () -> driverController.getLeftY() * (driverXbox.getRawButton(6) ? 0.2 : 1),
       () -> driverController.getRightY(), 
       () -> driverController.getHID().getPOV(),
-      () -> intake.isIn(),
+      intake::isIn,
       () -> driverXbox.getL1Button(),
       grabber);
     
@@ -213,9 +218,10 @@ public class RobotContainer
     // m_chooser.addOption("third cone and balance", Autos.thirdAndBalance(drivebase, gyro, arm, grabber, intake));
     m_chooser.setDefaultOption("drop cone (score top level cone)",Autos.anotherRandomThing(drivebase, arm, grabber, intake));
     m_chooser.addOption("score and leave later", Commands.sequence(Autos.dropOffCone(drivebase, arm, grabber),
-                                                                         new WaitCommand(5*1.5),
+                                                                         new WaitCommand(1000+2250+2000 - 250),
                                                                          new SetIntakePosition(intake, true),
                                                                          new MoveTime(drivebase, -1, 0, 1000+2250+2000 - 1250)));
+    m_chooser.addOption("test auto", Autos.exampleAuto(drivebase));
     // m_chooser.addOption("example auto",Autos.exampleAuto(drivebase));
     SmartDashboard.putData("the options for the autonomous period", m_chooser);
   }
@@ -294,11 +300,11 @@ public class RobotContainer
     
     new JoystickButton(driverXbox, 4).onTrue(new ToggleIntakePosition(intake));
 
-    new JoystickButton(driverXbox, 7).onTrue((new CloseGrabber(grabber)));
-    new JoystickButton(driverXbox, 8).onTrue((new OpenGrabber(grabber)));
+    new JoystickButton(driverXbox, 10).onTrue((new CloseGrabber(grabber)));
+    new JoystickButton(driverXbox, 9).onTrue((new OpenGrabber(grabber)));
 
-    new JoystickButton(driverXbox, 10).onTrue(new InstantCommand(arm::setZeroPosition));
-    new JoystickButton(driverXbox,5).whileTrue(new PANIC(drivebase, gyro, zeroPitch, zeroRoll));
+    new JoystickButton(driverXbox, 0).onTrue(new InstantCommand(arm::setZeroPosition));
+    
 
     new JoystickButton(driverXbox, 3).onTrue(Scoring.thirdLevelCube(intake));
     new JoystickButton(driverXbox, 1).onTrue(Scoring.secondLevelCube(intake));
@@ -325,6 +331,9 @@ public class RobotContainer
     new JoystickButton(leftstick,8).onTrue(Commands.sequence(new MoveArmPosition(arm, Positions.PICKUPSTATION), new OpenGrabber(grabber)));
     new JoystickButton(leftstick,8).whileTrue(new InstantCommand(() -> drivebase.drive(new Translation2d(-0.5, 0), 0, true, false)));
     new JoystickButton(leftstick, 8).onFalse(new CloseGrabber(grabber));
+    new JoystickButton(rightstick,3).whileTrue(new PidTurn(drivebase, gyro,0));
+    new JoystickButton(rightstick,4).whileTrue(AutoScore.AllignMid(drivebase,gyro,arm,grabber));
+    
     
     
     
@@ -368,13 +377,13 @@ public class RobotContainer
 
     switch (DriverStation.getAlliance()) {
       case Red:
-      light.setColor(255, 0, 0);
+      light.setColor(255, 0, 0,0);
       break;
       case Blue:
-      light.setColor(0, 0, 255);
+      light.setColor(0, 0, 255,250);
       break;
       default:
-      light.setColor(0, 255, 0);
+      light.setColor(0, 255, 0,113);
       break;
       
     }
@@ -399,8 +408,8 @@ public class RobotContainer
   }
 
   public void teleopInit() {
-    Random ran = new Random();
-    autoLedBehavior = (AutoLedBehavior)AutoLedBehavior.values()[ran.nextInt(AutoLedBehavior.values().length - 1)];
+    //Random ran = new Random();
+    //autoLedBehavior = (AutoLedBehavior)AutoLedBehavior.values()[ran.nextInt(AutoLedBehavior.values().length - 1)];
   }
 
   public void setDriveMode()

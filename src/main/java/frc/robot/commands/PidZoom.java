@@ -21,21 +21,24 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
 import frc.robot.utils.ArmPosition;
 import swervelib.SwerveDrive;
-
+import frc.robot.utils.MovingAverage;
+import edu.wpi.first.networktables.*;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class PidBalance extends CommandBase
+public class PidZoom extends CommandBase
 {
 
   private final SwerveSubsystem swerve;
-  private final IntakeSubsystem intake;
-  private final Pigeon2 gyro;
-  private boolean onStation;
   private PIDController pid;
-  private long startTime;
-  private final double zero;
+  private final double location;
+  private MovingAverage posMovingAverage;
+  private MovingAverage sensedMovingAverage;
+  private double currentAverage;
+  private double detect;
+  private boolean inPosition;
+  private NetworkTable table;
   
   /**
    * Extend arm to given distance in meters
@@ -47,15 +50,14 @@ public class PidBalance extends CommandBase
    *                          
    * 
    */
-  public PidBalance(SwerveSubsystem swerve, Pigeon2 gyro,IntakeSubsystem intake, double zero)
+  public PidZoom(SwerveSubsystem swerve, double location)
   {
     this.swerve = swerve;
-    this.gyro = gyro;
-    onStation = false;
-    this.intake = intake;
-    pid = new PIDController(0.045, 0, 0);
-    startTime = System.currentTimeMillis();
-    this.zero = zero;
+    
+    pid = new PIDController(1, 0, 0);
+    this.location = location;
+    this.posMovingAverage = new MovingAverage(20);
+    this.sensedMovingAverage = new MovingAverage(20);
     
     addRequirements(swerve);
   }
@@ -63,29 +65,41 @@ public class PidBalance extends CommandBase
   @Override
   public void initialize()
   { 
-    startTime = System.currentTimeMillis();
-    swerve.drive(new Translation2d(-0.5,0), 0, true, true);
+    inPosition = false;
+    SmartDashboard.putString("moving forvards", "nope");
+    swerve.drive(new Translation2d(1,0), 0, true, true);
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+    double ta = table.getEntry("ta").getDouble(0);
+    sensedMovingAverage.setAll(ta);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double tilt = gyro.getPitch();
-    SmartDashboard.putNumber("gyro: ", tilt);
-    // if (!onStation) {
-    //   if (Math.abs(tilt + 90) > 2) {
-    //     onStation = true;
-    //     intake.extendOut();
-    //   }
-    // } else {
-    if ((System.currentTimeMillis() - startTime) % (PIDBalance.moveTime + PIDBalance.waitTime) > PIDBalance.moveTime ) {
-      swerve.drive(new Translation2d(0,0),0,true,true);
-      swerve.brakeMotors();
-      SmartDashboard.putString("moving", "no I am not moving");
-    } else {
-      SmartDashboard.putString("moving", "yes I am moving");
-      swerve.drive(new Translation2d(pid.calculate(tilt,zero),0), 0, true, false);
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+    double ta = table.getEntry("ta").getDouble(0);
+    double tv = table.getEntry("tv").getDouble(0);
+    currentAverage = posMovingAverage.addValue(ta);
+    detect = sensedMovingAverage.addValue(tv);
+    SmartDashboard.putNumber("lime distance: ", Math.abs(currentAverage-location));
+    
+    //if (detect>0 & ta!=0){
+    if (ta>0){
+      SmartDashboard.putString("moving forvards", "wheeeeee");
+      swerve.drive(new Translation2d(pid.calculate(ta,location),0), 0, true, false);
+      if (Math.abs(currentAverage-location)<0.1) {
+        inPosition = true;
+      }
+      else {
+        inPosition = false;
+      }
     }
+    else {
+        inPosition = true;
+    }
+    //}
+    // else {
+    //      inPosition = true;
     // }
   }
 
@@ -94,15 +108,16 @@ public class PidBalance extends CommandBase
   public void end(boolean interrupted)
   {
     swerve.drive(new Translation2d(0,0), 0, true, true);
-    swerve.brakeMotors();
   }
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished()
-  {
+  public boolean isFinished(){
+  
+    if (inPosition){
+       return true;
+    }
     return false;
   }
-
 
 }

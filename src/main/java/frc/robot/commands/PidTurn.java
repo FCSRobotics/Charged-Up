@@ -21,41 +21,38 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
 import frc.robot.utils.ArmPosition;
 import swervelib.SwerveDrive;
+import frc.robot.utils.MovingAverage;
 
 
 /**
  * An example command that uses an example subsystem.
  */
-public class PidBalance extends CommandBase
+public class PidTurn extends CommandBase
 {
 
   private final SwerveSubsystem swerve;
-  private final IntakeSubsystem intake;
   private final Pigeon2 gyro;
-  private boolean onStation;
   private PIDController pid;
-  private long startTime;
-  private final double zero;
+  private final double angle;
+  private MovingAverage angleMovingAverage;
+  private double currentAverage;
+  private boolean inPosition;
+  private double var;
   
   /**
    * Extend arm to given distance in meters
    *
-   * @param armSubsystem      The arm subsystem
-   * @param distanceMeters    Target distance in meters
-   *                         
-   * @param acceptableDistanceMeters How close to the target position the final position of the arm must be in meters.
+   How close to the target position the final position of the arm must be in meters.
    *                          
    * 
    */
-  public PidBalance(SwerveSubsystem swerve, Pigeon2 gyro,IntakeSubsystem intake, double zero)
+  public PidTurn(SwerveSubsystem swerve, Pigeon2 gyro, double angle)
   {
     this.swerve = swerve;
     this.gyro = gyro;
-    onStation = false;
-    this.intake = intake;
-    pid = new PIDController(0.045, 0, 0);
-    startTime = System.currentTimeMillis();
-    this.zero = zero;
+    pid = new PIDController(-0.15, -0.1, 0);
+    this.angle = angle;
+    this.angleMovingAverage = new MovingAverage(50);
     
     addRequirements(swerve);
   }
@@ -63,30 +60,28 @@ public class PidBalance extends CommandBase
   @Override
   public void initialize()
   { 
-    startTime = System.currentTimeMillis();
-    swerve.drive(new Translation2d(-0.5,0), 0, true, true);
+    inPosition = false;
+    angleMovingAverage.setAll(90);//this line seems problematic. Rotation is in radians per second and calling drive only temporarily ovverides standard input
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double tilt = gyro.getPitch();
-    SmartDashboard.putNumber("gyro: ", tilt);
-    // if (!onStation) {
-    //   if (Math.abs(tilt + 90) > 2) {
-    //     onStation = true;
-    //     intake.extendOut();
-    //   }
-    // } else {
-    if ((System.currentTimeMillis() - startTime) % (PIDBalance.moveTime + PIDBalance.waitTime) > PIDBalance.moveTime ) {
-      swerve.drive(new Translation2d(0,0),0,true,true);
-      swerve.brakeMotors();
-      SmartDashboard.putString("moving", "no I am not moving");
-    } else {
-      SmartDashboard.putString("moving", "yes I am moving");
-      swerve.drive(new Translation2d(pid.calculate(tilt,zero),0), 0, true, false);
-    }
-    // }
+    double currAngle = (((gyro.getYaw()+180-angle)%360+360)%360)-180;
+    SmartDashboard.putNumber("gyro distance: ", currAngle);
+    currentAverage = angleMovingAverage.addValue(Math.abs(currAngle));
+    
+      SmartDashboard.putString("spinning", "wheeeeee");
+      var = pid.calculate(currAngle,-4);
+      SmartDashboard.putNumber("pid spiiin", var);
+      swerve.drive(new Translation2d(0,0), var, true, false); //this line seems problematic because of the second reason listed above
+      if (currentAverage<1) {
+        inPosition = true;
+      }
+      else {
+        inPosition = false;
+      }
+      SmartDashboard.putBoolean("ready", inPosition);
   }
 
   // Called once the command ends or is interrupted.
@@ -94,15 +89,16 @@ public class PidBalance extends CommandBase
   public void end(boolean interrupted)
   {
     swerve.drive(new Translation2d(0,0), 0, true, true);
-    swerve.brakeMotors();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished()
   {
+    if (inPosition){
+      return true;
+    }
     return false;
   }
-
 
 }

@@ -3,6 +3,7 @@ package frc.robot.utils;
 import java.util.List;
 import java.util.Queue;
 
+
 public class MovingAverage {
     private int numValues;
 
@@ -20,6 +21,13 @@ public class MovingAverage {
     public MovingAverage(double[] values) {
         this.values = values;
         numValues = values.length;
+    }
+
+   
+
+    public void setAll(double value) {
+        total = value * numValues;
+        for (int i = 0; i < numValues; i++) values[i] = value;
     }
 
 

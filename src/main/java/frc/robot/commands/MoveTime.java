@@ -36,14 +36,14 @@ public class MoveTime extends CommandBase {
   @Override
   public void initialize() {
     endTime = System.currentTimeMillis() + milliseconds;
-    swerve.drive(new Translation2d(vx,vy), 0, true,true);
+    swerve.drive(new Translation2d(vx,vy), 0, true,false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     if (System.currentTimeMillis() > endTime) {
-      swerve.drive(new Translation2d(0,0),0,true,true);
+      swerve.drive(new Translation2d(0,0),0,true,false);
       return true;
     }
     return false;
