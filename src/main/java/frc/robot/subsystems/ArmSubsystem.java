@@ -67,7 +67,7 @@ public class ArmSubsystem extends SubsystemBase
 
   public final ArmPosition[] armPositions = {
     new ArmPosition(0.5, 93.142197), //high back
-    new ArmPosition(0.6, 80.01), //mid back
+    new ArmPosition(0.7, 80.01), //mid back
     new ArmPosition(0.5, 34), //low back
     new ArmPosition(0, 79.142250), // change this to back
     new ArmPosition(0,0), // low cube
