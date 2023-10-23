@@ -5,12 +5,12 @@ package frc.robot.subsystems
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
-
 import edu.wpi.first.wpilibj.DoubleSolenoid
-import edu.wpi.first.wpilibj.PneumaticsModuleType
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants.Intake
-import frc.robot.utils.MovingAverage
+import kotlin.math.atan
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class IntakeSubsystem(topMotorId: Int,
                       bottomMotorId: Int,
@@ -57,7 +57,11 @@ class IntakeSubsystem(topMotorId: Int,
 
     fun aim(distance: Double, height: Double) {
        // TODO: calculate the required angle
-        val requiredAngle = distance
+
+        val velocity = 10.0
+
+        val numerator = velocity.pow(2.0) - sqrt(velocity.pow(4) - (9.81 * ((9.81 * distance.pow(2)) + (2 * height * velocity.pow(2))) ))
+        val requiredAngle = atan(numerator / (9.81 * distance))
         setRotation(requiredAngle)
 
         val angle = rotateMotor.encoder.position / rotateMotor.encoder.countsPerRevolution
@@ -80,15 +84,21 @@ class IntakeSubsystem(topMotorId: Int,
         rotateMotor.pidController.setReference(angle, CANSparkMax.ControlType.kPosition)
     }
 
-
     fun zeroMotors() {
         setTopMotorSpeed(0.0)
         setBottomMotorSpeed(0.0)
     }
 
-    fun resetPosition() {
+    fun extendOut() {
+
+        setRotation(90.0)
+    }
+
+    fun pullIn() {
+
         setRotation(0.0)
     }
 
 
 }
+

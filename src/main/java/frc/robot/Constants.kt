@@ -53,6 +53,7 @@ object Constants {
         const val wheelTopSpeedEject = 0.45
         const val maxTopSpeed = 1.0
         const val maxBottomSpeed = 1.0
+        const val rotateMotor = -4 // TODO: Figure out actual number
     }
 
     object Grabber {

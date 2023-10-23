@@ -51,9 +51,7 @@ class RobotContainer {
     val drivebase = SwerveSubsystem(File(Filesystem.getDeployDirectory(), "swerve"))
     val intake = IntakeSubsystem(Constants.Intake.topMotor,
             Constants.Intake.bottomMotor,
-            Constants.Intake.extendChannel,
-            Constants.Intake.retractChannel,
-            Constants.Intake.reverseSolenoid)
+            Constants.Intake.rotateMotor)
     val grabber = GrabberSubsystem(Constants.Grabber.rightMotorId,
             Constants.Grabber.leftMotorId,
             Constants.Grabber.extendChannel,
@@ -104,7 +102,7 @@ class RobotContainer {
         configureBindings()
 
 //(Math.random() > 0.5) ? AutoLedBehavior.Rainbow : 
-        autoLedBehavior = AutoLedBehavior.Rainbow
+        autoLedBehavior = AutoLedBehavior.Dart;
         CameraServer.startAutomaticCapture()
         CameraServer.startAutomaticCapture()
 
@@ -234,7 +232,7 @@ class RobotContainer {
         // new JoystickButton(rightstick, 3).whileTrue(Scoring.playerStation(drivebase, intake));
         // new JoystickButton(rightstick, 3).onFalse(new StopIntake(intake));
         // new JoystickButton(leftstick,9).onTrue(new PidBalance(drivebase,gyro,intake));
-        JoystickButton(driverXbox, 4).onTrue(ToggleIntakePosition(intake))
+        //JoystickButton(driverXbox, 4).onTrue(ToggleIntakePosition(intake))
         JoystickButton(driverXbox, 10).onTrue(CloseGrabber(grabber))
         JoystickButton(driverXbox, 9).onTrue(OpenGrabber(grabber))
         JoystickButton(driverXbox, 0).onTrue(InstantCommand({ arm.setZeroPosition() }))
@@ -263,7 +261,7 @@ class RobotContainer {
 
         //new JoystickButton(leftstick,7).onTrue(new InstantCommand(arm::resetAbsoluteEncoder));
         JoystickButton(leftstick, 3).whileTrue(Scoring.playerStation(drivebase, intake))
-        JoystickButton(leftstick, 3).onFalse(Commands.sequence(StopIntake(intake), ToggleIntakePosition(intake)))
+        //JoystickButton(leftstick, 3).onFalse(Commands.sequence(StopIntake(intake), ToggleIntakePosition(intake)))
         //new JoystickButton(rightstick,2).whileTrue(new PidBalance(drivebase,gyro,intake));
 
 
@@ -278,7 +276,7 @@ class RobotContainer {
             AutoLedBehavior.Dart -> light.dart()
             AutoLedBehavior.Alternate -> light.alternate()
             AutoLedBehavior.Rainbow -> light.rainbow()
-            else -> {}
+
         }
         when (DriverStation.getAlliance()) {
             Alliance.Red -> light.setColor(255, 0, 0, 0)
@@ -304,7 +302,7 @@ class RobotContainer {
     fun autoPeriodic() {}
     fun teleopInit() {
         //Random ran = new Random();
-        //autoLedBehavior = (AutoLedBehavior)AutoLedBehavior.values()[ran.nextInt(AutoLedBehavior.values().length - 1)];
+
     }
 
     fun setDriveMode() {

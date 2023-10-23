@@ -28,8 +28,9 @@ class AimIntake(private val intakeSubsystem: IntakeSubsystem, private val limeli
         //get whether the limelight has a valid target
         if(limelight.getEntry("tv").getInteger(0) == 1L && gridIds.contains(limelight.getEntry("tid").getInteger(0).toInt())) {
             // Limelight has a target and it is a scoring target
-            val distance = limelight.getEntry("ta").getDouble(0.0)
-            val height = limelight.getEntry("ty").getDouble(-24.85) + 24.85
+            val pose = limelight.getEntry("targetpose_robotspace").getDoubleArray(arrayOf(0.0, 0.0, 0.0, 0.0, 0.0))
+            val distance = pose[0]
+            val height = pose[2]
             intakeSubsystem.aim(distance, height)
             if(intakeSubsystem.isStationary) {
                 EjectIntake(intakeSubsystem, cone = false, rotateIn = false, 1.0f).schedule()
@@ -41,7 +42,7 @@ class AimIntake(private val intakeSubsystem: IntakeSubsystem, private val limeli
 
 
     override fun end(interrupted: Boolean) {
-        intakeSubsystem.resetPosition()
+        intakeSubsystem.pullIn()
     }
     // Returns true when the command should end.
     override fun isFinished(): Boolean {

@@ -9,7 +9,8 @@ import frc.robot.subsystems.IntakeSubsystem
 /**
  * An example command that uses an example subsystem.
  */
-class ToggleIntakePosition(private val intakeSubsystem: IntakeSubsystem) : CommandBase() {
+class SetIntakePosition(private val intakeSubsystem: IntakeSubsystem, private val desiredPosition: Boolean) :
+    CommandBase() {
     /**
      * bring the intake in or out
      */
@@ -18,7 +19,11 @@ class ToggleIntakePosition(private val intakeSubsystem: IntakeSubsystem) : Comma
     }
 
     override fun initialize() {
-        intakeSubsystem.togglePosition()
+        if (desiredPosition) {
+            intakeSubsystem.extendOut()
+        } else {
+            intakeSubsystem.pullIn()
+        }
     }
 
     // Returns true when the command should end.
