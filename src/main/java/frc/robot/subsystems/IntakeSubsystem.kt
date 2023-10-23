@@ -5,33 +5,39 @@ package frc.robot.subsystems
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
+
 import edu.wpi.first.wpilibj.DoubleSolenoid
 import edu.wpi.first.wpilibj.PneumaticsModuleType
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants.Intake
+import frc.robot.utils.MovingAverage
 
 class IntakeSubsystem(topMotorId: Int,
                       bottomMotorId: Int,
-                      extendChannel: Int,
-                      retractChannel: Int,
-                      reverseSolenoid: Boolean) : SubsystemBase() {
+                      rotateMotorId: Int) : SubsystemBase() {
+    private var stationaryUpdates = 0;
+    var isStationary = false
+    private var lastAngle = 0.0
     private val bottomMotor: CANSparkMax
     private val topMotor: CANSparkMax
-    private val solenoid: DoubleSolenoid
-    private val reversed: Boolean
+    private val rotateMotor: CANSparkMax
     var isIn = true
         private set
     private var intaking = true
 
     init {
         bottomMotor = CANSparkMax(bottomMotorId, CANSparkMaxLowLevel.MotorType.kBrushless)
-        bottomMotor.restoreFactoryDefaults()
-        bottomMotor.setSmartCurrentLimit(40)
         topMotor = CANSparkMax(topMotorId, CANSparkMaxLowLevel.MotorType.kBrushless)
-        topMotor.restoreFactoryDefaults()
-        topMotor.setSmartCurrentLimit(40)
-        solenoid = DoubleSolenoid(PneumaticsModuleType.REVPH, extendChannel, retractChannel)
-        reversed = reverseSolenoid
+        rotateMotor = CANSparkMax(rotateMotorId, CANSparkMaxLowLevel.MotorType.kBrushless)
+        lastAngle = rotateMotor.encoder.position / rotateMotor.encoder.countsPerRevolution
+
+        //configure all of these because they have the same configurations.
+        listOf(bottomMotor, topMotor, rotateMotor).forEach { configureMotor(it) }
+    }
+
+    private fun configureMotor(motor: CANSparkMax, smartCurrentLimit: Int = 40) {
+        motor.restoreFactoryDefaults()
+        motor.setSmartCurrentLimit(smartCurrentLimit)
     }
 
     // currently using percentage voltage might be better to change it to explicit speed
@@ -49,26 +55,40 @@ class IntakeSubsystem(topMotorId: Int,
         intaking = !intaking
     }
 
-    fun extendOut() {
-        isIn = false
-        solenoid.set(if (reversed) DoubleSolenoid.Value.kReverse else DoubleSolenoid.Value.kForward)
-    }
+    fun aim(distance: Double, height: Double) {
+       // TODO: calculate the required angle
+        val requiredAngle = distance
+        setRotation(requiredAngle)
 
-    fun pullIn() {
-        isIn = true
-        solenoid.set(if (reversed) DoubleSolenoid.Value.kForward else DoubleSolenoid.Value.kReverse)
-    }
+        val angle = rotateMotor.encoder.position / rotateMotor.encoder.countsPerRevolution
 
-    fun togglePosition() {
-        if (isIn) {
-            extendOut()
+        if(lastAngle == angle && rotateMotor.encoder.velocity < 0.1) {
+            stationaryUpdates++
         } else {
-            pullIn()
+            stationaryUpdates = 0
         }
+
+        isStationary = stationaryUpdates > 100
+
+
+        lastAngle = angle
+
+
     }
+
+    private fun setRotation(angle: Double) {
+        rotateMotor.pidController.setReference(angle, CANSparkMax.ControlType.kPosition)
+    }
+
 
     fun zeroMotors() {
         setTopMotorSpeed(0.0)
         setBottomMotorSpeed(0.0)
     }
+
+    fun resetPosition() {
+        setRotation(0.0)
+    }
+
+
 }
