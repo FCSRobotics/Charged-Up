@@ -12,7 +12,7 @@ import frc.robot.subsystems.swervedrive2.SwerveSubsystem
  * An example command that uses an example subsystem.
  */
 class VelocityForTime(private val swerve: SwerveSubsystem, private val time: Double, private val velocity: Double) : CommandBase() {
-    private val timer: Timer
+    private val timer: Timer = Timer()
 
     /**
      * Extend arm to given distance in meters
@@ -23,12 +23,11 @@ class VelocityForTime(private val swerve: SwerveSubsystem, private val time: Dou
      * @param acceptableDistanceMeters How close to the target position the final position of the arm must be in meters.
      */
     init {
-        timer = Timer()
         addRequirements(swerve)
     }
 
     override fun initialize() {
-        swerve.drive(Translation2d(0.0, 0.5), 0.0, true, true)
+        swerve.drive(Translation2d(0.5, 0.0), 0.0, true, true)
     }
 
     // Called every time the scheduler runs while the command is scheduled.

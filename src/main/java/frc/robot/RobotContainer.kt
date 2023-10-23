@@ -154,6 +154,7 @@ class RobotContainer {
         //   true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
         //   drivebase // The drive subsystem. Used to properly set the requirements of path following commands
         // );
+
         drivebase.defaultCommand = ParallelCommandGroup(closedFieldRel, armControl) //, grabberMotorsControl, intakeMotorsControl));
         // m_chooser.setDefaultOption("leave and balance", Autos.leaveandbalance(drivebase, intake, grabber, arm,gyro));
         // m_chooser.addOption("balance", Autos.setActionsBalance(drivebase, intake, arm, grabber));
@@ -171,6 +172,7 @@ class RobotContainer {
                 SetIntakePosition(intake, true),
                 MoveTime(drivebase, -1.0, 0.0, (1000 + 2250 + 2000 - 1250).toLong())))
         m_chooser.addOption("test auto", Autos.exampleAuto(drivebase))
+        m_chooser.addOption("path auto", Autos.followPath(drivebase))
         // m_chooser.addOption("example auto",Autos.exampleAuto(drivebase));
         SmartDashboard.putData("the options for the autonomous period", m_chooser)
     }
@@ -254,7 +256,7 @@ class RobotContainer {
         JoystickButton(leftstick, 8).whileTrue(InstantCommand({ drivebase.drive(Translation2d(-0.5, 0.0), 0.0, true, false) }))
         JoystickButton(leftstick, 8).onFalse(CloseGrabber(grabber))
         JoystickButton(rightstick, 3).whileTrue(PidTurn(drivebase, gyro, 0.0))
-        JoystickButton(rightstick, 4).whileTrue(AutoScore.AllignMid(drivebase, gyro, arm, grabber))
+        //JoystickButton(rightstick, 4).whileTrue(AutoScore.AllignMid(drivebase, gyro, arm, grabber))
         JoystickButton(leftstick, 2).onTrue(Scoring.shootCube(intake))
         JoystickButton(leftstick, 11).onTrue(InstantCommand({ intake.zeroMotors() }))
         JoystickButton(rightstick, 11).onTrue(InstantCommand({ grabber.zeroMotors() }))

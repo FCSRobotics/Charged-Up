@@ -16,6 +16,7 @@ import frc.robot.subsystems.GrabberSubsystem
 import frc.robot.subsystems.IntakeSubsystem
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem
 
+
 class Autos private constructor() {
     init {
         throw UnsupportedOperationException("This is a utility class!")
@@ -108,6 +109,12 @@ class Autos private constructor() {
 
         fun nullAuto(): CommandBase {
             return Commands.sequence()
+        }
+
+        fun followPath(driveBase: SwerveSubsystem): Command? {
+            val examplePath = PathPlanner.loadPath("balance", PathConstraints(1.0, 0.5))
+            //return FollowTrajectory(examplePath)
+            return null;
         }
     }
 }
