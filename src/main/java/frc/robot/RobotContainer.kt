@@ -6,11 +6,10 @@ package frc.robot
 import com.ctre.phoenix.sensors.Pigeon2
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.networktables.NetworkTable
+import edu.wpi.first.networktables.NetworkTableInstance
+import edu.wpi.first.wpilibj.*
 import edu.wpi.first.wpilibj.DriverStation.Alliance
-import edu.wpi.first.wpilibj.Filesystem
-import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -67,6 +66,8 @@ class RobotContainer {
     val light = LightSubsystem()
     val gyro = Pigeon2(31)
 
+    private var showAlert = false
+
     private enum class AutoLedBehavior {
         Dart,
         Alternate,
@@ -88,6 +89,7 @@ class RobotContainer {
     var leftstick = Joystick(1)
     private val m_chooser = SendableChooser<Command>()
     private val l1buttonPressed = false
+    private val limelight: NetworkTable
     var zeroPitch = gyro.pitch
     var zeroRoll = gyro.roll
     var zeroYaw = gyro.yaw
@@ -105,7 +107,7 @@ class RobotContainer {
         autoLedBehavior = AutoLedBehavior.Dart;
         CameraServer.startAutomaticCapture()
         CameraServer.startAutomaticCapture()
-
+        limelight = NetworkTableInstance.getDefault().getTable("limelight")
 
         // AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
         //                                                       // Applies deadbands and inverts controls because joysticks
@@ -232,7 +234,8 @@ class RobotContainer {
         // new JoystickButton(rightstick, 3).whileTrue(Scoring.playerStation(drivebase, intake));
         // new JoystickButton(rightstick, 3).onFalse(new StopIntake(intake));
         // new JoystickButton(leftstick,9).onTrue(new PidBalance(drivebase,gyro,intake));
-        //JoystickButton(driverXbox, 4).onTrue(ToggleIntakePosition(intake))
+        JoystickButton(driverXbox, 8).whileTrue(AimIntake(intake, limelight, Constants.Intake.ScoringLevel.HIGH))
+        JoystickButton(driverXbox, 9).whileTrue(AimIntake(intake, limelight, Constants.Intake.ScoringLevel.MIDDLE))
         JoystickButton(driverXbox, 10).onTrue(CloseGrabber(grabber))
         JoystickButton(driverXbox, 9).onTrue(OpenGrabber(grabber))
         JoystickButton(driverXbox, 0).onTrue(InstantCommand({ arm.setZeroPosition() }))
@@ -245,6 +248,7 @@ class RobotContainer {
         //new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(light::cycleColor, light));
         JoystickButton(rightstick, 1).onTrue(SetIntakePosition(intake, true))
         //new JoystickButton(rightstick,1).whileTrue(new StartIntake(intake,true,true));
+
         JoystickButton(rightstick, 1).onFalse(Commands.sequence(SetIntakePosition(intake, false), StopIntake(intake)))
         JoystickButton(rightstick, 5).onTrue(StartIntake(intake, true, true))
         JoystickButton(rightstick, 5).onFalse(StopIntake(intake))
@@ -272,17 +276,26 @@ class RobotContainer {
 
     fun periodic() {
         grabber.setMotorsSpeeds(0.0, true)
-        when (autoLedBehavior) {
-            AutoLedBehavior.Dart -> light.dart()
-            AutoLedBehavior.Alternate -> light.alternate()
-            AutoLedBehavior.Rainbow -> light.rainbow()
+        if(!showAlert) {
+            when (autoLedBehavior) {
+                AutoLedBehavior.Dart -> light.dart()
+                AutoLedBehavior.Alternate -> light.alternate()
+                AutoLedBehavior.Rainbow -> light.rainbow()
 
+            }
+            when (DriverStation.getAlliance()) {
+                Alliance.Red -> light.setColor(255, 0, 0, 0)
+                Alliance.Blue -> light.setColor(0, 0, 255, 250)
+                else -> light.setColor(0, 255, 0, 113)
+            }
+        } else {
+            light.alert()
         }
-        when (DriverStation.getAlliance()) {
-            Alliance.Red -> light.setColor(255, 0, 0, 0)
-            Alliance.Blue -> light.setColor(0, 0, 255, 250)
-            else -> light.setColor(0, 255, 0, 113)
-        }
+    }
+
+    fun teleopPeriodic() {
+        //driverXbox.setRumble(GenericHID.RumbleType.kBothRumble,
+        showAlert = limelight.getEntry("tv").getInteger(0) == 1L
     }
 
     val autonomousCommand: Command

@@ -5,6 +5,8 @@ package frc.robot
 
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.math.util.Units
+import edu.wpi.first.wpilibj.DriverStation
+import frc.robot.commands.AimIntake
 import swervelib.parser.PIDFConfig
 
 /**
@@ -40,6 +42,30 @@ object Constants {
     }
 
     object Intake {
+
+        //Auto aim section
+        enum class ScoringLevel {
+            HIGH,
+            MIDDLE
+        }
+
+
+        const val launchVelocity = 10.0
+        const val angleOffset = 0.0
+        const val stationaryVelocity = 0.1
+        const val stationaryUpdatesThreshold = 100
+        const val correctAngleThreshold = 5
+        val verticalOffsets = mapOf(
+            //0.0254 converts it from inches to meters
+            ScoringLevel.HIGH to 16.5 * 0.0254,
+            ScoringLevel.MIDDLE to 5.5 * 0.0254
+        )
+        //TODO: Figure out the actual ids
+        val gridIds: List<Int> = if(DriverStation.getAlliance() == DriverStation.Alliance.Blue) listOf(1) else listOf()
+
+
+
+        //regular stuff section
         const val wheelTopSpeedCube = 0.1
         const val wheelBottomSpeedCube = 0.1
         const val wheelTopSpeedCone = 0.5

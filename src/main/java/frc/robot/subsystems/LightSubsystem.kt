@@ -103,6 +103,7 @@ class LightSubsystem : SubsystemBase() {
     private val buffer = AddressableLEDBuffer(LedCount)
     private val m_toAnimate: Animation? = null
 
+
     // public enum Color {
     //     Yellow,
     //     Purple,
@@ -234,7 +235,7 @@ class LightSubsystem : SubsystemBase() {
         ledStrip.setData(buffer)
     }
 
-    fun setAll(r: Int, g: Int, b: Int) {
+    private fun setAll(r: Int, g: Int, b: Int) {
         for (i in 0 until LedCount) {
             buffer.setRGB(i, r / reciprocalOfBrightness, g / reciprocalOfBrightness, b / reciprocalOfBrightness)
         }
@@ -275,5 +276,9 @@ class LightSubsystem : SubsystemBase() {
 
     override fun simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
+    }
+
+    fun alert() {
+        this.setAll(0, 255, 0)
     }
 }

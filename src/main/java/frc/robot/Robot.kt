@@ -129,7 +129,9 @@ class Robot : TimedRobot() {
     /**
      * This function is called periodically during operator control.
      */
-    override fun teleopPeriodic() {}
+    override fun teleopPeriodic() {
+        m_robotContainer?.teleopPeriodic()
+    }
     override fun testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll()

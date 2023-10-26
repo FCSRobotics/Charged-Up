@@ -6,16 +6,21 @@ package frc.robot.commands
 import edu.wpi.first.networktables.NetworkTable
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.CommandBase
+import frc.robot.Constants
 import frc.robot.subsystems.IntakeSubsystem
+import jdk.nashorn.internal.objects.NativeMath.sqrt
+import kotlin.math.pow
 
 /**
  * An example command that uses an example subsystem.
  */
-class AimIntake(private val intakeSubsystem: IntakeSubsystem, private val limelight: NetworkTable) : CommandBase() {
-    //TODO: Figure out the actual ids
-
+class AimIntake(private val intakeSubsystem: IntakeSubsystem, private val limelight: NetworkTable, private val scoringLevel: Constants.Intake.ScoringLevel) : CommandBase() {
     private var hasEjected = false
-    private val gridIds: List<Int> = if(DriverStation.getAlliance() == DriverStation.Alliance.Blue) listOf(1) else listOf()
+
+
+
+
+
     init {
         addRequirements(intakeSubsystem)
     }
@@ -26,13 +31,15 @@ class AimIntake(private val intakeSubsystem: IntakeSubsystem, private val limeli
 
     override fun execute() {
         //get whether the limelight has a valid target
-        if(limelight.getEntry("tv").getInteger(0) == 1L && gridIds.contains(limelight.getEntry("tid").getInteger(0).toInt())) {
+        if(limelight.getEntry("tv").getInteger(0) == 1L && Constants.Intake.gridIds.contains(limelight.getEntry("tid").getInteger(-1).toInt())) {
             // Limelight has a target and it is a scoring target
             val pose = limelight.getEntry("targetpose_robotspace").getDoubleArray(arrayOf(0.0, 0.0, 0.0, 0.0, 0.0))
-            val distance = pose[0]
-            val height = pose[2]
+            // X is robot forwards
+            val distance = sqrt(pose[0].pow(2), pose[1].pow(2))
+            // Z is vertical offset from robot position
+            val height = pose[2] + (Constants.Intake.verticalOffsets[scoringLevel] ?: Constants.Intake.verticalOffsets[Constants.Intake.ScoringLevel.HIGH]!!) //This won't happen but if for some reason there is a missing scoring level it defaults to the high level
             intakeSubsystem.aim(distance, height)
-            if(intakeSubsystem.isStationary) {
+            if(intakeSubsystem.isStationary && !hasEjected && intakeSubsystem.isCorrect()) {
                 EjectIntake(intakeSubsystem, cone = false, rotateIn = false, 1.0f).schedule()
                 hasEjected = true
             }
