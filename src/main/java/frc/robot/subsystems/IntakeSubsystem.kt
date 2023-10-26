@@ -36,6 +36,9 @@ class IntakeSubsystem(topMotorId: Int,
 
         //configure all of these because they have the same configurations.
         listOf(bottomMotor, topMotor, rotateMotor).forEach { configureMotor(it) }
+        rotateMotor.pidController.setP(Intake.rotateP)
+        rotateMotor.pidController.setI(Intake.rotateI)
+        rotateMotor.pidController.setD(Intake.rotateD)
     }
 
     private fun configureMotor(motor: CANSparkMax, smartCurrentLimit: Int = 40) {

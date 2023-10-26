@@ -49,7 +49,6 @@ object Constants {
             MIDDLE
         }
 
-
         const val launchVelocity = 10.0
         const val angleOffset = 0.0
         const val stationaryVelocity = 0.1
@@ -62,8 +61,6 @@ object Constants {
         )
         //TODO: Figure out the actual ids
         val gridIds: List<Int> = if(DriverStation.getAlliance() == DriverStation.Alliance.Blue) listOf(1) else listOf()
-
-
 
         //regular stuff section
         const val wheelTopSpeedCube = 0.1
@@ -80,6 +77,10 @@ object Constants {
         const val maxTopSpeed = 1.0
         const val maxBottomSpeed = 1.0
         const val rotateMotor = -4 // TODO: Figure out actual number
+
+        const val rotateP = 0.1
+        const val rotateI = 0.0
+        const val rotateD = 0.0
     }
 
     object Grabber {

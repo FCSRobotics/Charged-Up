@@ -8,8 +8,9 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.Constants
 import frc.robot.subsystems.IntakeSubsystem
-import jdk.nashorn.internal.objects.NativeMath.sqrt
+
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * An example command that uses an example subsystem.
@@ -35,7 +36,7 @@ class AimIntake(private val intakeSubsystem: IntakeSubsystem, private val limeli
             // Limelight has a target and it is a scoring target
             val pose = limelight.getEntry("targetpose_robotspace").getDoubleArray(arrayOf(0.0, 0.0, 0.0, 0.0, 0.0))
             // X is robot forwards
-            val distance = sqrt(pose[0].pow(2), pose[1].pow(2))
+            val distance = sqrt(pose[0].pow(2) + pose[1].pow(2))
             // Z is vertical offset from robot position
             val height = pose[2] + (Constants.Intake.verticalOffsets[scoringLevel] ?: Constants.Intake.verticalOffsets[Constants.Intake.ScoringLevel.HIGH]!!) //This won't happen but if for some reason there is a missing scoring level it defaults to the high level
             intakeSubsystem.aim(distance, height)
